@@ -1,8 +1,13 @@
 /[Ll]ibrary/
+
 /[Tt]emp/
+
 /[Oo]bj/
+
 /[Bb]uild/
+
 /[Bb]uilds/
+
 /Assets/AssetStoreTools*
 
 
@@ -18,28 +23,28 @@
 ExportedObj/
 
 .consulo/
-*
-.csproj
-*
-.unityproj
-*
-.sln
-*
-.suo
-*
-.tmp
-*
-.user
-*
-.userprefs
-*
-.pidb
-*
-.booproj
-*
-.svd
-*
-.pdb
+
+*.csproj
+
+*.unityproj
+
+*.sln
+
+*.suo
+
+*.tmp
+
+*.user
+
+*.userprefs
+
+*.pidb
+
+*.booproj
+
+*.svd
+
+*.pdb
 
 
 
