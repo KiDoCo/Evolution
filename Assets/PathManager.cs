@@ -5,11 +5,13 @@ using UnityEngine;
 public class PathManager : MonoBehaviour {
 
     public LayerMask obstacleLayer;
-    public List<Node> allNodes = new List<Node>();
+    private List<Node> allNodes = new List<Node>();
     Node defNode, bestNode;
 
     public float speed;
     public float escapeSpeed;
+    public float visionRange;
+    public GameObject enemy;
 
 
     void Awake()

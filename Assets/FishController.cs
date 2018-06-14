@@ -7,7 +7,7 @@ public class FishController : MonoBehaviour {
     public PathManager pathManager;
     private Node node;
 
-    public LayerMask threatMask;
+    public LayerMask threatMask; //remove this
     private LayerMask obstacleMask;
 
     private enum States {roam, chased};
@@ -27,17 +27,15 @@ public class FishController : MonoBehaviour {
 
     void Update()
     {
-        RaycastHit hit;
         switch (curState)
         {
             case States.roam:
                 if (Vector3.Distance(gameObject.transform.position, node.position) > 0.1f)
                 {
                     transform.position = Vector3.MoveTowards(transform.position, node.position, pathManager.speed * Time.deltaTime);
-                    Physics.BoxCast(mCollider.bounds.center, boxScale * 2, transform.forward, out hit, transform.rotation, 1, threatMask);
-                    if (hit.transform)
+                    if (Vector3.Distance(transform.position, pathManager.enemy.transform.position) < pathManager.visionRange)
                     {
-                        CheckVisible(hit.transform);
+                        CheckVisible();
                     }
                 }
                 else
@@ -48,11 +46,7 @@ public class FishController : MonoBehaviour {
                 break;
             case States.chased:
                 transform.Translate(Vector3.forward * pathManager.escapeSpeed * Time.deltaTime);
-                Physics.BoxCast(mCollider.bounds.center, boxScale * 1.5f, transform.forward, out hit, transform.rotation, 1, obstacleMask);
-                if (hit.transform)
-                {
-                    transform.Rotate(Vector3.up*200*Time.deltaTime);
-                }
+                CheckObstacles();
                 /*
                 if (Physics.SphereCast(transform.position, 1.5f, transform.forward,out hit, 1, obstacleMask))
                 {
@@ -63,15 +57,38 @@ public class FishController : MonoBehaviour {
         }
     }
 
-    private void CheckVisible(Transform threat)
+    private void CheckVisible()
     {
-        if (!Physics.Linecast(transform.position, threat.position, obstacleMask))
+        Debug.Log(Vector3.Angle(transform.right, pathManager.enemy.transform.position));
+        if (!Physics.Linecast(transform.position, pathManager.enemy.transform.position, obstacleMask) && 
+            Vector3.Angle(pathManager.enemy.transform.position - transform.position, transform.forward) < 45)
         {
-            transform.LookAt(threat.position);
+            transform.LookAt(pathManager.enemy.transform.position);
             transform.Rotate(Vector3.up * 180);
             curState = States.chased;
             Invoke("SetRoam", 10);
         }
+    }
+
+    private void CheckObstacles()
+    {
+        if (Physics.Raycast(transform.position + transform.right * 0.5f, transform.forward, 1, obstacleMask))
+        {
+            transform.Rotate(-Vector3.up * 200 * Time.deltaTime);
+        }
+        else if (Physics.Raycast(transform.position - transform.right * 0.5f, transform.forward, 1, obstacleMask))
+        {
+            transform.Rotate(Vector3.up * 200 * Time.deltaTime);
+        }
+        /*
+        if (transform.forward.z - h.point.z > 0) //!!!!!!!!
+        {
+            transform.Rotate(Vector3.up * 200 * Time.deltaTime);
+        }
+        else
+        {
+            transform.Rotate(-Vector3.up * 200 * Time.deltaTime);
+        }*/
     }
 
     private void SetRoam()
