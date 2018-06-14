@@ -11,7 +11,10 @@ public class PathManager : MonoBehaviour {
     public float speed;
     public float escapeSpeed;
     public float visionRange;
+    public float maxVisionAngle;
+    public float escapeTimer;
     public GameObject enemy;
+    public GameObject fishPrefab;
 
 
     void Awake()
@@ -34,6 +37,12 @@ public class PathManager : MonoBehaviour {
 
             }
         }
+        Invoke("SpawnFish", 2);
+    }
+
+    void SpawnFish()
+    {
+        Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
     }
 
 

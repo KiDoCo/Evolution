@@ -6,8 +6,6 @@ public class FishController : MonoBehaviour {
 
     public PathManager pathManager;
     private Node node;
-
-    public LayerMask threatMask; //remove this
     private LayerMask obstacleMask;
 
     private enum States {roam, chased};
@@ -18,6 +16,7 @@ public class FishController : MonoBehaviour {
 
     void Start()
     {
+        pathManager = GameObject.Find("FishPathManager").GetComponent<PathManager>();
         node = pathManager.GetClosestNode(transform.position);
         mCollider = gameObject.GetComponent<Collider>();
         boxScale = transform.localScale;
@@ -47,11 +46,6 @@ public class FishController : MonoBehaviour {
             case States.chased:
                 transform.Translate(Vector3.forward * pathManager.escapeSpeed * Time.deltaTime);
                 CheckObstacles();
-                /*
-                if (Physics.SphereCast(transform.position, 1.5f, transform.forward,out hit, 1, obstacleMask))
-                {
-                    transform.Rotate(Vector3.up*200*Time.deltaTime);
-                }*/
                 Debug.DrawRay(transform.position, transform.forward*1.5f, Color.green);
                 break;
         }
@@ -59,14 +53,13 @@ public class FishController : MonoBehaviour {
 
     private void CheckVisible()
     {
-        Debug.Log(Vector3.Angle(transform.right, pathManager.enemy.transform.position));
         if (!Physics.Linecast(transform.position, pathManager.enemy.transform.position, obstacleMask) && 
-            Vector3.Angle(pathManager.enemy.transform.position - transform.position, transform.forward) < 45)
+            Vector3.Angle(pathManager.enemy.transform.position - transform.position, transform.forward) < pathManager.maxVisionAngle)
         {
             transform.LookAt(pathManager.enemy.transform.position);
             transform.Rotate(Vector3.up * 180);
             curState = States.chased;
-            Invoke("SetRoam", 10);
+            Invoke("SetRoam", pathManager.escapeTimer);
         }
     }
 
@@ -80,19 +73,15 @@ public class FishController : MonoBehaviour {
         {
             transform.Rotate(Vector3.up * 200 * Time.deltaTime);
         }
-        /*
-        if (transform.forward.z - h.point.z > 0) //!!!!!!!!
-        {
-            transform.Rotate(Vector3.up * 200 * Time.deltaTime);
-        }
-        else
-        {
-            transform.Rotate(-Vector3.up * 200 * Time.deltaTime);
-        }*/
     }
 
     private void SetRoam()
     {
+        if (Vector3.Distance(transform.position, pathManager.enemy.transform.position) < pathManager.visionRange)
+        {
+            Invoke("SetRoam", pathManager.escapeTimer);
+            return;
+        }
         node = pathManager.GetClosestNode(transform.position);
         curState = States.roam;
     }
