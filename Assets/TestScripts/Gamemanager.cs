@@ -4,22 +4,46 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-    
-public class Gamemanager : MonoBehaviour
+public class Gamemanager : NetworkBehaviour
 {
-    public delegate void AddScoreDelegate(int amount);
-    public static event AddScoreDelegate increasescore;
     public static Gamemanager Instance;
+    [SyncVar]
     private int score;
-    
-    //keeps track of score of the players and the plant growing actions
-    private void AddScore()
+    [SyncVar]
+    private float matchTimer;
+
+    public List<IEatable> FoodPlaceDictionary = new List<IEatable>();
+
+    public float MatchTimer
     {
-        //score += PlayerScoreWhich is fetched somehow
+        get
+        {
+            return matchTimer;
+        }
+
+        set
+        {
+            matchTimer = value;
+        }
     }
 
+    //keeps track of score of the players and the plant growing actions
+    public void AddScore(int amount, Test test)//Character person
+    {
+        //player.score += amount
+    }
+    
+    private void UpdateExperience()//Character person
+    {
+        //UIManager.Instance.UpdateCharacterExperience();
+    }
+
+    private void Update()
+    {
+    }
     private void Awake()
     {
-        EventManager.AddHandler(EVENT.AddScore, AddScore);
+        Instance = this;
+        EventManager.AddHandler(EVENT.UpdateExperience, UpdateExperience);
     }
 }

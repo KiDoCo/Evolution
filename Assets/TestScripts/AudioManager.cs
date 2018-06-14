@@ -25,4 +25,14 @@ public class AudioManager : MonoBehaviour
     {
         
     }
+
+    private void HurtSFX()
+    {
+        Debug.Log("Sound");
+        //RandomizeSFX(SFXClips[0]);
+    }
+    private void Awake()
+    {
+        EventManager.AddHandler(EVENT.PlayerHit, HurtSFX);
+    }
 }
