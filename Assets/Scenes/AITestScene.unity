@@ -2877,7 +2877,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 9a19704f08e64144a87ce76e901896ae, type: 2}
+  - {fileID: 2100000, guid: 543d8be25046e344eb8eb1f799382fc6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2928,6 +2928,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02f6320e2c8a50e418a83cfac4423b6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultMat: {fileID: 2100000, guid: 543d8be25046e344eb8eb1f799382fc6, type: 2}
+  glassMat: {fileID: 2100000, guid: 9a19704f08e64144a87ce76e901896ae, type: 2}
 --- !u!1 &1333906650
 GameObject:
   m_ObjectHideFlags: 0
