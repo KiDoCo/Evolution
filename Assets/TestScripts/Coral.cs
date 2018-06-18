@@ -8,6 +8,8 @@ public class Coral : MonoBehaviour, IEatable
     private float amountOfFood = 20;
     private int maxAmountFood = 20;
     private float foodPerSecond = 0.5f;
+    private bool isEatening = false;
+    private const float regenerationTimer = 2.0f;
 
     //collider variables
     private const float radiusMultiplier = 1.5f;
@@ -39,6 +41,18 @@ public class Coral : MonoBehaviour, IEatable
         }
     }
 
+    public float GetAmount()
+    {
+        if (amountOfFood > 0)
+        {
+            return foodPerSecond;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
     float IEatable.FoodPerSecond
     {
         get
@@ -51,19 +65,25 @@ public class Coral : MonoBehaviour, IEatable
         }
     }
 
-    public object Iclass
+    public bool IsEatening
     {
         get
         {
-            return this;
+            return isEatening;
         }
 
         set
         {
-            
+            isEatening = value;
         }
     }
 
+    public Collider GetCollider()
+    {
+        return coralCollider;
+    }
+
+    //Methods
 
     /// <summary>
     /// Used for triggering eat method from player character
@@ -82,21 +102,29 @@ public class Coral : MonoBehaviour, IEatable
         amountOfFood -= foodPerSecond;
     }
 
-    public Collider GetCollider()
+    private void IncreaseFood()
     {
-        return coralCollider;
+        if (amountOfFood < MaxAmountFood)
+        {
+            Debug.Log("increasing");
+            IsEatening = true;
+            amountOfFood += foodPerSecond / 2;
+        }
     }
-
 
     //unity methods
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
-
+        EventManager.AddHandler(EVENT.Increase, IncreaseFood);
     }
 
     public void Start()
     {
         Gamemanager.Instance.FoodPlaceDictionary.Add(this);
+    }
+
+    public void Update()
+    {
     }
 }

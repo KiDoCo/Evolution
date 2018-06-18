@@ -5,18 +5,36 @@ using UnityEngine.Networking;
 
 public class Test : MonoBehaviour
 {
-    public int Score { get; set; }
+
     private bool ready;
+    private bool Eating;
     private float health;
     private float experience;
 
-    public void CmdEat(IEatable asdf)
+    public void CmdEat(IEatable eatObject)
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKey(KeyCode.E))
         {
-            EventManager.Broadcast(EVENT.Eat);
-            EventManager.Broadcast(EVENT.UpdateExperience);
+            StartCoroutine(Eat(eatObject));
         }
+    }
+
+    /// <summary>
+    /// Coroutine which will be triggered every second
+    /// </summary>
+    /// <param name="eatObject"></param>
+    /// <returns></returns>
+    IEnumerator Eat(IEatable eatObject)
+    {
+        if (Eating) yield break;
+
+        Eating = true;
+        experience += eatObject.GetAmount();
+        eatObject.DecreaseFood();
+        EventManager.Broadcast(EVENT.UpdateExperience);
+        Debug.Log(eatObject.AmountFood);
+        yield return new WaitForSeconds(1.0f);
+        Eating = false;
     }
 
     private void TakeDamage()
@@ -41,6 +59,7 @@ public class Test : MonoBehaviour
     {
         EventManager.AddHandler(EVENT.PlayerHit, TakeDamage);
     }
+
     private void Update()
     {
         InteractionChecker();

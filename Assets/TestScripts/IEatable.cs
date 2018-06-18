@@ -7,9 +7,10 @@ public interface IEatable
     int MaxAmountFood { get;  set; }
     float AmountFood { get;  set; }
     float FoodPerSecond { get; set; }
+    float GetAmount();
+    bool IsEatening { get; set; }
     void Awake();
     void Interact(Test test);
     void DecreaseFood();
     Collider GetCollider();
-    object Iclass { get; set; }
 }

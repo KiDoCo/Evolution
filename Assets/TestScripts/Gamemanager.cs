@@ -38,6 +38,11 @@ public class Gamemanager : NetworkBehaviour
         //UIManager.Instance.UpdateCharacterExperience();
     }
 
+    private void IncreaseFoodOnSources()
+    {
+        EventManager.Broadcast(EVENT.Increase);
+    }
+
     private void Update()
     {
     }
@@ -45,5 +50,10 @@ public class Gamemanager : NetworkBehaviour
     {
         Instance = this;
         EventManager.AddHandler(EVENT.UpdateExperience, UpdateExperience);
+    }
+
+    private void Start()
+    {
+        InvokeRepeating("IncreaseFoodOnSources", 2.0f, 2.0f);
     }
 }

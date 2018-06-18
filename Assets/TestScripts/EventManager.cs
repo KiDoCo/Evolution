@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public enum EVENT {PlayerHit, UpdateExperience,UpdateSize,Eat};
+public enum EVENT {PlayerHit, UpdateExperience,UpdateSize,Eat, Increase};
 public static class EventManager 
 {
     private static Dictionary<EVENT, Action> eventTable = new Dictionary<EVENT, Action>();
@@ -36,4 +36,10 @@ public static class EventManager
             eventTable[evnt]();
         }
     }
+
+    //List of events and methods in that event
+
+    //EVENT playerhit contains: Test.Takedamage,Audiomanager.hurtSFX();
+    //EVENT UpdateExperience contains Gamemanager.UpdateExperience
+
 }

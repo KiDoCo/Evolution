@@ -11,8 +11,14 @@ public class UIManager : MonoBehaviour
     {
 
     }
+
     private void DisplayTime()
     {
         UImatchTimer = Gamemanager.Instance.MatchTimer / 60;
+    }
+
+    private void Start()
+    {
+        EventManager.AddHandler(EVENT.UpdateExperience, UpdateCharacterExperience);
     }
 }
