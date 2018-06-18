@@ -10,6 +10,7 @@ public class CloakAbility : MonoBehaviour {
 
     public Material defaultMat;
     public Material glassMat;
+    public float defSmooth = 0;
 
     void Start ()
     {
@@ -17,12 +18,29 @@ public class CloakAbility : MonoBehaviour {
     }
 
 	
-	void Update ()
+	void Update () //Delete this update
     {
+
 		if (Input.GetKeyDown(KeyCode.Q))
         {
             ToggleCloak();
 
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.Translate(Vector3.up * 1 * Time.deltaTime);
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            transform.Translate(-Vector3.up * 1 * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.Translate(-Vector3.right * 1 * Time.deltaTime);
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            transform.Translate(Vector3.right * 1 * Time.deltaTime);
         }
     }
 
@@ -60,17 +78,19 @@ public class CloakAbility : MonoBehaviour {
 
     IEnumerator SwapColor(Color goal)
     {
+        gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", 0);
         float backUpTimer = 0;
         while (Mathf.Abs(gameObject.GetComponent<MeshRenderer>().material.color.a - goal.a) > 0.05f && backUpTimer < 2)
         {
 
             backUpTimer += Time.deltaTime;
-            gameObject.GetComponent<MeshRenderer>().material.color = Color.Lerp(gameObject.GetComponent<MeshRenderer>().material.color, goal, 12 * Time.deltaTime);
+            gameObject.GetComponent<MeshRenderer>().material.color = Color.Lerp(gameObject.GetComponent<MeshRenderer>().material.color, goal, 15 * Time.deltaTime);
             yield return null;
 
         }
         gameObject.GetComponent<MeshRenderer>().material.color = goal;
         if (cloaked) { SetGlass(); }
+        else { gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", defSmooth); }
     }
 
     IEnumerator SetBump()
@@ -85,6 +105,7 @@ public class CloakAbility : MonoBehaviour {
             yield return null;
 
         }
+
     }
 
     IEnumerator RemoveGlass()
