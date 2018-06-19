@@ -9,6 +9,7 @@ public interface IEatable
     float FoodPerSecond { get; set; }
     float GetAmount();
     bool IsEatening { get; set; }
+    void SizeChanger();
     void Awake();
     void Interact(Test test);
     void DecreaseFood();

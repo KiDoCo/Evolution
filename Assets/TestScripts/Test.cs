@@ -20,7 +20,7 @@ public class Test : MonoBehaviour
     }
 
     /// <summary>
-    /// Coroutine which will be triggered every second
+    /// Player Eating coroutine
     /// </summary>
     /// <param name="eatObject"></param>
     /// <returns></returns>
@@ -32,7 +32,6 @@ public class Test : MonoBehaviour
         experience += eatObject.GetAmount();
         eatObject.DecreaseFood();
         EventManager.Broadcast(EVENT.UpdateExperience);
-        Debug.Log(eatObject.AmountFood);
         yield return new WaitForSeconds(1.0f);
         Eating = false;
     }

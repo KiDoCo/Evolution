@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance;
     public AudioClip[]         SFXClips;
     public AudioClip[]         MusicClips;
 
@@ -23,6 +22,17 @@ public class AudioManager : MonoBehaviour
         Debug.Log("Sound");
         //RandomizeSFX(SFXClips[0]);
     }
+
+    private void EatingSFX()
+    {
+
+    }
+
+    private void RoundStartSFX()
+    {
+
+    }
+
     private void Awake()
     {
         EventManager.AddHandler(EVENT.PlayerHit, HurtSFX);

@@ -106,11 +106,16 @@ public class Coral : MonoBehaviour, IEatable
     {
         if (amountOfFood < MaxAmountFood)
         {
-            Debug.Log("increasing");
             IsEatening = true;
             amountOfFood += foodPerSecond / 2;
         }
     }
+
+    public void SizeChanger()
+    {
+        transform.GetChild(0).localScale = Vector3.zero;
+    }
+
 
     //unity methods
     public void Awake()
@@ -127,4 +132,5 @@ public class Coral : MonoBehaviour, IEatable
     public void Update()
     {
     }
+
 }
