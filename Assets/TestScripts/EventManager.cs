@@ -1,45 +1,78 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
+//List of events
+public enum EVENT {PlayerHit, UpdateExperience, UpdateSize,
+                   Eat, Increase, Victory, Defeat, RoundBegin,
+                   RoundEnd};
 
-public enum EVENT {PlayerHit, UpdateExperience,UpdateSize,Eat, Increase};
 public static class EventManager 
 {
-    private static Dictionary<EVENT, Action> eventTable = new Dictionary<EVENT, Action>();
+    private static Dictionary<EVENT, Action>              actionEventTable = new Dictionary<EVENT, Action>();
+    private static Dictionary<EVENT, Action<AudioSource>> soundEventTable  = new Dictionary<EVENT, Action<AudioSource>>();
+
 
     /// <summary>
     /// Adds a new action or adds new method to existing entry to dictionary and stores it to event list 
     /// </summary>
     /// <param name="evnt"></param>
     /// <param name="action"></param>
-    public static void AddHandler(EVENT evnt, Action action)
+    public static void ActionAddHandler(EVENT evnt, Action action)
     {
-        if (!eventTable.ContainsKey(evnt))
+        if (!actionEventTable.ContainsKey(evnt))
         {
-            eventTable[evnt] = action;
+            actionEventTable[evnt] = action;
         }
         else
         {
-            eventTable[evnt] += action;
+            actionEventTable[evnt] += action;
+        }
+    }
+    /// <summary>
+    /// Adds a new sound action or adds a new method to existing entry to dictionary
+    /// </summary>
+    /// <param name="evnt"></param>
+    /// <param name="action"></param>
+    public static void SoundAddHandler(EVENT evnt, Action<AudioSource> action)
+    {
+        if (!soundEventTable.ContainsKey(evnt))
+        {
+            soundEventTable[evnt] = action;
+        }
+        else
+        {
+            soundEventTable[evnt] += action;
         }
     }
 
     /// <summary>
-    /// Calls the event specified in the parameter
+    /// Calls a action event specified in the parameter
     /// </summary>
     /// <param name="evnt"></param>
     public static void Broadcast(EVENT evnt)
     {
-        if(eventTable[evnt] != null)
+        if(actionEventTable[evnt] != null)
         {
-            eventTable[evnt]();
+            actionEventTable[evnt]();
+        }
+    }
+    /// <summary>
+    /// Calls a sound action event specified in the parameter
+    /// </summary>
+    /// <param name="evnt"></param>
+    /// <param name="source"></param>
+    public static void SoundBroadcast(EVENT evnt, AudioSource source)
+    {
+        if(soundEventTable[evnt] != null)
+        {
+            soundEventTable[evnt](source);
         }
     }
 
     //List of events and methods in that event
 
-    //EVENT playerhit contains: Test.Takedamage,Audiomanager.hurtSFX();
-    //EVENT UpdateExperience contains Gamemanager.UpdateExperience
+
 
 }

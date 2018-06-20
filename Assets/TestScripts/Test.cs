@@ -10,6 +10,7 @@ public class Test : MonoBehaviour
     private bool Eating;
     private float health;
     private float experience;
+    private AudioSource source;
 
     public void CmdEat(IEatable eatObject)
     {
@@ -31,13 +32,16 @@ public class Test : MonoBehaviour
         Eating = true;
         experience += eatObject.GetAmount();
         eatObject.DecreaseFood();
-        EventManager.Broadcast(EVENT.UpdateExperience);
+        EventManager.SoundBroadcast(EVENT.Eat, source);
         yield return new WaitForSeconds(1.0f);
         Eating = false;
     }
 
-    private void TakeDamage()
+    private void TakeDamage(float amount)
     {
+        Debug.Log("Health");
+        EventManager.SoundBroadcast(EVENT.PlayerHit, source);
+        health -= amount;
     }
 
     /// <summary>
@@ -54,13 +58,20 @@ public class Test : MonoBehaviour
         }
     }
 
+    //baseclass methods
+
     private void Awake()
     {
-        EventManager.AddHandler(EVENT.PlayerHit, TakeDamage);
+        health = 100;
+        source = GetComponent<AudioSource>();
     }
 
     private void Update()
     {
         InteractionChecker();
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            TakeDamage(20);
+        }
     }
 }

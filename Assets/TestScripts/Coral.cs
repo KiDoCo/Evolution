@@ -10,7 +10,7 @@ public class Coral : MonoBehaviour, IEatable
     private float foodPerSecond = 0.5f;
     private bool isEatening = false;
     private const float regenerationTimer = 2.0f;
-
+    private bool eaten;
     //collider variables
     private const float radiusMultiplier = 1.5f;
     private Collider coralCollider;
@@ -78,6 +78,19 @@ public class Coral : MonoBehaviour, IEatable
         }
     }
 
+    public bool Eaten
+    {
+        get
+        {
+            return eaten;
+        }
+
+        set
+        {
+            eaten = value;
+        }
+    }
+
     public Collider GetCollider()
     {
         return coralCollider;
@@ -99,12 +112,13 @@ public class Coral : MonoBehaviour, IEatable
 
     public void DecreaseFood()
     {
+        StartCoroutine(EatChecker());
         amountOfFood -= foodPerSecond;
     }
 
     private void IncreaseFood()
     {
-        if (amountOfFood < MaxAmountFood)
+        if (amountOfFood < MaxAmountFood && !Eaten)
         {
             IsEatening = true;
             amountOfFood += foodPerSecond / 2;
@@ -113,7 +127,14 @@ public class Coral : MonoBehaviour, IEatable
 
     public void SizeChanger()
     {
-        transform.GetChild(0).localScale = Vector3.zero;
+        transform.GetChild(0).transform.localScale = new Vector3(AmountFood / MaxAmountFood, AmountFood / MaxAmountFood, AmountFood / MaxAmountFood);
+    }
+
+    IEnumerator EatChecker()
+    {
+        Eaten = true;
+        yield return new WaitForSeconds(1.0f);
+        Eaten = false;
     }
 
 
@@ -121,16 +142,16 @@ public class Coral : MonoBehaviour, IEatable
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
-        EventManager.AddHandler(EVENT.Increase, IncreaseFood);
     }
 
     public void Start()
     {
         Gamemanager.Instance.FoodPlaceDictionary.Add(this);
+        EventManager.ActionAddHandler(EVENT.Increase, IncreaseFood);
     }
 
     public void Update()
     {
+        SizeChanger();
     }
-
 }
