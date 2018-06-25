@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//interface used by character interaction
+/// <summary>
+/// Interface which is implemented to food sources
+/// </summary>
 public interface IEatable 
 {
     int MaxAmountFood { get;  set; }

@@ -1,60 +1,76 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using UnityEditor;
 
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioClip[]         SFXClips;
-    public static AudioClip[]         MusicClips;
+    //lists containing sounds 
+    private static List<AudioClip>         SFXClips   = new List<AudioClip>();
+    private static List<AudioClip>         MusicClips = new List<AudioClip>(); 
 
-    //delegates
-    private System.Action<AudioSource> hurtAction   = new System.Action<AudioSource>(HurtSFX);
-    private System.Action<AudioSource> eatingAction = new System.Action<AudioSource>(EatingSFX);
-    //Insert Functions which are called when player is doing action related to sounds
+
+    /// <summary>
+    /// Delegate that can be called to play sound effects
+    /// </summary>
+    public System.Action<AudioSource,int> SFXDelegate  
+     = new System.Action<AudioSource,int>(SFXMethod);
+
+    /// <summary>
+    /// delegate that can be called to play music
+    /// </summary>
+    public System.Action<AudioSource, int> MusicDelegate 
+     = new System.Action<AudioSource, int>(MusicMethod);
+    //list of sounds and their id
+
+    /*Sound Effect ID list (SFX)
+     0: Eat
+     1: Hurt
+     2: Lose
+     3: RoundEnd
+     4: RoundBegin
+     5: Victory
+     */
+
+    /* Music ID list
+     0: Ambient Music
+     1: Hunting Music
+     2: Main Menu
+     */
 
     private static void RandomizeSFX(AudioClip clip, AudioSource source)
     {
         source.clip = clip;
-        source.pitch = Random.Range(0.1f, 1);
+       // source.pitch = Random.Range(0.8f, 1.0f);
         source.Play();
     }
 
-    /// <summary>
-    /// Audio when character is hit
-    /// </summary>
-    private static void HurtSFX(AudioSource source)
+    private static void SFXMethod(AudioSource source,int id)
     {
-        Debug.Log("Sound");
-        RandomizeSFX(SFXClips[0], source);
+        RandomizeSFX(SFXClips[id], source);
     }
 
-    private static void EatingSFX(AudioSource source)
+    private static void MusicMethod(AudioSource source, int id)
     {
-        //RandomizeSFX(SFXClips[2], source);
-    }
-
-    private void RoundStartSFX(AudioSource source)
-    {
-        //source.clip = SFXClips[3];
-        //source.Play();
-    }
-
-    private void RoundEndSFX(AudioSource source)
-    {
-        //source.clip = SFXClips[4];
-        //source.Play();
+        source.clip = MusicClips[id];
+        source.Play();
     }
 
     private void Awake()
     {
+        SFXClips.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + "/Assets/StreamingAssets/AssetBundles/soundeffects.sfx").Replace("\\", "/"),0).assetBundle.LoadAllAssets<AudioClip>());
+        MusicClips.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + "/Assets/StreamingAssets/AssetBundles/music.mfg").Replace("\\", "/"), 0).assetBundle.LoadAllAssets<AudioClip>());
+        Debug.Log("Sound effects loaded : " + SFXClips.ToArray().Length);
+        Debug.Log("Music loaded : " + MusicClips.ToArray().Length);
     }
+
     private void Start()
     {
-        EventManager.SoundAddHandler(EVENT.PlayerHit, hurtAction);
-        EventManager.SoundAddHandler(EVENT.Eat, EatingSFX);
-        EventManager.SoundAddHandler(EVENT.RoundBegin, RoundStartSFX);
-        EventManager.SoundAddHandler(EVENT.RoundEnd, RoundEndSFX);
+        //sound effect handler adding
+        EventManager.SoundAddHandler(EVENT.PlaySFX, SFXMethod);
+
+        //music handler adding
+        EventManager.SoundAddHandler(EVENT.PlayMusic, MusicMethod);
     }
 }

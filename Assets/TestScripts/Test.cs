@@ -10,6 +10,7 @@ public class Test : MonoBehaviour
     private bool Eating;
     private float health;
     private float experience;
+    private const float waitTime = 1.0f;
     private AudioSource source;
 
     public void CmdEat(IEatable eatObject)
@@ -32,15 +33,14 @@ public class Test : MonoBehaviour
         Eating = true;
         experience += eatObject.GetAmount();
         eatObject.DecreaseFood();
-        EventManager.SoundBroadcast(EVENT.Eat, source);
-        yield return new WaitForSeconds(1.0f);
+        EventManager.SoundBroadcast(EVENT.PlaySFX, source, (int)SFXEvent.Eat);
+        yield return new WaitForSeconds(waitTime);
         Eating = false;
     }
 
     private void TakeDamage(float amount)
     {
-        Debug.Log("Health");
-        EventManager.SoundBroadcast(EVENT.PlayerHit, source);
+        EventManager.SoundBroadcast(EVENT.PlaySFX, source, (int)SFXEvent.Hurt);
         health -= amount;
     }
 
@@ -49,13 +49,18 @@ public class Test : MonoBehaviour
     /// </summary>
     private void InteractionChecker()
     {
-        for (int i = 0; Gamemanager.Instance.FoodPlaceDictionary.Count > i; i++)
+        for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
         {
-            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceDictionary[i].GetCollider().bounds))
+            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetCollider().bounds))
             {
-                Gamemanager.Instance.FoodPlaceDictionary[i].Interact(this);
+                Gamemanager.Instance.FoodPlaceList[i].Interact(this);
             }
         }
+    }
+
+    private void Death()
+    { 
+
     }
 
     //baseclass methods

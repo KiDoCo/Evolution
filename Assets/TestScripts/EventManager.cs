@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //List of events
-public enum EVENT {PlayerHit, UpdateExperience, UpdateSize,
-                   Eat, Increase, Victory, Defeat, RoundBegin,
-                   RoundEnd};
+public enum EVENT { PlaySFX, PlayMusic, DoAction, UpdateExperience, Increase, RoundBegin,RoundEnd };
 
-public static class EventManager 
+public enum SFXEvent { Eat, Hurt, Lose, RoundEnd, RoundBegin, Victory};
+
+public enum MusicEvent {Ambient,Hunting,MainMenu};
+
+public static class EventManager
 {
-    private static Dictionary<EVENT, Action>              actionEventTable = new Dictionary<EVENT, Action>();
-    private static Dictionary<EVENT, Action<AudioSource>> soundEventTable  = new Dictionary<EVENT, Action<AudioSource>>();
-
+    private static Dictionary<EVENT, Action>                   actionEventTable = new Dictionary<EVENT, Action>();
+    private static Dictionary<EVENT, Action<AudioSource, int>> soundEventTable  = new Dictionary<EVENT, Action<AudioSource, int>>();
 
     /// <summary>
     /// Adds a new action or adds new method to existing entry to dictionary and stores it to event list 
@@ -30,12 +31,13 @@ public static class EventManager
             actionEventTable[evnt] += action;
         }
     }
+
     /// <summary>
     /// Adds a new sound action or adds a new method to existing entry to dictionary
     /// </summary>
     /// <param name="evnt"></param>
     /// <param name="action"></param>
-    public static void SoundAddHandler(EVENT evnt, Action<AudioSource> action)
+    public static void SoundAddHandler(EVENT evnt, Action<AudioSource, int> action)
     {
         if (!soundEventTable.ContainsKey(evnt))
         {
@@ -53,7 +55,7 @@ public static class EventManager
     /// <param name="evnt"></param>
     public static void Broadcast(EVENT evnt)
     {
-        if(actionEventTable[evnt] != null)
+        if (actionEventTable[evnt] != null)
         {
             actionEventTable[evnt]();
         }
@@ -63,16 +65,27 @@ public static class EventManager
     /// </summary>
     /// <param name="evnt"></param>
     /// <param name="source"></param>
-    public static void SoundBroadcast(EVENT evnt, AudioSource source)
+    public static void SoundBroadcast(EVENT evnt, AudioSource source, int id)
     {
-        if(soundEventTable[evnt] != null)
+        if (soundEventTable[evnt] != null)
         {
-            soundEventTable[evnt](source);
+            soundEventTable[evnt](source, id);
         }
     }
-
+    
     //List of events and methods in that event
 
+    /* SoundEffects
+     Sounds are played through sfxmethod and musicmethod. 
+     fomod?
+     Clip is determined on delegate call
+     */
 
+    /*Actionhandler
+     Event increase = Coral : increasefood()
+     Event UpdateExperience = UImanager : UpdateExperience
+     Event beginround = gamemanager : Startmatch()
+
+     */
 
 }

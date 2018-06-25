@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 1573940022
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: soundeffects.sfx
+      Dependencies: {}
+    Info_1:
+      Name: carnivore.pl
+      Dependencies: {}
+    Info_2:
+      Name: herbivore.pl
+      Dependencies: {}
+    Info_3:
+      Name: music.mfg
+      Dependencies: {}
