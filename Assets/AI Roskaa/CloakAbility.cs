@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CloakAbility : MonoBehaviour {
-    
+   
+
     bool cloaked = false;
 
     Color visibilityColor;
-
+   
+    //Uses 2 materials to swap between when cloak is used
     public Material defaultMat;
     public Material glassMat;
     public float defSmooth = 0;
@@ -26,25 +28,9 @@ public class CloakAbility : MonoBehaviour {
             ToggleCloak();
 
         }
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(Vector3.up * 1 * Time.deltaTime);
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(-Vector3.up * 1 * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(-Vector3.right * 1 * Time.deltaTime);
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(Vector3.right * 1 * Time.deltaTime);
-        }
     }
 
-    void ToggleCloak()
+    void ToggleCloak() //Change this to non-toggle if needed
     {
         Debug.Log("toggle cloak");
         cloaked = !cloaked;
@@ -52,8 +38,6 @@ public class CloakAbility : MonoBehaviour {
         {
             visibilityColor.a = 0;
             StartCoroutine(SwapColor(visibilityColor));
-            //Find out a way to disable the material reflections
-            //gameObject.GetComponent<MeshRenderer>().material.SetFloat("_SpecularHighlights", 0f);
 
         }
         else
@@ -63,12 +47,12 @@ public class CloakAbility : MonoBehaviour {
     }
 
 
-    void SetNormal()
+    void SetNormal() //Change material
     {
         gameObject.GetComponent<MeshRenderer>().material = defaultMat;
         
     }
-    void SetGlass()
+    void SetGlass() //Change material
     {
         gameObject.GetComponent<MeshRenderer>().material = glassMat;
         
@@ -76,7 +60,7 @@ public class CloakAbility : MonoBehaviour {
     }
 
 
-    IEnumerator SwapColor(Color goal)
+    IEnumerator SwapColor(Color goal) //Change visiblity of normal material
     {
         gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", 0);
         float backUpTimer = 0;
@@ -93,7 +77,7 @@ public class CloakAbility : MonoBehaviour {
         else { gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", defSmooth); }
     }
 
-    IEnumerator SetBump()
+    IEnumerator SetBump() //Increase distorion for glass
     {
         float backUpTimer = 0;
         float i = 0;
@@ -108,7 +92,7 @@ public class CloakAbility : MonoBehaviour {
 
     }
 
-    IEnumerator RemoveGlass()
+    IEnumerator RemoveGlass() //Decrease distortion for glass
     {
         float backUpTimer = 0;
         float i = 50;

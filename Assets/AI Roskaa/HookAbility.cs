@@ -6,7 +6,7 @@ public class HookAbility : MonoBehaviour {
 
 
     private GameObject hookObj;
-    public GameObject hookPrefab;
+    [SerializeField] private GameObject hookPrefab;
     [SerializeField] private float hookDistance;
     [SerializeField] private float hookSpeed;
     [SerializeField] private float slowDown;

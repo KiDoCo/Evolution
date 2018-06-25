@@ -10,17 +10,12 @@ public class FishController : MonoBehaviour {
 
     private enum States {roam, chased};
     States curState = States.roam;
-
-    Collider mCollider;
-    Vector3 boxScale;
+    
 
     void Start()
     {
         pathManager = GameObject.Find("FishPathManager").GetComponent<PathManager>();
         node = pathManager.GetClosestNode(transform.position);
-        mCollider = gameObject.GetComponent<Collider>();
-        boxScale = transform.localScale;
-        boxScale.z *= 2;
         obstacleMask = pathManager.obstacleLayer;
     }
 
@@ -28,7 +23,7 @@ public class FishController : MonoBehaviour {
     {
         switch (curState)
         {
-            case States.roam:
+            case States.roam: //Wander randomly between nodes
                 if (Vector3.Distance(gameObject.transform.position, node.position) > 0.1f)
                 {
                     transform.position = Vector3.MoveTowards(transform.position, node.position, pathManager.speed * Time.deltaTime);
@@ -43,7 +38,7 @@ public class FishController : MonoBehaviour {
                     transform.LookAt(node.position);
                 }
                 break;
-            case States.chased:
+            case States.chased: //Move forward for a given time and avoid obstacles
                 transform.Translate(Vector3.forward * pathManager.escapeSpeed * Time.deltaTime);
                 CheckObstacles();
                 Debug.DrawRay(transform.position, transform.forward*1.5f, Color.green);
@@ -51,7 +46,7 @@ public class FishController : MonoBehaviour {
         }
     }
 
-    private void CheckVisible()
+    private void CheckVisible() //Check monster visiblity with Physics.Linecast and the angle with Vector3.Angle -> chased if visible
     {
         if (!Physics.Linecast(transform.position, pathManager.enemy.transform.position, obstacleMask) && 
             Vector3.Angle(pathManager.enemy.transform.position - transform.position, transform.forward) < pathManager.maxVisionAngle)
@@ -63,7 +58,7 @@ public class FishController : MonoBehaviour {
         }
     }
 
-    private void CheckObstacles()
+    private void CheckObstacles() //Rotate away from obstacles
     {
         if (Physics.Raycast(transform.position + transform.right * 0.5f, transform.forward, 1, obstacleMask))
         {
@@ -75,7 +70,7 @@ public class FishController : MonoBehaviour {
         }
     }
 
-    private void SetRoam()
+    private void SetRoam() //Check if monster is within given distance and return to path if it isn't
     {
         if (Vector3.Distance(transform.position, pathManager.enemy.transform.position) < pathManager.visionRange)
         {

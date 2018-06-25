@@ -17,14 +17,18 @@ public class PathManager : MonoBehaviour {
     public GameObject fishPrefab;
 
 
-    void Awake()
+    void Awake() 
     {
         defNode = new Node(new Vector3(), this);
+
+        //Take all child objects -> create nodes with child position -> delete children
         for (int i = 0; i < gameObject.transform.childCount; i++)
         {
             allNodes.Add(new Node(gameObject.transform.GetChild(i).position, this));
             Destroy(gameObject.transform.GetChild(i).gameObject);
         }
+
+        //Check neighbours for each node using Physics.Linecast
         foreach (Node n in allNodes)
         {
             foreach (Node nn in allNodes)
@@ -37,16 +41,15 @@ public class PathManager : MonoBehaviour {
 
             }
         }
-        Invoke("SpawnFish", 2);
     }
 
-    void SpawnFish()
+    void SpawnFish() //instantiate a fish in random node position
     {
         Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
     }
 
 
-    public Node GetClosestNode(Vector3 startPos)
+    public Node GetClosestNode(Vector3 startPos) //Find closest node for fish using Physics.Linecast (used when fish returns to path)
     {
         float tempDist = 100;
         foreach (Node n in allNodes)
@@ -60,7 +63,7 @@ public class PathManager : MonoBehaviour {
         return bestNode;
     }
 
-    public Node GetNextNode(Vector3 startPos, Node prevNode)
+    public Node GetNextNode(Vector3 startPos, Node prevNode) //Random neighbour of node
     {
         return prevNode.neighbors[Random.Range(0, prevNode.neighbors.Count)];
     }

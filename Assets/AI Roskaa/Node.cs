@@ -7,9 +7,9 @@ public class Node
 
     PathManager pathManager;
 
-    public Vector3 position; //REMEMBER TO USE THIS INSTEAD OF transform.position
-    public List<Node> neighbors = new List<Node>();
-    public float gCost, hCost, fCost;
+    public Vector3 position; //use this instead of transform
+    public List<Node> neighbors = new List<Node>(); //visible nodes
+    public float gCost, hCost, fCost; //not used ATM
 
 
     public Node(Vector3 _pos, PathManager _path)
