@@ -164,6 +164,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9618f2aa07f7df4888c7588603df4d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  foodsources:
+  - {fileID: 1285185115931480, guid: 14dc4bef32bb7b84db031ab2d71a000e, type: 2}
   PlayerList: []
 --- !u!4 &368256339
 Transform:
