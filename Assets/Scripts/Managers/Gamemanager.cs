@@ -16,8 +16,8 @@ public class Gamemanager : NetworkBehaviour
 
     //Match variables
     private const float                 startingMatchTimer = 5.0f; //time value in minutes
-    private const float                 minutesToSeconds = 60.0f;  //converting value
-    private const float                 interval = 2.0f;           //The time in seconds that spawning will happen
+    private const float                 minutesToSeconds   = 60.0f;//converting value
+    private const float                 interval           = 2.0f;//The time in seconds that spawning will happen
     [SyncVar]
     private float                       matchTimer;
     private bool                        MatchStarting;
@@ -25,11 +25,11 @@ public class Gamemanager : NetworkBehaviour
     //Gamemanager lists
     private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
     private Dictionary<int, GameObject> herbivorePrefabs     = new Dictionary<int, GameObject>();
-    public List<GameObject>             foodsources          = new List<GameObject>();
-    public List<IEatable>               FoodPlaceList        = new List<IEatable>();
+    public  List<GameObject>            foodsources          = new List<GameObject>();
+    public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
     private List<Transform>             PlayerSpawnPointList = new List<Transform>();
-    public List<Test>                   PlayerList           = new List<Test>();
+    public  List<Test>                  PlayerList           = new List<Test>();
 #pragma warning restore
 
     public float MatchTimer

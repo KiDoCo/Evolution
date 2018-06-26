@@ -38,7 +38,11 @@ public class AudioManager : MonoBehaviour
      1: Hunting Music
      2: Main Menu
      */
-
+     /// <summary>
+     /// Randomizes the pitch of a clip
+     /// </summary>
+     /// <param name="clip"></param>
+     /// <param name="source"></param>
     private static void RandomizeSFX(AudioClip clip, AudioSource source)
     {
         source.clip = clip;
@@ -57,12 +61,14 @@ public class AudioManager : MonoBehaviour
         source.Play();
     }
 
+    //Unity Methods
+
     private void Awake()
     {
         SFXClips.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + "/Assets/StreamingAssets/AssetBundles/soundeffects.sfx").Replace("\\", "/"),0).assetBundle.LoadAllAssets<AudioClip>());
         MusicClips.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + "/Assets/StreamingAssets/AssetBundles/music.mfg").Replace("\\", "/"), 0).assetBundle.LoadAllAssets<AudioClip>());
         Debug.Log("Sound effects loaded : " + SFXClips.ToArray().Length);
-        Debug.Log("Music loaded : " + MusicClips.ToArray().Length);
+        Debug.Log("Music loaded : "         + MusicClips.ToArray().Length);
     }
 
     private void Start()

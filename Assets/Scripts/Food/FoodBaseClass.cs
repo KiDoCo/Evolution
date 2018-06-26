@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -7,17 +6,19 @@ using UnityEngine;
 /// </summary>
 public class FoodBaseClass : MonoBehaviour, IEatable
 {
+#pragma warning disable
     //Food variables
-    private int maxAmountFood = 20;
-    private float amountOfFood = 20;
-    private float foodPerSecond = 0.5f;
-    private bool isEatening = false;
+    private int         maxAmountFood     = 20;
+    private float       amountOfFood      = 20;
+    private float       foodPerSecond     = 0.5f;
+    private bool        isEatening        = false;
     private const float regenerationTimer = 2.0f;
-    private bool eaten;
+    private bool        eaten;
 
     //collider variables
-    private const float radiusMultiplier = 1.5f;
-    private Collider coralCollider;
+    private const float radiusMultiplier  = 1.5f;
+    private Collider    coralCollider;
+#pragma warning restore
 
     //interface properties
     public int MaxAmountFood

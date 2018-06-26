@@ -4,15 +4,15 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class Test : MonoBehaviour
-{
-
+{ 
+    //ADD necessary components to playable character
     private bool ready;
     private bool Eating;
     private float health;
     private float experience;
     private const float waitTime = 1.0f;
     private AudioSource source;
-
+    //ADD
     public void CmdEat(IEatable eatObject)
     {
         if (Input.GetKey(KeyCode.E))
@@ -20,9 +20,9 @@ public class Test : MonoBehaviour
             StartCoroutine(Eat(eatObject));
         }
     }
-
+    //ADD
     /// <summary>
-    /// Player Eating coroutine
+    /// Player Eating coroutine 
     /// </summary>
     /// <param name="eatObject"></param>
     /// <returns></returns>
@@ -37,13 +37,13 @@ public class Test : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         Eating = false;
     }
-
+    //ADD
     private void TakeDamage(float amount)
     {
         EventManager.SoundBroadcast(EVENT.PlaySFX, source, (int)SFXEvent.Hurt);
         health -= amount;
     }
-
+    //ADD
     /// <summary>
     /// Checks for interaction when player enters the corals bounding box
     /// </summary>
