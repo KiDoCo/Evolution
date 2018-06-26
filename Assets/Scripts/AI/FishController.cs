@@ -14,7 +14,7 @@ public class FishController : MonoBehaviour {
 
     void Start()
     {
-        pathManager = GameObject.Find("FishPathManager").GetComponent<PathManager>();
+        pathManager = FindObjectOfType<PathManager>();
         node = pathManager.GetClosestNode(transform.position);
         obstacleMask = pathManager.obstacleLayer;
     }

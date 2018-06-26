@@ -7,7 +7,8 @@ using System.IO;
 
 
 public class Gamemanager : NetworkBehaviour
-{ //Ingnore pragmas for unnecessary warnings
+{ 
+    //Ingnore pragmas for unnecessary warnings
 #pragma warning disable
     public static Gamemanager           Instance;
     //File location variables hard coded shishnet
@@ -30,6 +31,11 @@ public class Gamemanager : NetworkBehaviour
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
     private List<Transform>             PlayerSpawnPointList = new List<Transform>();
     public  List<Test>                  PlayerList           = new List<Test>();
+
+    //Strings
+    private string gameScene       = "DemoScene";
+    private string foodSourceName  = "FoodSource";
+    private string playerSpawnName = "player";
 #pragma warning restore
 
     public float MatchTimer
@@ -71,24 +77,24 @@ public class Gamemanager : NetworkBehaviour
         yield return new WaitForSeconds(1.0f);
 
         //search every spawnpoint for players and foodsources
-        for (int i = 0; i < GameObject.FindGameObjectsWithTag("FoodSource").Length; i++)
+        for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
         {
-            FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag("FoodSource")[i].transform);
+            FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
         }
 
-        for (int i = 0; i < GameObject.FindGameObjectsWithTag("PlayerSpawns").Length; i++)
+        for (int i = 0; i < GameObject.FindGameObjectsWithTag(playerSpawnName).Length; i++)
         {
-            PlayerSpawnPointList.Add(GameObject.FindGameObjectsWithTag("PlayerSpawns")[i].transform);
+            PlayerSpawnPointList.Add(GameObject.FindGameObjectsWithTag(playerSpawnName)[i].transform);
         }
-
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
         SpawnPlayers();
         SpawnFoodSources();
 
+        EventManager.Broadcast(EVENT.DoAction);
+
         //repeaters for spawning food/populating sources
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
-        InvokeRepeating("SpawnFish", interval, interval);
         MatchStarting = false;
         yield return matchTimer;
     }
@@ -119,7 +125,7 @@ public class Gamemanager : NetworkBehaviour
     /// <summary>
     /// Spawns The player to the match map
     /// </summary>
-    public void SpawnPlayers()
+    private void SpawnPlayers()
     {
         for (int i = 0; i < PlayerList.Capacity; i++)
         {
@@ -129,20 +135,17 @@ public class Gamemanager : NetworkBehaviour
         }
     }
 
-    /// <summary>
-    /// Spawns fish to the map
-    /// </summary>
-    public void SpawnFish()
-    {
-        //Insert function to spawn a fish at a random spawnpoint
-    }
 
     private void SpawnFoodSources()
     {
         for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
         {
             GameObject clone = Instantiate(foodsources[0], FoodSpawnPointList[i].position, Quaternion.identity);
-            clone.name = "FoodSource " + i;
+            clone.name = foodSourceName + i;
+        }
+        for( int a = 0; a <FoodSpawnPointList.Capacity; a++)
+        {
+            Destroy(FoodSpawnPointList[a].gameObject);
         }
     }
 
@@ -153,6 +156,7 @@ public class Gamemanager : NetworkBehaviour
     {
         List<GameObject> Ctemp = new List<GameObject>();
         List<GameObject> Htemp = new List<GameObject>();
+        //Search the file with WWW class
         Ctemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + cPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
         Htemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + hPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
 
@@ -173,7 +177,7 @@ public class Gamemanager : NetworkBehaviour
     public void LoadGame()
     {
         //Load the match scene
-        SceneManager.LoadSceneAsync("Game");
+        SceneManager.LoadSceneAsync(gameScene);
         StartCoroutine(StartMatch());
     }
 
@@ -181,7 +185,7 @@ public class Gamemanager : NetworkBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name != "Game")
+        if (SceneManager.GetActiveScene().name != gameScene)
         {
             if (Input.GetKey(KeyCode.F2))
             {
@@ -204,5 +208,6 @@ public class Gamemanager : NetworkBehaviour
     {
         LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
+        EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
     }
 }
