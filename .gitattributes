@@ -1,5 +1,2 @@
-*.unity binary
-
-*.prefab binary
-
-*.asset binary
+# Auto detect text files and perform LF normalization
+* text=auto
