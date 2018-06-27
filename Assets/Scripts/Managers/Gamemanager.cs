@@ -18,11 +18,11 @@ public class Gamemanager : NetworkBehaviour
     //Match variables
     private const float                 startingMatchTimer = 5.0f; //time value in minutes
     private const float                 minutesToSeconds   = 60.0f;//converting value
-    private const float                 interval           = 2.0f;//The time in seconds that spawning will happen
+    private const float                 interval           = 0.1f;//The time in seconds that spawning will happen
     [SyncVar]
     private float                       matchTimer;
     private bool                        MatchStarting;
-
+    private bool                        gameon; //debug variable
     //Gamemanager lists
     private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
     private Dictionary<int, GameObject> herbivorePrefabs     = new Dictionary<int, GameObject>();
@@ -30,7 +30,7 @@ public class Gamemanager : NetworkBehaviour
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
     private List<Transform>             PlayerSpawnPointList = new List<Transform>();
-    public  List<Test>                  PlayerList           = new List<Test>();
+    public  List<move>                  PlayerList           = new List<move>();
 
     //Strings
     private string gameScene       = "DemoScene";
@@ -74,7 +74,7 @@ public class Gamemanager : NetworkBehaviour
             //playerlist.add(playerselection[i])
         }
         //Stop for a moment to scene to load
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(1.5f);
 
         //search every spawnpoint for players and foodsources
         for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
@@ -86,13 +86,13 @@ public class Gamemanager : NetworkBehaviour
         {
             PlayerSpawnPointList.Add(GameObject.FindGameObjectsWithTag(playerSpawnName)[i].transform);
         }
+
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
         SpawnPlayers();
         SpawnFoodSources();
-
         EventManager.Broadcast(EVENT.DoAction);
-
+        FoodSpawnPointList.Clear();
         //repeaters for spawning food/populating sources
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
         MatchStarting = false;
@@ -127,12 +127,15 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private void SpawnPlayers()
     {
+            //list of player and loop it to every individual player
         for (int i = 0; i < PlayerList.Capacity; i++)
         {
         GameObject clone = Instantiate(carnivorePrefabs[0], PlayerSpawnPointList[0].position, Quaternion.identity);
-            //list of player and loop it to every individual player
             clone.name = "Player";
         }
+        Debug.Log("List " + FoodPlaceList.Capacity);
+
+
     }
 
 
@@ -146,6 +149,11 @@ public class Gamemanager : NetworkBehaviour
         for( int a = 0; a <FoodSpawnPointList.Capacity; a++)
         {
             Destroy(FoodSpawnPointList[a].gameObject);
+        }
+
+        for (int i = 0; i < FoodPlaceList.ToArray().Length; i++)
+        {
+            Debug.Log("Object in list: " + FoodPlaceList.ToArray()[i]);
         }
     }
 
@@ -187,9 +195,14 @@ public class Gamemanager : NetworkBehaviour
     {
         if (SceneManager.GetActiveScene().name != gameScene)
         {
-            if (Input.GetKey(KeyCode.F2))
+            if(!gameon)
             {
-                EventManager.Broadcast(EVENT.RoundBegin);
+                if (Input.GetKeyDown(KeyCode.F2))
+
+                {
+                    gameon = true;
+                    EventManager.Broadcast(EVENT.RoundBegin);
+                }
             }
         }
 

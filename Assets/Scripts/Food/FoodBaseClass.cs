@@ -6,19 +6,22 @@ using UnityEngine;
 /// </summary>
 public class FoodBaseClass : MonoBehaviour, IEatable
 {
-#pragma warning disable
+
     //Food variables
     private int         maxAmountFood     = 20;
     private float       amountOfFood      = 20;
     private float       foodPerSecond     = 0.5f;
-    private bool        isEatening        = false;
     private const float regenerationTimer = 2.0f;
+    private const float sizeMultiplier    = 1.5f;
+    private bool        isEatening        = false;
     private bool        eaten;
 
     //collider variables
     private const float radiusMultiplier  = 1.5f;
     private Collider    coralCollider;
-#pragma warning restore
+    private BoxCollider box;
+    private AudioSource source;
+
 
     //interface properties
     public int MaxAmountFood
@@ -50,7 +53,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         if (amountOfFood > 0)
         {
-            return foodPerSecond;
+            return foodPerSecond * Time.deltaTime;
         }
         else
         {
@@ -101,13 +104,17 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         return coralCollider;
     }
 
+    public AudioSource Source()
+    {
+        return source;
+    }
     //Methods
 
     /// <summary>
     /// Used for triggering eat method from player character
     /// </summary>
     /// <param name="test"></param>
-    public void Interact(Test test)
+    public void Interact(move test)
     {
         if (amountOfFood > 0)
         {
@@ -120,8 +127,9 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     /// </summary>
     public void DecreaseFood()
     {
+        Debug.Log(Eaten);
         StartCoroutine(EatChecker());
-        amountOfFood -= foodPerSecond;
+        amountOfFood -= foodPerSecond * Time.deltaTime;
     }
 
     /// <summary>
@@ -131,8 +139,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         if (amountOfFood < MaxAmountFood && !Eaten)
         {
-            IsEatening = true;
-            amountOfFood += foodPerSecond / 2;
+            amountOfFood += (foodPerSecond / 2 )* Time.deltaTime;
         }
     }
 
@@ -141,7 +148,13 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     /// </summary>
     public void SizeChanger()
     {
+        if(AmountFood <= MaxAmountFood)
+        {
         transform.GetChild(0).transform.localScale = new Vector3(AmountFood / MaxAmountFood, AmountFood / MaxAmountFood, AmountFood / MaxAmountFood);
+        box.size = new Vector3(2.0f, amountOfFood * sizeMultiplier, 2.0f);
+        box.center = new Vector3(0.0f, (amountOfFood * sizeMultiplier) / 2, 0.0f);
+
+        }
     }
 
     /// <summary>
@@ -159,11 +172,13 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
+        box = coralCollider.GetComponent<BoxCollider>();
+        source = GetComponent<AudioSource>();
+        Gamemanager.Instance.FoodPlaceList.Add(this);
     }
 
     public void Start()
     {
-        Gamemanager.Instance.FoodPlaceList.Add(this);
         EventManager.ActionAddHandler(EVENT.Increase, IncreaseFood);
     }
 
@@ -171,4 +186,5 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         SizeChanger();
     }
+
 }

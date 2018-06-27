@@ -39,7 +39,6 @@ GameObject:
   - component: {fileID: 33904372312414226}
   - component: {fileID: 23472062928499066}
   - component: {fileID: 65012702802536412}
-  - component: {fileID: 114260637055630964}
   - component: {fileID: 82544455154717854}
   m_Layer: 0
   m_Name: Herbivore
@@ -267,14 +266,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &114260637055630964
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1619856471747934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95c597f2281bf224899e5dec36a8e37b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

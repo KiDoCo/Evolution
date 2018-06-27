@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 368256338}
   - component: {fileID: 368256337}
   - component: {fileID: 368256336}
+  - component: {fileID: 368256340}
   m_Layer: 0
   m_Name: ManagerHolder
   m_TagString: Untagged
@@ -165,7 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodsources:
-  - {fileID: 1285185115931480, guid: 14dc4bef32bb7b84db031ab2d71a000e, type: 2}
+  - {fileID: 1588076483728332, guid: c1cc8b0e1ee915f41baf37c2e9c8ab02, type: 2}
   PlayerList: []
 --- !u!4 &368256339
 Transform:
@@ -180,6 +181,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &368256340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 368256335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46fb5140c214c1244843a5e5f1014946, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1965670161
 GameObject:
   m_ObjectHideFlags: 0

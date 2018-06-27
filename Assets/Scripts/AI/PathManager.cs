@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PathManager : MonoBehaviour
 {
+#pragma warning disable
     public static PathManager Instance;
 
     public LayerMask obstacleLayer;
@@ -20,18 +21,26 @@ public class PathManager : MonoBehaviour
     public GameObject enemy;
     public GameObject fishPrefab;
     private GameObject locationContainer;
-
+#pragma warning restore
     private void NodeAssign()
     {
         locationContainer = GameObject.Find("LocationContainer");
-
+        Transform[] array = locationContainer.GetComponentsInChildren<Transform>();
+        
+        foreach (Transform a in array)
+        {
+            if(a.transform.parent != null)
+            {
+                a.SetParent(gameObject.transform);
+            }
+        }
         defNode = new Node(new Vector3(), this);
 
         //Take all child objects -> create nodes with child position -> delete children
-        for (int i = 0; i < locationContainer.transform.childCount; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
-            allNodes.Add(new Node(locationContainer.transform.GetChild(i).position, this));
-            Destroy(locationContainer.transform.GetChild(i).gameObject);
+            allNodes.Add(new Node(transform.GetChild(i).position, this));
+            Destroy(transform.GetChild(i).gameObject);
         }
 
         //Check neighbours for each node using Physics.Linecast

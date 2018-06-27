@@ -2,87 +2,97 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Species { carnivore, herbivore};
 
 public class move : MonoBehaviour
 {
-    public float verticalSpeed = 2f;
-    public float horizontalSpeed = 2f;
-    public float speed = 2f;
-    public float turnSpeed = 2f;
-    public float rotateSpeed = 2f;
-    public bool rolling;
-    public bool hasjustRolled;
-    public Quaternion myQuat, targetQuat;
-    public float quatSpeed = 1f;
-    public float stabilize = 0.1f;
-    private Animator m_animator;
-    public bool isMoving;
-    public GameObject camera1;
-    public GameObject camera2;
-    public float velocity;
-    Vector3 lastposition = Vector3.zero;
-    public float restrictAngle = Mathf.Abs(80);
-    public CameraController camerascript;
+    public Quaternion        myQuat, targetQuat;
+    public float             verticalSpeed   = 2f;
+    public float             horizontalSpeed = 2f;
+    public float             speed           = 2f;
+    public float             turnSpeed       = 2f;
+    public float             rotateSpeed     = 2f;
+    public float             quatSpeed       = 1f;
+    public float             stabilize       = 0.1f;
+    public float             velocity;
+    public float             restrictAngle   = Mathf.Abs(80);
+    private float            health = 100;
+    private float            experience = 0;
+    private const float      healthMax       =100.0f;
+    private const float      waitTime        = 1.0f;
+    private bool             ready;
+    public bool              rolling;
+    public bool              hasjustRolled;
+    public bool              isMoving;
+    private bool             Eating;
+    private Animator         m_animator;
+    public  GameObject       camera1;
+    public  GameObject       camera2;
+    public  CameraController camerascript;
+    private Vector3          lastposition    = Vector3.zero;
+    private AudioSource      source;
+
+    public float Maxhealth { get { return healthMax; } }
+    public float Health { get { return health; } }
+    public float Experience { get { return experience; } }
 
 
-    void Start()
-    {
-        Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
-        Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
-        m_animator = gameObject.GetComponent<Animator>();
-        isMoving = true;
-        
-        
-    }
-
-
-    void Update()
-    {
-        if(isMoving)
-        {
-            m_animator.SetBool("isMoving", true);
-        }
-        if (!isMoving)
-        {
-            m_animator.SetBool("isMoving", false);
-        }
-    }
-    void FixedUpdate()
+    public void CmdEat(IEatable eatObject)
     {
 
-        if (!CameraController.cam.freeCamera)
+        if (Input.GetButton("Fire1"))
         {
-            MouseMove();
-        }
-       
-        
-        Move();
-        BarrelRoll();
-        Restrict();
-        //AFTER ROLL
-        if (!rolling && hasjustRolled)
-        {
-            Stabilize();
-            //Debug.Log("Stabilize");
-        }
-        //NORMAL STABILIZER
-        if (!rolling && !hasjustRolled)
-        {
-            Stabilize();
-            //Debug.Log("FastStabilize");
-        }
-
-        /*velocity = Mathf.Clamp(Mathf.Abs((transform.position - lastposition).magnitude), 0f, 1f);
-        lastposition = transform.position;
-
-        if (velocity > 0)
-        {
-            isMoving = true;
+            experience += eatObject.GetAmount();
+            Debug.Log(experience);
+            m_animator.SetBool("isEating", eatObject.Eaten);
+            eatObject.Eaten = true;
+            eatObject.DecreaseFood();
+            if (!source.isPlaying)
+            {
+                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+            }
         }
         else
         {
-            isMoving = false;
-        }*/
+            eatObject.Eaten = false;
+            m_animator.SetBool("isEating", eatObject.Eaten);
+        }
+    }
+
+    private void TakeDamage(float amount)
+    {
+        EventManager.SoundBroadcast(EVENT.PlaySFX, source, (int)SFXEvent.Hurt);
+        health -= amount;
+    }
+
+    /// <summary>
+    /// Checks for interaction when player enters the corals bounding box
+    /// </summary>
+    private void InteractionChecker()
+    {
+        for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
+        {
+            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetCollider().bounds))
+            {
+                Gamemanager.Instance.FoodPlaceList[i].Interact(this);
+            }
+        }
+    }
+
+    void Restrict()
+    {
+        if (transform.rotation.x > 15)
+        {
+            float x = transform.eulerAngles.x;
+            transform.Rotate(-x, 0, 0);
+        }
+
+        if (transform.rotation.x < -15)
+        {
+            float x = transform.eulerAngles.x;
+            transform.Rotate(-x, 0, 0);
+        }
+       
     }
 
     public void MouseMove()
@@ -144,6 +154,7 @@ public class move : MonoBehaviour
         
 
     }
+
     public void BarrelRoll()
     {
         //BARREL ROLL
@@ -174,6 +185,7 @@ public class move : MonoBehaviour
             hasjustRolled = true;
         }
     }
+
     public void Stabilize1()
     {
         if (transform.rotation.z < 0)
@@ -191,6 +203,7 @@ public class move : MonoBehaviour
         }
 
     }
+
     public void Stabilize2()
     {
         if (transform.rotation.z < -0.1)
@@ -226,6 +239,7 @@ public class move : MonoBehaviour
         }
 
     }
+
     void Stabilize()
     {
 
@@ -236,19 +250,71 @@ public class move : MonoBehaviour
 
 
     }
-    void Restrict()
+
+    private void Awake()
     {
-        if (transform.rotation.x > 15)
+        health = 100;
+        source = GetComponentInChildren<AudioSource>();
+    }
+
+    void Start()
+    {
+        Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
+        Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
+        m_animator = gameObject.GetComponent<Animator>();
+        isMoving = true;
+        EventManager.SoundBroadcast(EVENT.PlayMusic, source, (int)MusicEvent.Ambient);
+    }
+
+    void Update()
+    {
+        InteractionChecker();
+        if (isMoving)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+            m_animator.SetBool("isMoving", true);
+        }
+        if (!isMoving)
+        {
+            m_animator.SetBool("isMoving", false);
+        }
+        UIManager.Instance.InstantiateMatchUI(this);
+    }
+
+    void FixedUpdate()
+    {
+
+        if (!CameraController.cam.freeCamera)
+        {
+            MouseMove();
         }
 
-        if (transform.rotation.x < -15)
+        Move();
+        BarrelRoll();
+        Restrict();
+        //AFTER ROLL
+        if (!rolling && hasjustRolled)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+            Stabilize();
+            //Debug.Log("Stabilize");
         }
-       
+        //NORMAL STABILIZER
+        if (!rolling && !hasjustRolled)
+        {
+            Stabilize();
+            //Debug.Log("FastStabilize");
+        }
+
+        /*velocity = Mathf.Clamp(Mathf.Abs((transform.position - lastposition).magnitude), 0f, 1f);
+        lastposition = transform.position;
+
+        if (velocity > 0)
+        {
+            isMoving = true;
+        }
+        else
+        {
+            isMoving = false;
+        }*/
     }
+
 }

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3957646853
+CRC: 2648660742
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d61200a20f9eb77d51272367db9da85d
+    Hash: 85c3c78f4fe3957b61ff3610c8c739a7
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 60153800cadcd3d61ebe6ddb7e9ff948
+    Hash: 995db1706fcb9d734faec42f15a7da83
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -31,10 +31,6 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 82
   Script: {instanceID: 0}
-- Class: 114
-  Script: {fileID: 11500000, guid: 95c597f2281bf224899e5dec36a8e37b, type: 3}
-- Class: 115
-  Script: {instanceID: 0}
 Assets:
-- Assets/Prefabs/Herbivore.prefab
+- Assets/Prefabs/Temp/Herbivore.prefab
 Dependencies: []

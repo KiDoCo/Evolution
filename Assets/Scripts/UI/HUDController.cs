@@ -3,41 +3,112 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HUDController : MonoBehaviour {
-
-
+public class HUDController : MonoBehaviour
+{
+    public static HUDController instance;
+#pragma warning disable
     private float curProgress; //testing
 
     [SerializeField] private Slider progressSlider;
     [SerializeField] private Text curHealthText;
     [SerializeField] private Text maxHealthText;
     [SerializeField] private int maxHealth;
-    private float curHealth;
+    private int curHealth;
 
     //Cooldowns
     [SerializeField] private int abilityCount;
-    [SerializeField ]private List<GameObject> coolDownObjects;
-
-
-
-    void Start ()
+    [SerializeField] private List<GameObject> coolDownObjects;
+#pragma warning restore
+    public Slider ProgressSlider
     {
-        
+        get
+        {
+            return progressSlider;
+        }
+
+        set
+        {
+            progressSlider = value;
+        }
+    }
+
+    public Text CurHealthText
+    {
+        get
+        {
+            return curHealthText;
+        }
+
+        set
+        {
+            curHealthText = value;
+        }
+    }
+
+    public Text MaxHealthText
+    {
+        get
+        {
+            return maxHealthText;
+        }
+
+        set
+        {
+            maxHealthText = value;
+        }
+    }
+
+    public int MaxHealth
+    {
+        get
+        {
+            return maxHealth;
+        }
+
+        set
+        {
+            maxHealth = value;
+        }
+    }
+
+    public int CurHealth
+    {
+        get
+        {
+            return curHealth;
+        }
+
+        set
+        {
+            curHealth = value;
+        }
+    }
+
+    public float CurProgress
+    {
+        get
+        {
+            return curProgress;
+        }
+
+        set
+        {
+            curProgress = value;
+        }
+    }
+
+    void Start()
+    {
+
         UpdateHUD();
     }
 
-    
-	void Update () //remove this update after testing =)
+
+    void Update() //remove this update after testing =)
     {
-		
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            curHealth = Random.Range(0,maxHealth);
-            curProgress = Random.Range(0, 100);
-            UpdateHUD();
-            UpdateCooldowns();
-        }
-	}
+        UpdateHUD();
+        // UpdateCooldowns();
+    }
 
 
     private void UpdateHUD() //set reference to player here
@@ -66,5 +137,10 @@ public class HUDController : MonoBehaviour {
         }
         cdObj.transform.GetChild(0).GetComponent<Image>().fillAmount = 0;
         cdObj.GetComponentInChildren<Text>().text = "";
+    }
+
+    private void Awake()
+    {
+        instance = this;
     }
 }
