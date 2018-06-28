@@ -47,13 +47,14 @@ public class move : MonoBehaviour
             m_animator.SetBool("isEating", eatObject.Eaten);
             eatObject.Eaten = true;
             eatObject.DecreaseFood();
-            if (!source.isPlaying)
+            if (!eatObject.Source().isPlaying)
             {
                 EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
             }
         }
         else
         {
+            EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
             eatObject.Eaten = false;
             m_animator.SetBool("isEating", eatObject.Eaten);
         }
@@ -263,7 +264,10 @@ public class move : MonoBehaviour
         Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         m_animator = gameObject.GetComponent<Animator>();
         isMoving = true;
+        GameObject clone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
         EventManager.SoundBroadcast(EVENT.PlayMusic, source, (int)MusicEvent.Ambient);
+        clone.name = "FollowCamera";
+        CameraController.cam.InstantiateCamera(this);
     }
 
     void Update()
@@ -282,6 +286,7 @@ public class move : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (CameraController.cam == null) return;
 
         if (!CameraController.cam.freeCamera)
         {

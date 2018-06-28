@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] Transform target;
+    private static Transform target;
     [SerializeField] Vector3 defaultDistance = new Vector3(0f, 2f, -10f);
     [SerializeField] float distanceDamp = 10f;
     [SerializeField] float rotationalDamp = 10f;
@@ -24,14 +24,11 @@ public class CameraController : MonoBehaviour
 
     void Awake()
     {
+        //lisää singleton
+        cam = this;
         myT = transform;
     }
 
-    private void Start()
-    {
-        //lisää singleton
-        cam = this;
-    }
 
     void FixedUpdate()
     {
@@ -40,9 +37,6 @@ public class CameraController : MonoBehaviour
        
         Stabilize();
         ControlCamera();
-
-
-
 
         //Vector3 toPos = target.position + (target.rotation * defaultDistance);
         //Vector3 curPos = Vector3.Lerp(myT.position, toPos, distanceDamp * Time.deltaTime);
@@ -63,6 +57,12 @@ public class CameraController : MonoBehaviour
             //rotation, same up direction
             myT.LookAt(target, target.up);
         }
+        
+    }
+
+    public  void InstantiateCamera(move test)
+    {
+        target = test.transform;
     }
        
     void Stabilize()

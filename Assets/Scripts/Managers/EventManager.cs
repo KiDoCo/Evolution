@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //List of events
-public enum EVENT { PlaySFX, PlayMusic, DoAction, UpdateExperience, Increase, RoundBegin,RoundEnd,Spawn };
+public enum EVENT { PlaySFX, PlayMusic, DoAction, UpdateExperience, Increase, RoundBegin,RoundEnd,Spawn , StopSound};
 
 public enum SFXEvent { Eat, Hurt, Lose, RoundEnd, RoundBegin, Victory};
 

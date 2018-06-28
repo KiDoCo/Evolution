@@ -12,14 +12,14 @@ public class Gamemanager : NetworkBehaviour
 #pragma warning disable
     public static Gamemanager           Instance;
     //File location variables hard coded shishnet
-    private string                      hPFileLocation = "/Assets/StreamingAssets/AssetBundles/carnivore.pl"; //herbivore asset location
-    private string                      cPFileLocation = "/Assets/StreamingAssets/AssetBundles/herbivore.pl"; //carnivore asset location
-
+    private string                      hPFileLocation = "/Assets/StreamingAssets/AssetBundles/herbivore.pl"; //herbivore asset location
+    private string                      cPFileLocation = "/Assets/StreamingAssets/AssetBundles/carnivore.pl"; //carnivore asset location
+    public GameObject                   CameraPrefab;
+    private GameObject                  MusicPlaySource;
     //Match variables
     private const float                 startingMatchTimer = 5.0f; //time value in minutes
     private const float                 minutesToSeconds   = 60.0f;//converting value
     private const float                 interval           = 0.1f;//The time in seconds that spawning will happen
-    [SyncVar]
     private float                       matchTimer;
     private bool                        MatchStarting;
     private bool                        gameon; //debug variable
@@ -36,6 +36,7 @@ public class Gamemanager : NetworkBehaviour
     private string gameScene       = "DemoScene";
     private string foodSourceName  = "FoodSource";
     private string playerSpawnName = "player";
+    private string MusicSource = "MusicSource";
 #pragma warning restore
 
     public float MatchTimer
@@ -47,7 +48,7 @@ public class Gamemanager : NetworkBehaviour
 
         set
         {
-            matchTimer = Mathf.Clamp(value, 0, startingMatchTimer);
+            matchTimer = value;
         }
     }
 
@@ -74,7 +75,7 @@ public class Gamemanager : NetworkBehaviour
             //playerlist.add(playerselection[i])
         }
         //Stop for a moment to scene to load
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2.0f);
 
         //search every spawnpoint for players and foodsources
         for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
@@ -86,7 +87,7 @@ public class Gamemanager : NetworkBehaviour
         {
             PlayerSpawnPointList.Add(GameObject.FindGameObjectsWithTag(playerSpawnName)[i].transform);
         }
-
+        yield return new WaitForSeconds(1.0f);
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
         SpawnPlayers();
@@ -127,15 +128,10 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private void SpawnPlayers()
     {
+        Debug.Log("Spawning player");
             //list of player and loop it to every individual player
-        for (int i = 0; i < PlayerList.Capacity; i++)
-        {
-        GameObject clone = Instantiate(carnivorePrefabs[0], PlayerSpawnPointList[0].position, Quaternion.identity);
+        GameObject clone = Instantiate(herbivorePrefabs[0], PlayerSpawnPointList[0].position, Quaternion.identity);
             clone.name = "Player";
-        }
-        Debug.Log("List " + FoodPlaceList.Capacity);
-
-
     }
 
 
@@ -164,7 +160,7 @@ public class Gamemanager : NetworkBehaviour
     {
         List<GameObject> Ctemp = new List<GameObject>();
         List<GameObject> Htemp = new List<GameObject>();
-        //Search the file with WWW class
+        //Search the file with WWW class and loads them to cache
         Ctemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + cPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
         Htemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + hPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
 
@@ -177,7 +173,9 @@ public class Gamemanager : NetworkBehaviour
         {
             herbivorePrefabs.Add(i, Htemp[i]);
         }
-
+        Ctemp.Clear();
+        Htemp.Clear();
+            
         Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
         Debug.Log("Herbivores loaded: " + herbivorePrefabs.Count);
     }
