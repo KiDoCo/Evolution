@@ -21,6 +21,7 @@ public class move : MonoBehaviour
     private const float      healthMax         = 100.0f;
     private const float      waitTime          = 1.0f;
     private const float      experiencePenalty = 25.0f;
+    private const float      deathpenaltytime  = 2.0f;
     private bool             ready;
     public bool              rolling;
     public bool              isMoving;
@@ -40,10 +41,11 @@ public class move : MonoBehaviour
         }
         set
         {
-            if(value <= 0)
+            if(health <= 0)
             {
+                Debug.Log("Called Death");
                 Death();
-                health = 100;
+                health = Maxhealth;
             }
             else
             {
@@ -62,7 +64,6 @@ public class move : MonoBehaviour
             experience = Mathf.Clamp(value, 0, 100);
         }
     }
-
 
     public void CmdEat(IEatable eatObject)
     {
@@ -113,6 +114,7 @@ public class move : MonoBehaviour
             }
         }
     }
+
     private void AnimationChanger()
     {
         m_animator.SetBool("isEating", eating);
@@ -140,10 +142,8 @@ public class move : MonoBehaviour
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
        float h = horizontalSpeed * Input.GetAxis("Mouse X");
         //float translation = Input.GetAxisRaw("Vertical") * speed;
-// v nollaksi jos barrel roll
+        // v nollaksi jos barrel roll
         transform.Rotate(v, h, 0);
-        
-        
     }
 
     public void Move()
@@ -198,13 +198,6 @@ public class move : MonoBehaviour
     {
         Experience -= experiencePenalty;
         Gamemanager.Instance.RespawnPlayer(this);
-
-    }
-
-    public void Respawn()
-    {
-        Health = Maxhealth;
-        transform.position = Gamemanager.Instance.PlayerSpawnPointList[Random.Range(0, Gamemanager.Instance.PlayerSpawnPointList.ToArray().Length)].position;
     }
 
     private void Awake()
@@ -261,5 +254,4 @@ public class move : MonoBehaviour
     {
         AnimationChanger();
     }
-
 }

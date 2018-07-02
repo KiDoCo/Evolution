@@ -19,10 +19,10 @@ public class Gamemanager : NetworkBehaviour
     private const float                 startingMatchTimer = 5.0f; //time value in minutes
     private const float                 minutesToSeconds   = 60.0f;//converting value
     private const float                 interval           = 0.1f;//The time in seconds that spawning will happen
+    private const float                 deathPenaltyTime   = 2.0f;
     private float                       matchTimer;
     private int                         lifeCount;
-    private const int                   maxLifeCount = 5;
-    private bool                        MatchStarting;
+    private const int                   maxLifeCount = 2;
     
     //Gamemanager lists
     private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
@@ -40,7 +40,6 @@ public class Gamemanager : NetworkBehaviour
 
     //Prefabs
     public  GameObject CameraPrefab;
-    private GameObject MusicPlaySource;
     public  GameObject BerryPrefab;
 #pragma warning restore
 
@@ -70,16 +69,14 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     public IEnumerator StartMatch()
     {
-        if (MatchStarting) yield break;
-        MatchStarting = true;
         yield return new WaitForSeconds(2.0f);
-        lifeCount = maxLifeCount;
         //check the player selection and add them to a list
-        for (int i = 0; i < PlayerList.Capacity; i++)
+        for (int i = 0; i < PlayerList.ToArray().Length; i++)
         {
             //playerselection blah blah 
             //playerlist.add(playerselection[i])
         }
+        lifeCount = maxLifeCount * PlayerList.ToArray().Length;
         //Stop for a moment to scene to load
         yield return new WaitForSeconds(2.0f);
 
@@ -95,7 +92,6 @@ public class Gamemanager : NetworkBehaviour
         }
 
         yield return new WaitForSeconds(1.0f);
-
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
         SpawnPlayers();
@@ -105,8 +101,20 @@ public class Gamemanager : NetworkBehaviour
 
         //repeaters for spawning food/populating sources
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
-        MatchStarting = false;
         yield return matchTimer;
+    }
+
+    /// <summary>
+    /// Spawns the player 
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public IEnumerator Respawn(move player)
+    {
+        player.gameObject.SetActive(false);
+        player.transform.position = PlayerSpawnPointList[Random.Range(0, PlayerSpawnPointList.ToArray().Length)].position;
+        yield return new WaitForSeconds(deathPenaltyTime);
+        player.gameObject.SetActive(true);        
     }
 
     /// <summary>
@@ -139,12 +147,14 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private void SpawnPlayers()
     {
-            //list of player and loop it to every individual player
+        //list of player and loop it to every individual player
         GameObject clone = Instantiate(herbivorePrefabs[0], PlayerSpawnPointList[0].position, Quaternion.identity);
-            clone.name = "Player";
+        clone.name = "Player";
     }
 
-
+    /// <summary>
+    /// Spawns the sources to the environment
+    /// </summary>
     private void SpawnFoodSources()
     {
         for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
@@ -192,17 +202,20 @@ public class Gamemanager : NetworkBehaviour
         StartCoroutine(StartMatch());
     }
 
+    /// <summary>
+    /// Checks if the player can be spawned
+    /// </summary>
+    /// <param name="player"></param>
     public void RespawnPlayer(move player)
     {
         if (lifeCount > 0)
         {
         lifeCount--;
-            //player.spawnplayer()
+        StartCoroutine(Respawn(player));
         }
         else
         {
             EndMatchForPlayer(player);
-            //player.nolifesleft();
         }
     }
 
@@ -211,7 +224,7 @@ public class Gamemanager : NetworkBehaviour
     private void Update()
     {
 
-        if (MatchTimer <= 0)
+        if (MatchTimer <= 0 && SceneManager.GetActiveScene().name == "Demoscene")
         {
             EventManager.Broadcast(EVENT.RoundEnd);
         }

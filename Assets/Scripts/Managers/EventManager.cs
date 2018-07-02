@@ -6,7 +6,7 @@ using UnityEngine;
 //List of events
 public enum EVENT { PlaySFX, PlayMusic, StopSound, DoAction, Increase, RoundBegin, RoundEnd, Spawn };
 //list of sounds
-public enum SFXEvent { Eat, Hurt, Lose, RoundEnd, RoundBegin, Victory};
+public enum SFXEvent { Eat, Hurt, Lose, RoundEnd, RoundBegin, Victory}; // ADD death when clip available
 
 public enum MusicEvent {Ambient,Hunting,MainMenu};
 

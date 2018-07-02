@@ -10,17 +10,16 @@ public class AudioManager : MonoBehaviour
     private static List<AudioClip>         SFXClips   = new List<AudioClip>();
     private static List<AudioClip>         MusicClips = new List<AudioClip>(); 
 
-
-
     //list of sounds and their id
 
     /* Sound Effect ID list (SFX)
-     0: Eat
-     1: Hurt
-     2: Lose
-     3: RoundEnd
+     0: Death
+     1: Eat
+     2: Hurt
+     3: Lose
      4: RoundBegin
-     5: Victory
+     5: RoundEnd
+     6: Victory
      */
 
     /* Music ID list
