@@ -183,7 +183,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     public void Start()
     {
         EventManager.ActionAddHandler(EVENT.Increase, IncreaseFood);
-        originalPos = transform.GetChild(0).position;
+        originalPos = transform.GetChild(0).localPosition;
     }
 
     public void Update()

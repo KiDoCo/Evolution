@@ -186,8 +186,6 @@ public class move : MonoBehaviour
         transform.Rotate(0, 0, inputValue);
 
         rolling = true;
-
-
     }
     
     private void Stabilize()
@@ -196,9 +194,17 @@ public class move : MonoBehaviour
         transform.Rotate(0, 0, -z);
     }
 
-    private void Death()
+    public void Death()
     {
         Experience -= experiencePenalty;
+        Gamemanager.Instance.RespawnPlayer(this);
+
+    }
+
+    public void Respawn()
+    {
+        Health = Maxhealth;
+        transform.position = Gamemanager.Instance.PlayerSpawnPointList[Random.Range(0, Gamemanager.Instance.PlayerSpawnPointList.ToArray().Length)].position;
     }
 
     private void Awake()
@@ -208,7 +214,7 @@ public class move : MonoBehaviour
         SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
-    void Start()
+    private void Start()
     {
         Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
         Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
@@ -220,7 +226,7 @@ public class move : MonoBehaviour
         CameraController.cam.InstantiateCamera(this);
     }
 
-    void Update()
+    private void Update()
     {
         InteractionChecker();
 
@@ -232,7 +238,7 @@ public class move : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (CameraController.cam == null) return;
 

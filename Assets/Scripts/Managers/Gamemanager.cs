@@ -20,8 +20,9 @@ public class Gamemanager : NetworkBehaviour
     private const float                 minutesToSeconds   = 60.0f;//converting value
     private const float                 interval           = 0.1f;//The time in seconds that spawning will happen
     private float                       matchTimer;
+    private int                         lifeCount;
+    private const int                   maxLifeCount = 5;
     private bool                        MatchStarting;
-    private bool                        gameon; //debug variable
     
     //Gamemanager lists
     private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
@@ -29,14 +30,13 @@ public class Gamemanager : NetworkBehaviour
     public  List<GameObject>            foodsources;
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
-    private List<Transform>             PlayerSpawnPointList = new List<Transform>();
+    public  List<Transform>             PlayerSpawnPointList = new List<Transform>();
     public  List<move>                  PlayerList           = new List<move>();
 
     //Strings
     private string gameScene       = "DemoScene";
     private string foodSourceName  = "FoodSource";
     private string playerSpawnName = "player";
-    private string MusicSource     = "MusicSource";
 
     //Prefabs
     public  GameObject CameraPrefab;
@@ -72,11 +72,10 @@ public class Gamemanager : NetworkBehaviour
     {
         if (MatchStarting) yield break;
         MatchStarting = true;
-
         yield return new WaitForSeconds(2.0f);
-
+        lifeCount = maxLifeCount;
         //check the player selection and add them to a list
-        for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
+        for (int i = 0; i < PlayerList.Capacity; i++)
         {
             //playerselection blah blah 
             //playerlist.add(playerselection[i])
@@ -94,13 +93,16 @@ public class Gamemanager : NetworkBehaviour
         {
             PlayerSpawnPointList.Add(GameObject.FindGameObjectsWithTag(playerSpawnName)[i].transform);
         }
+
         yield return new WaitForSeconds(1.0f);
+
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
         SpawnPlayers();
         SpawnFoodSources();
         EventManager.Broadcast(EVENT.DoAction);
         FoodSpawnPointList.Clear();
+
         //repeaters for spawning food/populating sources
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
         MatchStarting = false;
@@ -118,6 +120,7 @@ public class Gamemanager : NetworkBehaviour
         insert function to kill server after x seconds 
         and return remaining players to lobby/menu screen
         */
+        EventManager.Broadcast(EVENT.RoundEnd);
         CancelInvoke();
         //killserver
     }
@@ -125,9 +128,10 @@ public class Gamemanager : NetworkBehaviour
     /// <summary>
     /// Ends the match for a single player
     /// </summary>
-    public void EndMatchForPlayer()
+    public void EndMatchForPlayer(move player)
     {
         //some client magix röh röh
+        PlayerList.Remove(player);
     }
 
     /// <summary>
@@ -151,11 +155,6 @@ public class Gamemanager : NetworkBehaviour
         for( int a = 0; a <FoodSpawnPointList.Capacity; a++)
         {
             Destroy(FoodSpawnPointList[a].gameObject);
-        }
-
-        for (int i = 0; i < FoodPlaceList.ToArray().Length; i++)
-        {
-            Debug.Log("Object in list: " + FoodPlaceList.ToArray()[i]);
         }
     }
 
@@ -193,26 +192,28 @@ public class Gamemanager : NetworkBehaviour
         StartCoroutine(StartMatch());
     }
 
+    public void RespawnPlayer(move player)
+    {
+        if (lifeCount > 0)
+        {
+        lifeCount--;
+            //player.spawnplayer()
+        }
+        else
+        {
+            EndMatchForPlayer(player);
+            //player.nolifesleft();
+        }
+    }
+
     //unity methods
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name != gameScene)
-        {
-            if(!gameon)
-            {
-                if (Input.GetKeyDown(KeyCode.F2))
-
-                {
-                    gameon = true;
-                    EventManager.Broadcast(EVENT.RoundBegin);
-                }
-            }
-        }
 
         if (MatchTimer <= 0)
         {
-            EndMatch();
+            EventManager.Broadcast(EVENT.RoundEnd);
         }
     }
 
@@ -225,6 +226,7 @@ public class Gamemanager : NetworkBehaviour
     {
         LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
+        EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
         LoadGame();
     }

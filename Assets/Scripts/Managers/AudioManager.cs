@@ -14,7 +14,7 @@ public class AudioManager : MonoBehaviour
 
     //list of sounds and their id
 
-    /*Sound Effect ID list (SFX)
+    /* Sound Effect ID list (SFX)
      0: Eat
      1: Hurt
      2: Lose
