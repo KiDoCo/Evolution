@@ -10,12 +10,12 @@ public interface IEatable
     int MaxAmountFood { get;  set; }
     float AmountFood { get;  set; }
     float FoodPerSecond { get; set; }
-    float GetAmount();
+    float CoolDownTime { get; set; }
     bool Eaten { get; set; }
     bool IsEatening { get; set; }
+    float GetAmount();
     void SizeChanger();
     void Awake();
-    void Interact(move test);
     void DecreaseFood();
     Collider GetCollider();
     AudioSource Source();

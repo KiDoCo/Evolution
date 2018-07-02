@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 53730929
+CRC: 3029310755
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: f6d08c6fcbe8e2fa7e64a8f0f10449e4
+    Hash: d2547ccd3e34c7e2a667672185bb6449
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 995db1706fcb9d734faec42f15a7da83
+    Hash: ec23400331d3c94d567599cb019b5709
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -17,20 +17,41 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
-- Class: 23
-  Script: {instanceID: 0}
-- Class: 33
+- Class: 28
   Script: {instanceID: 0}
 - Class: 43
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
-- Class: 65
+- Class: 74
   Script: {instanceID: 0}
 - Class: 81
   Script: {instanceID: 0}
 - Class: 82
   Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: fb6536a3b1235d24496ee4772094987d, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9b17d407cc45d47419bb41f2cb96e649, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 51f9b26e16577c84884f9f2ed7cc78d9, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 124
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
 Assets:
-- Assets/Prefabs/Temp/Carnivore.prefab
-Dependencies: []
+- Assets/Prefabs/Character/ProtoFish 2.prefab
+Dependencies:
+- C:/Users/JoonasTuo/Desktop/Evolution/Assets/StreamingAssets/AssetBundles/music.mfg

@@ -47,8 +47,6 @@ public class AudioManager : MonoBehaviour
 
     private static void MusicMethod(AudioSource source, int id)
     {
-        Debug.Log(source);
-        Debug.Log(id);
         source.clip = MusicClips[id];
         source.Play();
     }

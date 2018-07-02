@@ -181,11 +181,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9618f2aa07f7df4888c7588603df4d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  foodsources:
+  - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
+  PlayerList: []
   CameraPrefab: {fileID: 1824946988335758, guid: 0576a07d4cfab8a42acea443ccd318a1,
     type: 2}
-  foodsources:
-  - {fileID: 1588076483728332, guid: c1cc8b0e1ee915f41baf37c2e9c8ab02, type: 2}
-  PlayerList: []
+  BerryPrefab: {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117,
+    type: 2}
 --- !u!4 &1479481612
 Transform:
   m_ObjectHideFlags: 0
@@ -262,7 +264,7 @@ MonoBehaviour:
   visionRange: 4
   maxVisionAngle: 45
   escapeTimer: 6
-  enemy: {fileID: 1619856471747934, guid: 263594c1c7ca0784981bcb6f153bca7f, type: 2}
+  enemy: {fileID: 1453091268883130, guid: c04e4cf5feb99bc408d97f2f2ea6c5f2, type: 2}
   fishPrefab: {fileID: 1896606498718602, guid: 5f872a3ae431cd347966da54bb339f9d, type: 2}
 --- !u!114 &1965670165
 MonoBehaviour:

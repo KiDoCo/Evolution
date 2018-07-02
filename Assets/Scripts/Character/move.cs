@@ -7,63 +7,97 @@ public enum Species { carnivore, herbivore};
 public class move : MonoBehaviour
 {
     public Quaternion        myQuat, targetQuat;
-    public float             verticalSpeed   = 2f;
-    public float             horizontalSpeed = 2f;
-    public float             speed           = 2f;
-    public float             turnSpeed       = 2f;
-    public float             rotateSpeed     = 2f;
-    public float             quatSpeed       = 1f;
-    public float             stabilize       = 0.1f;
+    public float             verticalSpeed     = 2f;
+    public float             horizontalSpeed   = 2f;
+    public float             speed             = 2f;
+    public float             turnSpeed         = 2f;
+    public float             rotateSpeed       = 2f;
+    public float             quatSpeed         = 1f;
+    public float             stabilize         = 0.1f;
     public float             velocity;
-    public float             restrictAngle   = Mathf.Abs(80);
-    private float            health = 100;
-    private float            experience = 0;
-    private const float      healthMax       =100.0f;
-    private const float      waitTime        = 1.0f;
+    public float             restrictAngle     = Mathf.Abs(80);
+    private float            health            = 100;
+    private float            experience        = 0;
+    private const float      healthMax         = 100.0f;
+    private const float      waitTime          = 1.0f;
+    private const float      experiencePenalty = 25.0f;
     private bool             ready;
     public bool              rolling;
-    public bool              hasjustRolled;
     public bool              isMoving;
-    private bool             Eating;
+    private bool             eating;
     private Animator         m_animator;
-    public  GameObject       camera1;
-    public  GameObject       camera2;
     public  CameraController camerascript;
     private Vector3          lastposition    = Vector3.zero;
     private AudioSource      source;
+    private AudioSource      SFXsource;
 
     public float Maxhealth { get { return healthMax; } }
-    public float Health { get { return health; } }
-    public float Experience { get { return experience; } }
+    public float Health
+    {
+        get
+        {
+            return health;
+        }
+        set
+        {
+            if(value <= 0)
+            {
+                Death();
+                health = 100;
+            }
+            else
+            {
+                health = value;
+            }
+        }
+    }
+    public float Experience
+    {
+        get
+        {
+            return experience;
+        }
+        set
+        {
+            experience = Mathf.Clamp(value, 0, 100);
+        }
+    }
 
 
     public void CmdEat(IEatable eatObject)
     {
-
-        if (Input.GetButton("Fire1"))
+        if (eatObject == null || eatObject.AmountFood <= 0)
         {
-            experience += eatObject.GetAmount();
-            Debug.Log(experience);
-            m_animator.SetBool("isEating", eatObject.Eaten);
-            eatObject.Eaten = true;
-            eatObject.DecreaseFood();
-            if (!eatObject.Source().isPlaying)
-            {
-                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
-            }
+            eating = false;
         }
         else
         {
-            EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
-            eatObject.Eaten = false;
-            m_animator.SetBool("isEating", eatObject.Eaten);
+            if (Input.GetButton("Fire1"))
+            {
+                eating = true;
+                Experience += eatObject.GetAmount();
+                m_animator.SetBool("isEating", eatObject.Eaten);
+                eatObject.Eaten = eating;
+                eatObject.DecreaseFood();
+                if (!eatObject.Source().isPlaying)
+                {
+                    EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+                }
+            }
+            else
+            {
+                eating = false;
+                EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
+                eatObject.Eaten = eating;
+                m_animator.SetBool("isEating", eatObject.Eaten);
+            }
         }
     }
 
     private void TakeDamage(float amount)
     {
-        EventManager.SoundBroadcast(EVENT.PlaySFX, source, (int)SFXEvent.Hurt);
-        health -= amount;
+        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
+        Health -= amount;
     }
 
     /// <summary>
@@ -75,9 +109,14 @@ public class move : MonoBehaviour
         {
             if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetCollider().bounds))
             {
-                Gamemanager.Instance.FoodPlaceList[i].Interact(this);
+                 CmdEat(Gamemanager.Instance.FoodPlaceList[i]);
             }
         }
+    }
+    private void AnimationChanger()
+    {
+        m_animator.SetBool("isEating", eating);
+        m_animator.SetBool("isMoving", isMoving);
     }
 
     void Restrict()
@@ -110,152 +149,63 @@ public class move : MonoBehaviour
     public void Move()
     {
         isMoving = false;
-        //BASIC MOVE
-        if (Input.GetKey(KeyCode.W))
+        Vector3 inputvectorX = (Vector3.up *  Input.GetAxisRaw("Horizontal") * turnSpeed);
+        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * speed )* Time.deltaTime;
+        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * speed )* Time.deltaTime;
+
+        if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
             isMoving = true;
         }
-        if (Input.GetKey(KeyCode.A))
+        else
         {
-            //transform.Translate(Vector3.left * speed * Time.deltaTime);
-            transform.Rotate(0, -turnSpeed, 0);
-            isMoving = true;
+            isMoving = false;
         }
-        if (Input.GetKey(KeyCode.D))
+
+        if(!eating)
         {
-            //transform.Translate(Vector3.forward * speed * Time.deltaTime);
-            transform.Rotate(0, turnSpeed, 0);
-            isMoving = true;
+        transform.Translate(inputvectorZ);
+        transform.Rotate(inputvectorX);
+        transform.Translate(inputvectorY);
         }
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector3.back * speed * Time.deltaTime);
-            isMoving = true;
-        }
-        // ALTITUDE
-        if (Input.GetKey(KeyCode.Space))
-        {
-            transform.Translate(Vector3.up * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            transform.Translate(Vector3.down * speed * Time.deltaTime);
-        }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            camera1.SetActive(true);
-            camera2.SetActive(false);
-        }
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            camera1.SetActive(false);
-            camera2.SetActive(true);
-        }
-        
 
     }
 
     public void BarrelRoll()
     {
+        rolling = false;
         //BARREL ROLL
-        if (Input.GetKey(KeyCode.Q))
-        {
-            transform.Rotate(0, 0, rotateSpeed);
-            if (transform.rotation.z >= 180)
-            {
-                return;
-            }
-            rolling = true;
+        float inputValue = Input.GetAxisRaw("Rotation") * rotateSpeed;
 
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            transform.Rotate(0, 0, -rotateSpeed);
-            rolling = true;
-        }
+        if (inputValue == 0) return;
 
-        if (Input.GetKeyUp(KeyCode.Q))
+        if (transform.rotation.z >= 180)
         {
-            rolling = false;
-            hasjustRolled = true;
+            return;
         }
-        if (Input.GetKeyUp(KeyCode.E))
-        {
-            rolling = false;
-            hasjustRolled = true;
-        }
-    }
+        transform.Rotate(0, 0, inputValue);
 
-    public void Stabilize1()
-    {
-        if (transform.rotation.z < 0)
-        {
-            float z = transform.eulerAngles.z - 360;
-            //Debug.Log(z);
-            transform.Rotate(0, 0, -z * stabilize);
+        rolling = true;
 
-        }
-        if (transform.rotation.z >= 0)
-        {
-            float z = transform.eulerAngles.z;
-            //Debug.Log(z);
-            transform.Rotate(0, 0, -z * stabilize);
-        }
 
     }
-
-    public void Stabilize2()
+    
+    private void Stabilize()
     {
-        if (transform.rotation.z < -0.1)
-        {
-            transform.localRotation = Quaternion.RotateTowards(myQuat, targetQuat, quatSpeed);
-            myQuat = Quaternion.Euler(transform.localEulerAngles);
-            //Debug.Log("Quaternion1");
-
-
-        }
-        else if (transform.rotation.z > 0.1)
-        {
-            transform.localRotation = Quaternion.RotateTowards(myQuat, targetQuat, quatSpeed);
-            myQuat = Quaternion.Euler(transform.localEulerAngles);
-            //Debug.Log("Quaternion2");
-        }
-
-    }
-
-    public void StabilizeFast()
-    {
-        if (transform.rotation.z < 0)
-        {
-            float z = transform.eulerAngles.z - 360;
-            //Debug.Log(z);
-            transform.Rotate(0, 0, -z);
-        }
-        if (transform.rotation.z >= 0)
-        {
-            float z = transform.eulerAngles.z;
-            //Debug.Log(z);
-            transform.Rotate(0, 0, -z);
-        }
-
-    }
-
-    void Stabilize()
-    {
-
         float z = transform.eulerAngles.z;
-       // Debug.Log(z);
         transform.Rotate(0, 0, -z);
+    }
 
-
-
+    private void Death()
+    {
+        Experience -= experiencePenalty;
     }
 
     private void Awake()
     {
         health = 100;
         source = GetComponentInChildren<AudioSource>();
+        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
     void Start()
@@ -273,15 +223,13 @@ public class move : MonoBehaviour
     void Update()
     {
         InteractionChecker();
-        if (isMoving)
-        {
-            m_animator.SetBool("isMoving", true);
-        }
-        if (!isMoving)
-        {
-            m_animator.SetBool("isMoving", false);
-        }
+
         UIManager.Instance.InstantiateMatchUI(this);
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            TakeDamage(20);
+        }
     }
 
     void FixedUpdate()
@@ -292,34 +240,20 @@ public class move : MonoBehaviour
         {
             MouseMove();
         }
-
         Move();
         BarrelRoll();
         Restrict();
+
         //AFTER ROLL
-        if (!rolling && hasjustRolled)
+        if (!rolling)
         {
             Stabilize();
-            //Debug.Log("Stabilize");
         }
-        //NORMAL STABILIZER
-        if (!rolling && !hasjustRolled)
-        {
-            Stabilize();
-            //Debug.Log("FastStabilize");
-        }
+    }
 
-        /*velocity = Mathf.Clamp(Mathf.Abs((transform.position - lastposition).magnitude), 0f, 1f);
-        lastposition = transform.position;
-
-        if (velocity > 0)
-        {
-            isMoving = true;
-        }
-        else
-        {
-            isMoving = false;
-        }*/
+    private void LateUpdate()
+    {
+        AnimationChanger();
     }
 
 }

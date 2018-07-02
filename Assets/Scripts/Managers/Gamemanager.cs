@@ -14,8 +14,7 @@ public class Gamemanager : NetworkBehaviour
     //File location variables hard coded shishnet
     private string                      hPFileLocation = "/Assets/StreamingAssets/AssetBundles/herbivore.pl"; //herbivore asset location
     private string                      cPFileLocation = "/Assets/StreamingAssets/AssetBundles/carnivore.pl"; //carnivore asset location
-    public GameObject                   CameraPrefab;
-    private GameObject                  MusicPlaySource;
+
     //Match variables
     private const float                 startingMatchTimer = 5.0f; //time value in minutes
     private const float                 minutesToSeconds   = 60.0f;//converting value
@@ -23,10 +22,11 @@ public class Gamemanager : NetworkBehaviour
     private float                       matchTimer;
     private bool                        MatchStarting;
     private bool                        gameon; //debug variable
+    
     //Gamemanager lists
     private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
     private Dictionary<int, GameObject> herbivorePrefabs     = new Dictionary<int, GameObject>();
-    public  List<GameObject>            foodsources          = new List<GameObject>();
+    public  List<GameObject>            foodsources;
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
     private List<Transform>             PlayerSpawnPointList = new List<Transform>();
@@ -36,7 +36,12 @@ public class Gamemanager : NetworkBehaviour
     private string gameScene       = "DemoScene";
     private string foodSourceName  = "FoodSource";
     private string playerSpawnName = "player";
-    private string MusicSource = "MusicSource";
+    private string MusicSource     = "MusicSource";
+
+    //Prefabs
+    public  GameObject CameraPrefab;
+    private GameObject MusicPlaySource;
+    public  GameObject BerryPrefab;
 #pragma warning restore
 
     public float MatchTimer
@@ -67,6 +72,8 @@ public class Gamemanager : NetworkBehaviour
     {
         if (MatchStarting) yield break;
         MatchStarting = true;
+
+        yield return new WaitForSeconds(2.0f);
 
         //check the player selection and add them to a list
         for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
@@ -128,7 +135,6 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private void SpawnPlayers()
     {
-        Debug.Log("Spawning player");
             //list of player and loop it to every individual player
         GameObject clone = Instantiate(herbivorePrefabs[0], PlayerSpawnPointList[0].position, Quaternion.identity);
             clone.name = "Player";
@@ -220,5 +226,6 @@ public class Gamemanager : NetworkBehaviour
         LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
+        LoadGame();
     }
 }
