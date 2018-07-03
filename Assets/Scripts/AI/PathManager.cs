@@ -7,21 +7,24 @@ public class PathManager : MonoBehaviour
 #pragma warning disable
     public static PathManager Instance;
 
-    public LayerMask obstacleLayer;
-    private List<Node> allNodes = new List<Node>();
+    public LayerMask     obstacleLayer;
+    private List<Node>   allNodes = new List<Node>();
     public List<Vector3> NodeLocations = new List<Vector3>();
-    private Node defNode, bestNode;
-    private int fishAmount;
-    public float speed;
-    public float escapeSpeed;
-    public float visionRange;
-    public float maxVisionAngle;
-    public float escapeTimer;
-    private bool loaded;
-    public GameObject enemy;
-    public GameObject fishPrefab;
-    private GameObject locationContainer;
+    private Node         defNode, bestNode;
+    private int          fishAmount;
+    private float        timer;
+    private const float  spawnInterval = 4.0f;
+    public float         speed;
+    public float         escapeSpeed;
+    public float         visionRange;
+    public float         maxVisionAngle;
+    public float         escapeTimer;
+    private bool         loaded;
+    public GameObject    enemy;
+    public GameObject    fishPrefab;
+    private GameObject   locationContainer;
 #pragma warning restore
+
     private void NodeAssign()
     {
         locationContainer = GameObject.Find("LocationContainer");
@@ -60,9 +63,10 @@ public class PathManager : MonoBehaviour
 
     public void SpawnFish() //instantiate a fish in random node position
     {
-        if (fishAmount >= 20) return;
+        if (fishAmount >= 20 || timer >= 0) return;
         Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
         fishAmount++;
+        timer = spawnInterval;
     }
     public void DecreaseFishAmount()
     {
@@ -88,7 +92,12 @@ public class PathManager : MonoBehaviour
         return bestNode;
     }
 
-    void Awake()
+    private void Update()
+    {
+        timer -= Time.deltaTime;
+    }
+
+    private void Awake()
     {
         Instance = this;
         EventManager.ActionAddHandler(EVENT.Increase, SpawnFish);

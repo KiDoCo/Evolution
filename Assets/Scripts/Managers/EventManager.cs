@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //List of events
-public enum EVENT { PlaySFX, PlayMusic, DoAction, UpdateExperience, Increase, RoundBegin,RoundEnd,Spawn };
-
-public enum SFXEvent { Eat, Hurt, Lose, RoundEnd, RoundBegin, Victory};
+public enum EVENT { PlaySFX, PlayMusic, StopSound, DoAction, Increase, RoundBegin, RoundEnd, Spawn };
+//list of sounds
+public enum SFXEvent { Eat, Hurt, Lose, RoundEnd, RoundBegin, Victory}; // ADD death when clip available
 
 public enum MusicEvent {Ambient,Hunting,MainMenu};
 
@@ -60,6 +60,7 @@ public static class EventManager
             actionEventTable[evnt]();
         }
     }
+
     /// <summary>
     /// Calls a sound action event specified in the parameter
     /// </summary>
@@ -84,8 +85,6 @@ public static class EventManager
     /*Actionhandler
      Event increase = Coral : increasefood()
      Event UpdateExperience = UImanager : UpdateExperience
-     Event beginround = gamemanager : Startmatch()
-
+     Event RoundEnd = gamemanager : EndMatch
      */
-
 }

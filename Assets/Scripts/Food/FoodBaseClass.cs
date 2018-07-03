@@ -8,19 +8,23 @@ public class FoodBaseClass : MonoBehaviour, IEatable
 {
 
     //Food variables
-    private int         maxAmountFood     = 20;
-    private float       amountOfFood      = 20;
-    private float       foodPerSecond     = 0.5f;
+    private int         maxAmountFood     = 10;
+    private float       amountOfFood      = 10;
+    private float       foodPerSecond     = 4.0f;
     private const float regenerationTimer = 2.0f;
     private const float sizeMultiplier    = 1.5f;
+    private const float DefaultSize       = 2.0f;
+    private float       cooldownTime;      
     private bool        isEatening        = false;
     private bool        eaten;
 
     //collider variables
     private const float radiusMultiplier  = 1.5f;
+    private float       vectoroffset      = 0.55f;
     private Collider    coralCollider;
     private BoxCollider box;
     private AudioSource source;
+    private Vector3     originalPos;
 
 
     //interface properties
@@ -45,7 +49,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         }
         set
         {
-            amountOfFood = value;
+            amountOfFood = Mathf.Clamp(value,0,maxAmountFood);
         }
     }
 
@@ -53,7 +57,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         if (amountOfFood > 0)
         {
-            return foodPerSecond * Time.deltaTime;
+            return (foodPerSecond / 4) * Time.deltaTime;
         }
         else
         {
@@ -99,6 +103,19 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         }
     }
 
+    public float CoolDownTime
+    {
+        get
+        {
+            return cooldownTime;
+        }
+
+        set
+        {
+            cooldownTime = Mathf.Clamp(value, 0 , 5);
+        }
+    }
+
     public Collider GetCollider()
     {
         return coralCollider;
@@ -108,28 +125,17 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         return source;
     }
-    //Methods
 
-    /// <summary>
-    /// Used for triggering eat method from player character
-    /// </summary>
-    /// <param name="test"></param>
-    public void Interact(move test)
-    {
-        if (amountOfFood > 0)
-        {
-            test.CmdEat(this);
-        }
-    }
+    //Methods
 
     /// <summary>
     /// Decreases food from source
     /// </summary>
     public void DecreaseFood()
     {
-        Debug.Log(Eaten);
         StartCoroutine(EatChecker());
-        amountOfFood -= foodPerSecond * Time.deltaTime;
+        AmountFood -= foodPerSecond * Time.deltaTime;
+        CoolDownTime = 5.0f;
     }
 
     /// <summary>
@@ -137,9 +143,9 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     /// </summary>
     private void IncreaseFood()
     {
-        if (amountOfFood < MaxAmountFood && !Eaten)
+        if (amountOfFood < MaxAmountFood && !Eaten && CoolDownTime <= 0)
         {
-            amountOfFood += (foodPerSecond / 2 )* Time.deltaTime;
+            amountOfFood += (foodPerSecond / 4) * Time.deltaTime;
         }
     }
 
@@ -148,12 +154,9 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     /// </summary>
     public void SizeChanger()
     {
-        if(AmountFood <= MaxAmountFood)
+        if(AmountFood <= MaxAmountFood && amountOfFood > 0)
         {
-        transform.GetChild(0).transform.localScale = new Vector3(AmountFood / MaxAmountFood, AmountFood / MaxAmountFood, AmountFood / MaxAmountFood);
-        box.size = new Vector3(2.0f, amountOfFood * sizeMultiplier, 2.0f);
-        box.center = new Vector3(0.0f, (amountOfFood * sizeMultiplier) / 2, 0.0f);
-
+            MathFunctions.BoxScaleObject(transform, transform.GetChild(0), originalPos, AmountFood / MaxAmountFood);
         }
     }
 
@@ -168,7 +171,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         Eaten = false;
     }
 
-    //unity methods
+    //Unity methods
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
@@ -180,11 +183,12 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     public void Start()
     {
         EventManager.ActionAddHandler(EVENT.Increase, IncreaseFood);
+        originalPos = transform.GetChild(0).localPosition;
     }
 
     public void Update()
     {
+        CoolDownTime -= Time.deltaTime;
         SizeChanger();
     }
-
 }

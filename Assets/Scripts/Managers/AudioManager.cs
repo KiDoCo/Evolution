@@ -10,27 +10,16 @@ public class AudioManager : MonoBehaviour
     private static List<AudioClip>         SFXClips   = new List<AudioClip>();
     private static List<AudioClip>         MusicClips = new List<AudioClip>(); 
 
-
-    /// <summary>
-    /// Delegate that can be called to play sound effects
-    /// </summary>
-    public System.Action<AudioSource,int> SFXDelegate  
-     = new System.Action<AudioSource,int>(SFXMethod);
-
-    /// <summary>
-    /// delegate that can be called to play music
-    /// </summary>
-    public System.Action<AudioSource, int> MusicDelegate 
-     = new System.Action<AudioSource, int>(MusicMethod);
     //list of sounds and their id
 
-    /*Sound Effect ID list (SFX)
-     0: Eat
-     1: Hurt
-     2: Lose
-     3: RoundEnd
+    /* Sound Effect ID list (SFX)
+     0: Death
+     1: Eat
+     2: Hurt
+     3: Lose
      4: RoundBegin
-     5: Victory
+     5: RoundEnd
+     6: Victory
      */
 
     /* Music ID list
@@ -61,6 +50,12 @@ public class AudioManager : MonoBehaviour
         source.Play();
     }
 
+    private static void StopSound(AudioSource source, int id)
+    {
+        source.Stop();
+    }
+
+
     //Unity Methods
 
     private void Awake()
@@ -75,6 +70,7 @@ public class AudioManager : MonoBehaviour
     {
         //sound effect handler adding
         EventManager.SoundAddHandler(EVENT.PlaySFX, SFXMethod);
+        EventManager.SoundAddHandler(EVENT.StopSound, StopSound);
 
         //music handler adding
         EventManager.SoundAddHandler(EVENT.PlayMusic, MusicMethod);

@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     {
         HUDController.instance.MaxHealth   = (int)source.Maxhealth;
         HUDController.instance.CurProgress = source.Experience;
-        HUDController.instance.CurHealth =   (int)source.Health;
+        HUDController.instance.CurHealth   = (int)source.Health;
     }
 
     public void UpdateCharacterExperience()
@@ -32,6 +32,10 @@ public class UIManager : MonoBehaviour
     {
 
     }
+    private void MatchResultScreen(move source)
+    {
+
+    }
 
     private void Awake()
     {
@@ -41,7 +45,6 @@ public class UIManager : MonoBehaviour
     //unity methods
     private void Start()
     {
-        EventManager.ActionAddHandler(EVENT.UpdateExperience, UpdateCharacterExperience);
     }
 
     private void Update()
