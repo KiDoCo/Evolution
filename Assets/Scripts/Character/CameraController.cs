@@ -5,64 +5,52 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    private static Transform target;
-    [SerializeField] Vector3 defaultDistance = new Vector3(0f, 2f, -10f);
-    [SerializeField] float distanceDamp = 10f;
-    [SerializeField] float rotationalDamp = 10f;
-    public Vector3 velocity = Vector3.one;
-    public bool freeCamera;
-    public static CameraController cam;
-
-    Transform myT;
-
+#pragma warning disable
+    private Transform                target;
+    [SerializeField] private Vector3 defaultDistance = new Vector3(0f, 2f, -10f);
+    [SerializeField] private float   distanceDamp    = 10f;
+    [SerializeField] private float   rotationalDamp  = 10f;
+    public Vector3                   velocity        = Vector3.one;
+    public bool                      freeCamera;
+    public static CameraController   cam;
+    private Transform                myT;
 
     // CAMERA CONTROLS
-    public float speedH = 2.0f;
-    public float speedV = 2.0f;
-    private float yaw = 0.0f;
-    private float pitch = 0.0f;
-
-    void Awake()
+    public float  speedH = 2.0f;
+    public float  speedV = 2.0f;
+    private float yaw    = 0.0f;
+    private float pitch  = 0.0f;
+#pragma warning restore
+    public Transform Target
     {
-        //lisää singleton
-        cam = this;
-        myT = transform;
+        get
+        {
+            return target;
+        }
+
+        set
+        {
+            target = value;
+        }
     }
 
-
-    void FixedUpdate()
-    {
-       SmoothFollow();
-       
-       
-        Stabilize();
-        ControlCamera();
-
-        //Vector3 toPos = target.position + (target.rotation * defaultDistance);
-        //Vector3 curPos = Vector3.Lerp(myT.position, toPos, distanceDamp * Time.deltaTime);
-        // myT.position = curPos;
-
-        // Quaternion toRot = Quaternion.LookRotation(target.position - myT.position, target.up);
-        // Quaternion curRot = Quaternion.Slerp(myT.rotation, toRot, rotationalDamp * Time.deltaTime);
-        //myT.rotation = curRot;
-    }
     void SmoothFollow()
     {
-        Vector3 toPos = target.position + (target.rotation * defaultDistance);
+        Vector3 toPos = Target.position + (Target.rotation * defaultDistance);
 
         Vector3 curPos = Vector3.SmoothDamp(myT.position, toPos, ref velocity, distanceDamp);
         myT.position = curPos;
         if (!freeCamera)
         {
             //rotation, same up direction
-            myT.LookAt(target, target.up);
+            myT.LookAt(Target, Target.up);
         }
         
     }
 
     public  void InstantiateCamera(move test)
     {
-        target = test.transform;
+        Target = test.transform;
     }
        
     void Stabilize()
@@ -71,9 +59,6 @@ public class CameraController : MonoBehaviour
         float z = transform.eulerAngles.z;
         //Debug.Log(z);
         transform.Rotate(0, 0, -z);
-
-
-
     }
 
     void ControlCamera()
@@ -86,19 +71,40 @@ public class CameraController : MonoBehaviour
         {
             freeCamera = false;
         }
-
-
-
-
     }
+
+    /// <summary>
+    /// Sets the camera target to fixed point
+    /// </summary>
+    /// <param name="source"></param>
+    public void CameraPlaceOnDeath(move source)
+    {
+        source.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
+    }
+
     void FreeCamera()
     {
         if (freeCamera)
         {
-            Debug.Log("FREE CAMERA!");
             yaw += speedH * Input.GetAxis("Mouse X");
             pitch -= speedV * Input.GetAxis("Mouse Y");
             transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
         }
+    }
+
+    void Awake()
+    {
+        cam = this;
+        myT = transform;
+    }
+
+    void FixedUpdate()
+    {
+       SmoothFollow();
+       
+       
+        Stabilize();
+        ControlCamera();
+
     }
 }

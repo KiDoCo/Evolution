@@ -28,9 +28,12 @@ public class move : MonoBehaviour
     private bool             eating;
     private Animator         m_animator;
     public  CameraController camerascript;
-    private Vector3          lastposition    = Vector3.zero;
-    private AudioSource      source;
+    private Vector3          lastposition      = Vector3.zero;
+    private Vector3          MovementInputVector;
+    private Vector3          rotationInputVector;
+    private AudioSource      musicSource;
     private AudioSource      SFXsource;
+    private GameObject       cameraClone;
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -41,15 +44,11 @@ public class move : MonoBehaviour
         }
         set
         {
+            health = value;
             if(health <= 0)
             {
-                Debug.Log("Called Death");
                 Death();
                 health = Maxhealth;
-            }
-            else
-            {
-                health = value;
             }
         }
     }
@@ -64,7 +63,13 @@ public class move : MonoBehaviour
             experience = Mathf.Clamp(value, 0, 100);
         }
     }
+    public GameObject CameraClone { get { return cameraClone; } }
 
+
+    /// <summary>
+    /// Takes care of the eating for the player
+    /// </summary>
+    /// <param name="eatObject"></param>
     public void CmdEat(IEatable eatObject)
     {
         if (eatObject == null || eatObject.AmountFood <= 0)
@@ -162,13 +167,13 @@ public class move : MonoBehaviour
             isMoving = false;
         }
 
+        MovementInputVector = inputvectorY + inputvectorZ;
+        rotationInputVector = inputvectorX;
         if(!eating)
         {
-        transform.Translate(inputvectorZ);
-        transform.Rotate(inputvectorX);
-        transform.Translate(inputvectorY);
+        transform.Translate(MovementInputVector);
+        transform.Rotate(rotationInputVector);
         }
-
     }
 
     public void BarrelRoll()
@@ -203,7 +208,7 @@ public class move : MonoBehaviour
     private void Awake()
     {
         health = 100;
-        source = GetComponentInChildren<AudioSource>();
+        musicSource = GetComponentInChildren<AudioSource>();
         SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
@@ -213,9 +218,9 @@ public class move : MonoBehaviour
         Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         m_animator = gameObject.GetComponent<Animator>();
         isMoving = true;
-        GameObject clone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
-        EventManager.SoundBroadcast(EVENT.PlayMusic, source, (int)MusicEvent.Ambient);
-        clone.name = "FollowCamera";
+        cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
+        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        cameraClone.name = "FollowCamera";
         CameraController.cam.InstantiateCamera(this);
     }
 
@@ -227,7 +232,7 @@ public class move : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            TakeDamage(20);
+            TakeDamage(30);
         }
     }
 
