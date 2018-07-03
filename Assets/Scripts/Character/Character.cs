@@ -11,18 +11,33 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float AscendSpeed = 2f;
     [SerializeField] protected float turnSpeed = 2f;
     [SerializeField] protected float rotateSpeed = 2f;
-    //bools
+    public Quaternion myQuat, targetQuat;
+    public float quatSpeed = 1f;
+    public float stabilize = 0.1f;
+    public float velocity;
+    public float restrictAngle = Mathf.Abs(80);
+    private float health = 100;
+    private float experience = 0;
+    private const float healthMax = 100.0f;
+    private const float waitTime = 1.0f;
+    private const float experiencePenalty = 25.0f;
+    private const float deathpenaltytime = 2.0f;
+    private bool ready;
     public bool rolling;
+    public bool isMoving;
+    private bool eating;
+    private Animator m_animator;
+    public CameraController camerascript;
+    private Vector3 lastposition = Vector3.zero;
+    private Vector3 MovementInputVector;
+    private Vector3 rotationInputVector;
+    private AudioSource musicSource;
+    private AudioSource SFXsource;
+    private GameObject cameraClone;
+    //bools
     public bool hasjustRolled;
 
     public float Rotatingspeed;
-
-    public bool isMoving;
-    private bool eating;
-
-    private Vector3 MovementInputVector;
-    private Vector3 rotationInputVector;
-
     private Vector3 moveDirection;
     private Vector3 surfaceNormal;
     private Vector3 capsuleNormal;
@@ -54,6 +69,7 @@ public abstract class Character : MonoBehaviour
         //CameraController.cam.InstantiateCamera(this);
     }
 
+    public float Maxhealth { get { return healthMax; } }
     public float Health
     {
         get
@@ -116,6 +132,12 @@ public abstract class Character : MonoBehaviour
                 m_animator.SetBool("isEating", eatObject.Eaten);
             }
         }
+    }
+
+    public void Death()
+    {
+        Experience -= experiencePenalty;
+        Gamemanager.Instance.RespawnPlayer(this);
     }
 
     private void TakeDamage(float amount)
@@ -284,6 +306,7 @@ public abstract class Character : MonoBehaviour
         // Debug.Log(z);
         transform.Rotate(0, 0, -z);
     }
+
     protected virtual void BarrelRoll()
     {
         rolling = false;

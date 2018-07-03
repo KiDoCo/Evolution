@@ -33,7 +33,7 @@ public class Herbivore : Character
         base.Start();        
         m_animator = gameObject.GetComponent<Animator>();        
         herbiv = this;
-        camera.GetComponent<CameraController>().ConstructCamera(this);
+        camera.GetComponent<CameraController>().InstantiateCamera(this);
     }
 
     protected override void Update()
@@ -52,12 +52,10 @@ public class Herbivore : Character
     }
     protected override void FixedUpdate()
     {
-        
         base.FixedUpdate();
-        if (!CameraController.Cam.FreeCamera)
-        {
-            MouseMove();
-        }
+        CameraController.cam.FreeCamera();
+        MouseMove();
+
 
        
         

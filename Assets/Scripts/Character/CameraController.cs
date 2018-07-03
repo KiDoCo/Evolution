@@ -48,7 +48,7 @@ public class CameraController : MonoBehaviour
         
     }
 
-    public  void InstantiateCamera(move test)
+    public  void InstantiateCamera(Character test)
     {
         Target = test.transform;
     }
@@ -77,12 +77,12 @@ public class CameraController : MonoBehaviour
     /// Sets the camera target to fixed point
     /// </summary>
     /// <param name="source"></param>
-    public void CameraPlaceOnDeath(move source)
+    public void CameraPlaceOnDeath(Character test)
     {
-        source.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
+        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }
 
-    void FreeCamera()
+    public void FreeCamera()
     {
         if (freeCamera)
         {

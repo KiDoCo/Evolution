@@ -33,7 +33,7 @@ public class Gamemanager : NetworkBehaviour
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
     public  List<Transform>             PlayerSpawnPointList = new List<Transform>();
-    public  List<move>                  PlayerList           = new List<move>();
+    public  List<Character>                  PlayerList      = new List<Character>();
 
     //Strings
     private string gameScene       = "DemoScene";
@@ -119,7 +119,7 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
-    private IEnumerator Respawn(move player)
+    private IEnumerator Respawn(Character player)
     {
         player.gameObject.SetActive(false);
         player.transform.position = PlayerSpawnPointList[Random.Range(0, PlayerSpawnPointList.ToArray().Length)].position;
@@ -148,7 +148,7 @@ public class Gamemanager : NetworkBehaviour
     /// <summary>
     /// Ends the match for a single player
     /// </summary>
-    public void EndMatchForPlayer(move player)
+    public void EndMatchForPlayer(Character player)
     {
         //some client magix röh röh
 
@@ -222,7 +222,7 @@ public class Gamemanager : NetworkBehaviour
     /// Checks if the player can be spawned
     /// </summary>
     /// <param name="player"></param>
-    public void RespawnPlayer(move player)
+    public void RespawnPlayer(Character player)
     {
         if (lifeCount > 0)
         {
