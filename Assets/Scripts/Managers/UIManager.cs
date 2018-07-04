@@ -32,7 +32,7 @@ public class UIManager : MonoBehaviour
     {
 
     }
-    private void MatchResultScreen(move source)
+    private void MatchResultScreen(Character source)
     {
 
     }
