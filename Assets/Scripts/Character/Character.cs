@@ -111,13 +111,13 @@ public abstract class Character : MonoBehaviour
                 eatObject.DecreaseFood();
                 if (!eatObject.Source().isPlaying)
                 {
-                    EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+                    //EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
                 }
             }
             else
             {
                 eating = false;
-                EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
+                //EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
                 eatObject.Eaten = eating;
             }
         }
@@ -303,8 +303,8 @@ public abstract class Character : MonoBehaviour
     {
         //Component search
         m_animator = gameObject.GetComponent<Animator>();
-        cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
-        cameraClone.name = "FollowCamera";
+        //cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
+        //cameraClone.name = "FollowCamera";
 
 
         //Cursor lock state and quaterions
@@ -312,8 +312,8 @@ public abstract class Character : MonoBehaviour
         Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
         Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         isMoving = true;
-        UIManager.Instance.InstantiateMatchUI(this);
-        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        //UIManager.Instance.InstantiateMatchUI(this);
+       // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()

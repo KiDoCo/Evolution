@@ -15,7 +15,7 @@ public class Herbivore : Character
     
     //object references
     [HideInInspector] public static Herbivore herbiv;
-
+    public new GameObject  CameraClone;
     //eulermeter values
     [HideInInspector] public float y;
     

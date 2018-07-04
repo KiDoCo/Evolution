@@ -8,12 +8,11 @@ public class Carnivore : Character
 
     //objects
     [SerializeField] new GameObject camera;
-    private Animator m_animator;
 
 
     //script references
     [HideInInspector] public static Carnivore carniv;
-
+    public GameObject CameraClone;
     //eulermeter values
     [HideInInspector] public float y;
     public bool barrelRoll;
@@ -37,7 +36,6 @@ public class Carnivore : Character
         carniv = this;
         barrelRoll = false;
         stamina = staminaValue;
-        //camera.GetComponent<CameraController>().ConstructCamera(this);
     }
 
     protected override void Update()
@@ -91,7 +89,7 @@ public class Carnivore : Character
         Dash();
         
 
-        if (!cameraClone.GetComponent<CameraController>().freeCamera)
+        if (!CameraClone.GetComponent<CameraController>().freeCamera)
         {
             MouseMove();
         }
