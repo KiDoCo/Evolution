@@ -127,8 +127,8 @@ GameObject:
   - component: {fileID: 4582253081090262}
   - component: {fileID: 95622823668362642}
   - component: {fileID: 136574025905355464}
-  - component: {fileID: 114826328469776742}
   - component: {fileID: 82769841182586898}
+  - component: {fileID: 114252917376091746}
   m_Layer: 0
   m_Name: ProtoFish 1
   m_TagString: Untagged
@@ -942,6 +942,38 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114252917376091746
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  verticalSpeed: 2
+  horizontalSpeed: 2
+  speed: 2
+  AscendSpeed: 2
+  turnSpeed: 2
+  rotateSpeed: 2
+  myQuat: {x: 0, y: 0, z: 0, w: 0}
+  targetQuat: {x: 0, y: 0, z: 0, w: 0}
+  quatSpeed: 1
+  stabilize: 0.1
+  velocity: 0
+  restrictAngle: 80
+  rolling: 0
+  isMoving: 0
+  camerascript: {fileID: 0}
+  hasjustRolled: 0
+  Rotatingspeed: 0
+  camera: {fileID: 0}
+  myT: {fileID: 0}
+  camerascript: {fileID: 0}
+  y: 0
 --- !u!114 &114779759895996194
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -954,31 +986,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 982aae529381c164ca28fdce0f2120b7, type: 2}
---- !u!114 &114826328469776742
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1445834569832970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51f9b26e16577c84884f9f2ed7cc78d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myQuat: {x: 0, y: 0, z: 0, w: 0}
-  targetQuat: {x: 0, y: 0, z: 0, w: 0}
-  verticalSpeed: 2
-  horizontalSpeed: 4
-  speed: 10
-  turnSpeed: 2
-  rotateSpeed: 2
-  quatSpeed: 1
-  stabilize: 0.1
-  velocity: 0
-  restrictAngle: 80
-  rolling: 0
-  isMoving: 0
-  camerascript: {fileID: 0}
 --- !u!124 &124526422719982118
 Behaviour:
   m_ObjectHideFlags: 1

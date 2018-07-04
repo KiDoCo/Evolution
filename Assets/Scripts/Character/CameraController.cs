@@ -12,7 +12,6 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float   rotationalDamp  = 10f;
     public Vector3                   velocity        = Vector3.one;
     public bool                      freeCamera;
-    public static CameraController   cam;
     private Transform                myT;
 
     // CAMERA CONTROLS
@@ -94,15 +93,13 @@ public class CameraController : MonoBehaviour
 
     void Awake()
     {
-        cam = this;
         myT = transform;
     }
 
     void FixedUpdate()
     {
+        if (target == null) return;
        SmoothFollow();
-       
-       
         Stabilize();
         ControlCamera();
 
