@@ -5,20 +5,27 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-#pragma warning disable
-    private Transform                target;
-    [SerializeField] private Vector3 defaultDistance = new Vector3(0f, 2f, -10f);
-    [SerializeField] private float   distanceDamp    = 10f;
-    [SerializeField] private float   rotationalDamp  = 10f;
-    public Vector3                   velocity        = Vector3.one;
-    public bool                      freeCamera;
-    private Transform                myT;
 
-    // CAMERA CONTROLS
-    public float  speedH = 2.0f;
-    public float  speedV = 2.0f;
-    private float yaw    = 0.0f;
-    private float pitch  = 0.0f;
+
+
+    [SerializeField] Transform target;
+
+    //values
+    [SerializeField] Vector3 offset = new Vector3(0f, 2f, -10f);
+    [SerializeField] float distanceDamp = 10f;
+    [SerializeField] float rotationalDamp = 10f;
+    [SerializeField] Vector3 velocity = Vector3.one;
+    [SerializeField] float RotationsSpeed = 2f;
+
+    public bool FreeCamera;
+
+    //Script references
+    [HideInInspector] public Herbivore Herbivorescript;
+    [HideInInspector] public static CameraController cam;
+
+
+    //reset point
+    Vector3 startOffset = Vector3.zero;
 #pragma warning restore
     public Transform Target
     {
@@ -33,43 +40,31 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    void SmoothFollow()
+    private void Start()
     {
-        Vector3 toPos = Target.position + (Target.rotation * defaultDistance);
 
-        Vector3 curPos = Vector3.SmoothDamp(myT.position, toPos, ref velocity, distanceDamp);
-        myT.position = curPos;
-        if (!freeCamera)
-        {
-            //rotation, same up direction
-            myT.LookAt(Target, Target.up);
-        }
-        
+        cam = this;
+        startOffset = offset;
+
     }
 
-    public  void InstantiateCamera(Character test)
+    void FixedUpdate()
+    {
+        if (target == null) return;
+
+
+        ControlCamera();
+        if (Input.GetKey(KeyCode.R))
+        {
+            ResetCamera();
+        }
+        SmoothFollow();
+        Stabilize();
+
+    }
+    public void InstantiateCamera(Character test)
     {
         Target = test.transform;
-    }
-       
-    void Stabilize()
-    {
-
-        float z = transform.eulerAngles.z;
-        //Debug.Log(z);
-        transform.Rotate(0, 0, -z);
-    }
-
-    void ControlCamera()
-    {
-        if (Input.GetMouseButtonDown(2))
-        {
-            freeCamera = true;
-        }
-        if (Input.GetMouseButtonUp(2))
-        {
-            freeCamera = false;
-        }
     }
 
     /// <summary>
@@ -81,27 +76,70 @@ public class CameraController : MonoBehaviour
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }
 
-    public void FreeCamera()
+    void SmoothFollow()// follow every frame
     {
-        if (freeCamera)
+        Vector3 toPos = target.position + (target.rotation * offset);
+
+        Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
+        transform.position = curPos;
+
+        //rotation, same up direction
+        transform.LookAt(target, target.up);
+
+    }
+
+
+    void FollowRot()//Alternative camera follow
+    {
+
+        Vector3 toPos = target.position + (target.rotation * offset);
+
+        Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
+        transform.position = curPos;
+
+        Quaternion toRot = Quaternion.LookRotation(target.position - transform.position, target.up);
+        Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
+        transform.rotation = curRot;
+    }
+
+
+    void Stabilize()
+    {
+
+        float z = transform.eulerAngles.z;
+        //Debug.Log(z);
+        transform.Rotate(0, 0, -z);
+
+    }
+
+    void ResetCamera()
+    {
+        offset = startOffset;
+    }
+
+    void ControlCamera()// Camera input
+    {
+
+        if (Input.GetMouseButton(2))
         {
-            yaw += speedH * Input.GetAxis("Mouse X");
-            pitch -= speedV * Input.GetAxis("Mouse Y");
-            transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
+            //FreeCamera = !FreeCamera;
+            FreeCamera = true;
+        }
+        else
+        {
+            FreeCamera = false;
+        }
+
+        if (FreeCamera)
+        {
+            Quaternion camTurnAngle = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * RotationsSpeed, Vector3.up);
+            offset = camTurnAngle * offset;
+        }
+        else if (!FreeCamera)
+        {
+            ResetCamera();
         }
     }
 
-    void Awake()
-    {
-        myT = transform;
-    }
 
-    void FixedUpdate()
-    {
-        if (target == null) return;
-       SmoothFollow();
-        Stabilize();
-        ControlCamera();
-
-    }
 }

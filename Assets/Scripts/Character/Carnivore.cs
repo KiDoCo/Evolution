@@ -15,7 +15,7 @@ public class Carnivore : Character
     public GameObject CameraClone;
     //eulermeter values
     [HideInInspector] public float y;
-    public bool barrelRoll;
+    //public bool barrelRoll;
     public float dashSpeed;
     public float strafeSpeed;
     //dash
@@ -89,7 +89,7 @@ public class Carnivore : Character
         Dash();
         
 
-        if (!CameraClone.GetComponent<CameraController>().freeCamera)
+        if (!CameraClone.GetComponent<CameraController>().FreeCamera)
         {
             MouseMove();
         }

@@ -6,23 +6,11 @@ using UnityEngine;
 public class Herbivore : Character
 {
 
-
-    Quaternion originZ;
-    Quaternion currentZ;
-
-    //objects
-    public Transform myT;
     
     //object references
     [HideInInspector] public static Herbivore herbiv;
     public new GameObject  CameraClone;
-    //eulermeter values
-    [HideInInspector] public float y;
-    
-
-    /// <summary>
-    /// Inputs for rotating with the mouse
-    /// </summary>
+ 
     public void MouseMove()
     {
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
@@ -39,6 +27,7 @@ public class Herbivore : Character
     {
         base.Start();        
         herbiv = this;
+        
         CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
     }
 
@@ -58,14 +47,21 @@ public class Herbivore : Character
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-        CameraClone.GetComponent<CameraController>().FreeCamera();
-        MouseMove();
+        
+        if (!CameraClone.GetComponent<CameraController>().FreeCamera)
+        {
+            MouseMove();
+        }
+        
        
         Restrict();
 
-        if (!rolling) return;
+        if (!rolling)
+        {
+            Stabilize();
+        }
 
-        Stabilize();
+        
     }
     
 }

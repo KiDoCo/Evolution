@@ -518,8 +518,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 45683166}
-  m_LocalRotation: {x: -0.10077671, y: 0.52272475, z: 0.062398866, w: 0.8442211}
-  m_LocalPosition: {x: -47.829453, y: 19.1707, z: -16.58023}
+  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
+  m_LocalPosition: {x: -42.309006, y: 33.863968, z: 9.063599}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}
@@ -7504,7 +7504,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &429305792
 Transform:
   m_ObjectHideFlags: 0
@@ -8032,13 +8032,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4be9ea4337ee2654b802643b6cbbb7c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultDistance: {x: 0, y: 0.5, z: -2}
-  distanceDamp: 0.15
+  target: {fileID: 1171430160}
+  offset: {x: 0, y: 0.2, z: -1}
+  distanceDamp: 0.02
   rotationalDamp: 10
   velocity: {x: 0, y: 0, z: 0}
-  freeCamera: 0
-  speedH: 2
-  speedV: 2
+  RotationsSpeed: 2
+  FreeCamera: 0
+  Herbivorescript: {fileID: 0}
 --- !u!114 &523931249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8112,8 +8113,8 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 523931246}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 240.25, y: 4.83, z: 220.71548}
+  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
+  m_LocalPosition: {x: 191.4, y: 10.5, z: 253}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -8312,11 +8313,11 @@ MonoBehaviour:
   isMoving: 0
   camerascript: {fileID: 0}
   hasjustRolled: 0
+  barrelRoll: 0
   Rotatingspeed: 0
   camera: {fileID: 0}
   CameraClone: {fileID: 1924471185}
   y: 0
-  barrelRoll: 0
   dashSpeed: 0
   strafeSpeed: 0
   dashing: 0
@@ -15242,8 +15243,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 951538560}
-  m_LocalRotation: {x: -0.10077671, y: 0.52272475, z: 0.062398866, w: 0.8442211}
-  m_LocalPosition: {x: -47.829453, y: 19.173286, z: -16.58023}
+  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
+  m_LocalPosition: {x: -42.309006, y: 33.866554, z: 9.063599}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}
@@ -21251,6 +21252,34 @@ Transform:
   m_Father: {fileID: 1387249702}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: -78.247, y: -33.051003, z: 33.419003}
+--- !u!1 &1171430159
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1171430160}
+  m_Layer: 0
+  m_Name: Pivotpoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1171430160
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1171430159}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2023802326}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1176905865
 Prefab:
   m_ObjectHideFlags: 0
@@ -29112,6 +29141,80 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: 32ad59f5569ef2941830a44b0eff6145, type: 3}
   m_PrefabInternal: {fileID: 226292222}
+--- !u!1 &1682169021
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1682169024}
+  - component: {fileID: 1682169023}
+  - component: {fileID: 1682169022}
+  m_Layer: 0
+  m_Name: Water4Simple (1)ReflectionPreview Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!45 &1682169022
+Skybox:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1682169021}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
+--- !u!20 &1682169023
+Camera:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1682169021}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967279
+  m_RenderingPath: 1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &1682169024
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1682169021}
+  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalPosition: {x: 191.4002, y: 46.868137, z: 253}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 22
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1708779665
 GameObject:
   m_ObjectHideFlags: 0
@@ -29618,8 +29721,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1780965395}
-  m_LocalRotation: {x: -0.10077671, y: 0.52272475, z: 0.062398866, w: 0.8442211}
-  m_LocalPosition: {x: -47.829453, y: 19.1707, z: -16.58023}
+  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
+  m_LocalPosition: {x: -42.309006, y: 33.863968, z: 9.063599}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}
@@ -35018,13 +35121,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4be9ea4337ee2654b802643b6cbbb7c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultDistance: {x: 0, y: 0.5, z: -2}
+  target: {fileID: 0}
+  offset: {x: 0, y: 2, z: -10}
   distanceDamp: 0.15
   rotationalDamp: 10
   velocity: {x: 0, y: 0, z: 0}
-  freeCamera: 0
-  speedH: 2
-  speedV: 2
+  RotationsSpeed: 2
+  FreeCamera: 0
+  Herbivorescript: {fileID: 0}
 --- !u!114 &1924471188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35447,6 +35551,15 @@ Prefab:
         type: 2}
       propertyPath: speed
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 114252917376091746, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+      propertyPath: barrelRoll
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1445834569832970, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
+      propertyPath: m_Name
+      value: Herbivore
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
@@ -36034,8 +36147,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2115615593}
-  m_LocalRotation: {x: -0.10077671, y: 0.52272475, z: 0.062398866, w: 0.8442211}
-  m_LocalPosition: {x: -47.829453, y: 19.17199, z: -16.58023}
+  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
+  m_LocalPosition: {x: -42.309006, y: 33.865257, z: 9.063599}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}

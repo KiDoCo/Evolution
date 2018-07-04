@@ -23,7 +23,7 @@ public abstract class Character : MonoBehaviour
     private const float experiencePenalty = 25.0f;
     private const float deathpenaltytime = 2.0f;
     private bool ready;
-    public bool rolling;
+    public bool rolling = false;
     public bool isMoving;
     private bool eating;
     protected Animator m_animator;
@@ -36,6 +36,7 @@ public abstract class Character : MonoBehaviour
     protected GameObject cameraClone;
     //bools
     public bool hasjustRolled;
+    public bool barrelRoll;
 
     public float Rotatingspeed;
     private Vector3 moveDirection;
@@ -181,7 +182,8 @@ public abstract class Character : MonoBehaviour
         Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
         Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * Speed) * Time.deltaTime;
-
+        
+        
         if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
             isMoving = true;
@@ -269,26 +271,41 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void Stabilize()
     {
-        float z = transform.eulerAngles.z;
-        // Debug.Log(z);
-        transform.Rotate(0, 0, -z);
+        if (!rolling)
+        {
+
+            float z = transform.eulerAngles.z;
+            // Debug.Log(z);
+            transform.Rotate(0, 0, -z);
+        }
+
     }
+
 
     protected virtual void BarrelRoll()
     {
-        rolling = false;
-        //BARREL ROLL
-        float inputValue = Input.GetAxisRaw("Rotation") * rotateSpeed;
-
-        if (inputValue == 0) return;
-
-        if (transform.rotation.z >= 180)
+        if (barrelRoll)
         {
-            return;
-        }
-        transform.Rotate(0, 0, inputValue);
+            if (Input.GetKey(KeyCode.Q))
+            {
+                transform.Rotate(0, 0, Rotatingspeed);
+                rolling = true;
+            }
+            if (Input.GetKey(KeyCode.E))
+            {
+                transform.Rotate(0, 0, -Rotatingspeed);
+                rolling = true;
+            }
+            if (Input.GetKeyUp(KeyCode.Q))
+            {
+                rolling = false;
 
-        rolling = true;
+            }
+            if (Input.GetKeyUp(KeyCode.E))
+            {
+                rolling = false;
+            }
+        }
     }
 
     protected virtual void Awake()
@@ -328,6 +345,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
+
         //Stabilize();
         CanMove(MovementInputVector);
         Move();
