@@ -94,7 +94,6 @@ public abstract class Character : MonoBehaviour
             {
                 eating = true;
                 Experience += eatObject.GetAmount();
-                m_animator.SetBool("isEating", eatObject.Eaten);
                 eatObject.Eaten = eating;
                 eatObject.DecreaseFood();
                 if (!eatObject.Source().isPlaying)
@@ -107,7 +106,6 @@ public abstract class Character : MonoBehaviour
                 eating = false;
                 EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
                 eatObject.Eaten = eating;
-                m_animator.SetBool("isEating", eatObject.Eaten);
             }
         }
     }
@@ -243,8 +241,6 @@ public abstract class Character : MonoBehaviour
                     surfaceNormal = hit.normal;
                 }
 
-               
-
                 collided = true;
 
                 return false;
@@ -253,7 +249,6 @@ public abstract class Character : MonoBehaviour
 
         return true;
     }
-
 
 
     /// <summary>
