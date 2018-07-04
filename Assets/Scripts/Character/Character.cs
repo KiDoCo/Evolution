@@ -7,7 +7,7 @@ public abstract class Character : MonoBehaviour
     //values
     [SerializeField] protected float verticalSpeed = 2f;
     [SerializeField] protected float horizontalSpeed = 2f;
-    [SerializeField] protected float speed = 2f;
+    [SerializeField] private float speed = 2f;
     [SerializeField] protected float AscendSpeed = 2f;
     [SerializeField] protected float turnSpeed = 2f;
     [SerializeField] protected float rotateSpeed = 2f;
@@ -33,7 +33,7 @@ public abstract class Character : MonoBehaviour
     private Vector3 rotationInputVector;
     private AudioSource musicSource;
     private AudioSource SFXsource;
-    private GameObject cameraClone;
+    protected GameObject cameraClone;
     //bools
     public bool hasjustRolled;
 
@@ -76,6 +76,19 @@ public abstract class Character : MonoBehaviour
         }
     }
     public GameObject CameraClone { get { return cameraClone; } }
+
+    protected float Speed
+    {
+        get
+        {
+            return speed;
+        }
+
+        set
+        {
+            speed = value;
+        }
+    }
 
 
     /// <summary>
@@ -166,8 +179,8 @@ public abstract class Character : MonoBehaviour
     {
         isMoving = false;
         Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
-        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * speed) * Time.deltaTime;
+        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * Speed) * Time.deltaTime;
 
         if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {

@@ -12,12 +12,13 @@ public class Carnivore : Character
 
 
     //script references
-    [HideInInspector] public CameraController camerascript;
     [HideInInspector] public static Carnivore carniv;
 
     //eulermeter values
     [HideInInspector] public float y;
-
+    public bool barrelRoll;
+    public float dashSpeed;
+    public float strafeSpeed;
     //dash
     [SerializeField] protected bool dashing;
     [SerializeField] protected bool canDash;
@@ -90,7 +91,7 @@ public class Carnivore : Character
         Dash();
         
 
-        if (!CameraController.Cam.FreeCamera)
+        if (!cameraClone.GetComponent<CameraController>().freeCamera)
         {
             MouseMove();
         }
