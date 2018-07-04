@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 89201087
+CRC: 3946199827
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1d5e9fdabfaec41a91abe1ef5a138ea2
+    Hash: d53e46703333aaca764a54aadc0641cb
   TypeTreeHash:
     serializedVersion: 2
     Hash: ec23400331d3c94d567599cb019b5709
@@ -52,6 +52,6 @@ ClassTypes:
 - Class: 137
   Script: {instanceID: 0}
 Assets:
-- Assets/Prefabs/Character/ProtoFish 2.prefab
+- Assets/Prefabs/Character/Carnivore.prefab
 Dependencies:
 - C:/Users/JoonasTuo/Desktop/Evolution/Assets/StreamingAssets/AssetBundles/music.mfg

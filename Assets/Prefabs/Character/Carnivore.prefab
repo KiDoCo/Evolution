@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 114826328469776742}
   - component: {fileID: 82769841182586898}
   m_Layer: 0
-  m_Name: ProtoFish 2
+  m_Name: Carnivore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -841,10 +841,7 @@ MonoBehaviour:
   velocity: 0
   restrictAngle: 80
   rolling: 0
-  hasjustRolled: 0
   isMoving: 0
-  camera1: {fileID: 0}
-  camera2: {fileID: 0}
   camerascript: {fileID: 0}
 --- !u!114 &114779759895996194
 MonoBehaviour:
@@ -881,10 +878,7 @@ MonoBehaviour:
   velocity: 0
   restrictAngle: 80
   rolling: 0
-  hasjustRolled: 0
   isMoving: 0
-  camera1: {fileID: 0}
-  camera2: {fileID: 0}
   camerascript: {fileID: 0}
 --- !u!124 &124526422719982118
 Behaviour:

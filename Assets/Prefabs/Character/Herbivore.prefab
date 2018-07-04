@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 82769841182586898}
   - component: {fileID: 114252917376091746}
   m_Layer: 0
-  m_Name: ProtoFish 1
+  m_Name: Herbivore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -970,9 +970,7 @@ MonoBehaviour:
   camerascript: {fileID: 0}
   hasjustRolled: 0
   Rotatingspeed: 0
-  camera: {fileID: 0}
   myT: {fileID: 0}
-  camerascript: {fileID: 0}
   y: 0
 --- !u!114 &114779759895996194
 MonoBehaviour:

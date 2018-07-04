@@ -30,6 +30,10 @@ public class Herbivore : Character
         transform.Rotate(v, h, 0);
                 
     }
+    protected override void Awake()
+    {
+        base.Awake();
+    }
 
     protected override void Start()
     {

@@ -16,8 +16,8 @@ public abstract class Character : MonoBehaviour
     public float stabilize = 0.1f;
     public float velocity;
     public float restrictAngle = Mathf.Abs(80);
-    private float health = 100;
-    private float experience = 0;
+    protected float health = 100;
+    protected float experience = 0;
     private const float healthMax = 100.0f;
     private const float waitTime = 1.0f;
     private const float experiencePenalty = 25.0f;
@@ -282,7 +282,6 @@ public abstract class Character : MonoBehaviour
     {
         col = GetComponentInChildren<CapsuleCollider>();
 
-        health = 100;
         musicSource = GetComponentInChildren<AudioSource>();
         SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
@@ -300,6 +299,7 @@ public abstract class Character : MonoBehaviour
         Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
         Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         isMoving = true;
+        UIManager.Instance.InstantiateMatchUI(this);
         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3946965596
+CRC: 3323685506
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 6ddd63a0b9ab9863869e247e254cb7f4
+    Hash: 369050d4b62fbad83b9318e925612045
   TypeTreeHash:
     serializedVersion: 2
-    Hash: b23e7c52d074605ddf7c8817e8502852
+    Hash: da449c689de8604121f5aac31d2bfafd
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -40,9 +40,9 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: fb6536a3b1235d24496ee4772094987d, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 9b17d407cc45d47419bb41f2cb96e649, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 124
@@ -52,6 +52,6 @@ ClassTypes:
 - Class: 137
   Script: {instanceID: 0}
 Assets:
-- Assets/Prefabs/Character/ProtoFish 1.prefab
+- Assets/Prefabs/Character/Herbivore.prefab
 Dependencies:
 - C:/Users/JoonasTuo/Desktop/Evolution/Assets/StreamingAssets/AssetBundles/music.mfg

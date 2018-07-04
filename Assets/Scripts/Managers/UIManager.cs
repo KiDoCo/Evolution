@@ -8,7 +8,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
 
     //Match UI
-    public void InstantiateMatchUI(move source)
+    public void InstantiateMatchUI(Character source)
     {
         HUDController.instance.MaxHealth   = (int)source.Maxhealth;
         HUDController.instance.CurProgress = source.Experience;
