@@ -16,8 +16,8 @@ public abstract class Character : MonoBehaviour
     public float stabilize = 0.1f;
     public float velocity;
     public float restrictAngle = Mathf.Abs(80);
-    private float health = 100;
-    private float experience = 0;
+    protected float health = 100;
+    protected float experience = 0;
     private const float healthMax = 100.0f;
     private const float waitTime = 1.0f;
     private const float experiencePenalty = 25.0f;
@@ -26,7 +26,7 @@ public abstract class Character : MonoBehaviour
     public bool rolling;
     public bool isMoving;
     private bool eating;
-    private Animator m_animator;
+    protected Animator m_animator;
     public CameraController camerascript;
     private Vector3 lastposition = Vector3.zero;
     private Vector3 MovementInputVector;
@@ -46,28 +46,6 @@ public abstract class Character : MonoBehaviour
     private Vector3 colPoint;
     private CapsuleCollider col;
     private bool collided = false;
-
-    private void Awake()
-    {
-        col = GetComponentInChildren<CapsuleCollider>();
-
-        //health = 100;
-        //musicSource = GetComponentInChildren<AudioSource>();
-        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
-    }
-
-    protected virtual void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        //Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
-        //Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
-        //m_animator = gameObject.GetComponent<Animator>();
-        //isMoving = true;
-        //cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
-        //EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
-        //cameraClone.name = "FollowCamera";
-        //CameraController.cam.InstantiateCamera(this);
-    }
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -104,7 +82,7 @@ public abstract class Character : MonoBehaviour
     /// Takes care of the eating for the player
     /// </summary>
     /// <param name="eatObject"></param>
-    public void CmdEat(IEatable eatObject)
+    protected virtual void CmdEat(IEatable eatObject)
     {
         if (eatObject == null || eatObject.AmountFood <= 0)
         {
@@ -116,7 +94,6 @@ public abstract class Character : MonoBehaviour
             {
                 eating = true;
                 Experience += eatObject.GetAmount();
-                m_animator.SetBool("isEating", eatObject.Eaten);
                 eatObject.Eaten = eating;
                 eatObject.DecreaseFood();
                 if (!eatObject.Source().isPlaying)
@@ -129,18 +106,17 @@ public abstract class Character : MonoBehaviour
                 eating = false;
                 EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
                 eatObject.Eaten = eating;
-                m_animator.SetBool("isEating", eatObject.Eaten);
             }
         }
     }
 
-    public void Death()
+    protected virtual void Death()
     {
         Experience -= experiencePenalty;
         Gamemanager.Instance.RespawnPlayer(this);
     }
 
-    private void TakeDamage(float amount)
+    protected virtual void TakeDamage(float amount)
     {
         EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         Health -= amount;
@@ -149,7 +125,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// Checks for interaction when player enters the corals bounding box
     /// </summary>
-    private void InteractionChecker()
+    protected virtual void InteractionChecker()
     {
         for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
         {
@@ -160,13 +136,16 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    private void AnimationChanger()
+    protected virtual void AnimationChanger()
     {
         m_animator.SetBool("isEating", eating);
         m_animator.SetBool("isMoving", isMoving);
     }
 
-    void Restrict()
+    /// <summary>
+    /// Avoid control jerkiness with ristricting x rotation
+    /// </summary>
+    protected virtual void Restrict()
     {
         if (transform.rotation.x > 15)
         {
@@ -179,29 +158,11 @@ public abstract class Character : MonoBehaviour
             float x = transform.eulerAngles.x;
             transform.Rotate(-x, 0, 0);
         }
-
-    }
-
-    protected virtual void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
-
-        CanMove(MovementInputVector);
-    }
-
-    protected virtual void FixedUpdate()
-    {
-        //Stabilize();
-        CanMove(MovementInputVector);
-        Move();
-        BarrelRoll();
     }
 
 
-    protected virtual void Move()
+
+    protected virtual void Move(Vector3 dir)
     {
         isMoving = false;
         Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
@@ -217,23 +178,12 @@ public abstract class Character : MonoBehaviour
             isMoving = false;
         }
 
-        if(collided)
-        {
-            moveDirection = Vector3.Cross(colPoint, surfaceNormal);
-            moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
-            moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
-
-
-            MovementInputVector = moveDirection;
-        }
-        else
-        {
-            MovementInputVector = inputvectorY + inputvectorZ;
-        }
+       
+        MovementInputVector = inputvectorY + inputvectorZ;
         rotationInputVector = inputvectorX;
         if (!eating)
         {
-            transform.Translate(MovementInputVector);
+            transform.Translate(dir);
             transform.Rotate(rotationInputVector);
         }
     }
@@ -243,12 +193,12 @@ public abstract class Character : MonoBehaviour
     /// returns true if there is not another bject's collider in way
     /// and false if player would collide with another collider
     /// </summary>
-    bool CanMove(Vector3 dir)
+    protected bool CanMove(Vector3 dir)
     {
 
         float distanceToPoints = col.height / 2 - col.radius;
 
-        //calculating start and en point  of capuleCollider for capsuleCast to use
+        //calculating start and end point  of capsuleCollider for capsuleCast to use
         Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
 
@@ -260,7 +210,7 @@ public abstract class Character : MonoBehaviour
 
         foreach (RaycastHit objectHit in hits)
         {
-            collided = false;
+
 
             if (objectHit.transform.tag == "Ground")
             {
@@ -280,10 +230,6 @@ public abstract class Character : MonoBehaviour
                     surfaceNormal = hit.normal;
                 }
 
-               
-
-                collided = true;
-
                 return false;
             }
         }
@@ -291,11 +237,16 @@ public abstract class Character : MonoBehaviour
         return true;
     }
 
-    //public void Death()
-    //{
-    //    Experience -= experiencePenalty;
-    //    Gamemanager.Instance.RespawnPlayer(this);
-    //}
+    private void ChangeDirection()
+    {
+        moveDirection = Vector3.ProjectOnPlane(moveDirection, surfaceNormal);
+        //moveDirection = Vector3.Cross(colPoint, surfaceNormal);
+        //moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
+        //moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
+
+
+        Move(moveDirection);
+    }
 
     /// <summary>
     /// Reset z rotation to 0 every frame
@@ -322,5 +273,56 @@ public abstract class Character : MonoBehaviour
         transform.Rotate(0, 0, inputValue);
 
         rolling = true;
+    }
+
+    protected virtual void Awake()
+    {
+        col = GetComponentInChildren<CapsuleCollider>();
+
+        musicSource = GetComponentInChildren<AudioSource>();
+        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+    }
+
+    protected virtual void Start()
+    {
+        //Component search
+        m_animator = gameObject.GetComponent<Animator>();
+        cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
+        cameraClone.name = "FollowCamera";
+
+
+        //Cursor lock state and quaterions
+        Cursor.lockState = CursorLockMode.Locked;
+        Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
+        Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
+        isMoving = true;
+        UIManager.Instance.InstantiateMatchUI(this);
+        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+    }
+
+    protected virtual void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+        CanMove(MovementInputVector);
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        moveDirection = MovementInputVector;
+
+        Stabilize();
+        if (CanMove(moveDirection))
+        {
+            Move(moveDirection);
+        }
+        else
+        {
+            ChangeDirection();
+        }
+        BarrelRoll();
     }
 }
