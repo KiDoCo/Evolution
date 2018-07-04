@@ -737,7 +737,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000030418947}
+  m_AnchoredPosition: {x: 0, y: 0.00003041451}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &521801090
@@ -1994,7 +1994,7 @@ MonoBehaviour:
   m_ServerBindToIP: 0
   m_ServerBindAddress: 
   m_NetworkAddress: localhost
-  m_DontDestroyOnLoad: 0
+  m_DontDestroyOnLoad: 1
   m_RunInBackground: 1
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
@@ -2069,7 +2069,7 @@ MonoBehaviour:
   m_GamePlayerPrefab: {fileID: 1100167678837076, guid: f188fec62dbe04644a02f0cfc6995ed6,
     type: 2}
   m_LobbyScene: Menu
-  m_PlayScene: InGame
+  m_PlayScene: NetworkInGame
   lobbySlots: []
   mainUI: {fileID: 2090509512}
   hostUI: {fileID: 1601013216}

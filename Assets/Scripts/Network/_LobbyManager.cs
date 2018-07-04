@@ -142,6 +142,21 @@ public class _LobbyManager : NetworkLobbyManager {
         Debug.Log("Client exited.");
     }
 
+    public override void OnLobbyServerConnect(NetworkConnection conn)
+    {
+        base.OnLobbyServerConnect(conn);
+        Debug.Log("Client " + conn.connectionId + " connected!");
+    }
+
+    public override void OnLobbyServerPlayersReady()
+    {
+        base.OnLobbyServerPlayersReady();
+
+        Debug.Log("Players are ready!");
+
+        CheckReadyToBegin();
+    }
+
     // Enables only one of the objects in GameObject[] and disables others (NEEDS REPLACEMENT! See the top TODO)
     private void switchEnabledGameObject(GameObject[] obj, int index)
     {

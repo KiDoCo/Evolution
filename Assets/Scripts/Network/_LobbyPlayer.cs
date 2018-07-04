@@ -14,14 +14,22 @@ public class _LobbyPlayer : NetworkLobbyPlayer {
     {
         base.OnClientEnterLobby();
 
-        if (isServer)
-            Debug.Log("Server");
-        if (isClient)
-            Debug.Log("Client");
-
-        CmdChangePlayerName(_LobbyManager.Instance.playerName.text);
-
         transform.SetParent(_LobbyManager.Instance.playerListContent.transform, false);
+
+        if (isClient)
+        {
+            updateNameText();
+        }
+    }
+
+    public override void OnStartLocalPlayer()
+    {
+        CmdChangePlayerName(_LobbyManager.Instance.playerName.text);
+    }
+
+    public void PlayerReadyPressed()
+    {
+        SendReadyToBeginMessage();
     }
 
     public override void OnClientExitLobby()
@@ -31,9 +39,13 @@ public class _LobbyPlayer : NetworkLobbyPlayer {
 
     private void changePlayerName(string name)
     {
-        Debug.Log("Client name: " + name);
         playerName = name;
-        playerNameText.text = name;
+        updateNameText();
+    }
+
+    private void updateNameText()
+    {
+        playerNameText.text = playerName;
     }
 
     [Command]
