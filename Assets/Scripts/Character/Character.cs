@@ -12,6 +12,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float horizontalSpeed = 2f;
     [SerializeField] protected float rotateSpeed = 2f;
     [SerializeField] protected float strafeSpeed = 2f;
+    [SerializeField] protected float dashSpeed = 20f;
 
     protected float velocity;
     protected float restrictAngle = Mathf.Abs(80);
@@ -24,13 +25,16 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
     [SerializeField] protected bool isStrafing;
-    //abilitys unlocks from base class
+    [SerializeField] protected bool isDashing;
+
+    //ability unlocks from base class
     [SerializeField] protected bool canBarrellRoll;
     [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
-    
+    [SerializeField] protected bool canDash;
 
-    
+
+
 
     protected float health = 100;
     protected float experience = 0;
@@ -284,6 +288,23 @@ public abstract class Character : MonoBehaviour
         }
 
     }
+    protected virtual void Dash()
+    {
+        if (canDash)
+        {
+            Vector3 inputVectorX = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Dash") * dashSpeed * Time.deltaTime);
+            transform.Translate(inputVectorX);
+            if (inputVectorX.magnitude != 0)
+            {
+                isDashing = true;
+                isMoving = true;
+            }
+            else
+            {
+                isDashing = false;
+            }
+        }
+    }
     
 
    
@@ -401,5 +422,6 @@ public abstract class Character : MonoBehaviour
         BarrellRoll();
         Turn();
         Strafe();
+        Dash();
     }
 }

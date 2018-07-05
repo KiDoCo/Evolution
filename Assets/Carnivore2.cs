@@ -21,14 +21,16 @@ public class Carnivore2 : Character
     protected override void Awake()
     {
         base.Awake();
+        canStrafe = true;
+        canTurn = false;
+        canDash = true;
     }
 
     protected override void Start()
     {
         base.Start();
         carniv = this;
-        canStrafe = true;
-        canTurn = false;
+        
         
     }
 

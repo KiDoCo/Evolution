@@ -8451,14 +8451,17 @@ MonoBehaviour:
   horizontalSpeed: 2
   rotateSpeed: 2
   strafeSpeed: 14
+  dashSpeed: 60
   camerascript: {fileID: 0}
   isMoving: 0
   turning: 0
   rolling: 0
   isStrafing: 0
+  isDashing: 0
   canBarrellRoll: 0
   canStrafe: 1
   canTurn: 0
+  canDash: 1
 --- !u!1 &576881602
 GameObject:
   m_ObjectHideFlags: 0
