@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Herbivore : Character
+public class Carnivore2 : Character
 {
 
-    
+
     //object references
-    [HideInInspector] public static Herbivore herbiv;
-    public new GameObject  CameraClone;
- 
+    [HideInInspector] public static Carnivore2 carniv;
+    
+
     public void MouseMove()
     {
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
-                
+
     }
     protected override void Awake()
     {
@@ -25,18 +25,18 @@ public class Herbivore : Character
 
     protected override void Start()
     {
-        base.Start();        
-        herbiv = this;
-        canBarrellRoll = true;
-        canTurn = true;
-        CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
+        base.Start();
+        carniv = this;
+        canStrafe = true;
+        canTurn = false;
+        
     }
 
     protected override void Update()
     {
         base.Update();
-        
-        if(isMoving)
+
+        if (isMoving)
         {
             m_animator.SetBool("isMoving", true);
         }
@@ -48,21 +48,10 @@ public class Herbivore : Character
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-        
-        if (!CameraClone.GetComponent<CameraController>().FreeCamera)
-        {
-            MouseMove();
-        }
-        
-       
+        MouseMove();
         Restrict();
+        Stabilize();
 
-        if (!rolling)
-        {
-           Stabilize();
-        }
-
-        
     }
-    
+
 }

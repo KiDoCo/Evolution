@@ -17,7 +17,7 @@ public class Carnivore : Character
     [HideInInspector] public float y;
     //public bool barrelRoll;
     public float dashSpeed;
-    public float strafeSpeed;
+    
     //dash
     [SerializeField] protected bool dashing;
     [SerializeField] protected bool canDash;
@@ -34,7 +34,7 @@ public class Carnivore : Character
         base.Start();
         m_animator = gameObject.GetComponent<Animator>();
         carniv = this;
-        barrelRoll = false;
+        
         stamina = staminaValue;
     }
 
@@ -87,6 +87,7 @@ public class Carnivore : Character
         base.FixedUpdate();
         Strafe();
         Dash();
+        Stabilize();
         
 
         if (!CameraClone.GetComponent<CameraController>().FreeCamera)
@@ -107,19 +108,20 @@ public class Carnivore : Character
 
     }
 
-    public void Strafe()
-    {
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(Vector3.left * strafeSpeed * Time.deltaTime);
-            isMoving = true;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(Vector3.right * strafeSpeed * Time.deltaTime);
-        }
-    }
+    //public void Strafe()
+    //{
+    //    if (Input.GetKey(KeyCode.A))
+    //    {
+    //        transform.Translate(Vector3.left * strafeSpeed * Time.deltaTime);
+    //        isMoving = true;
+    //    }
+    //
+    //    if (Input.GetKey(KeyCode.D))
+    //    {
+    //        transform.Translate(Vector3.right * strafeSpeed * Time.deltaTime);
+    //    }
+    //}
+    
    
 
     public void Dash()

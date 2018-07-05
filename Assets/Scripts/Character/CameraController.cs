@@ -58,7 +58,7 @@ public class CameraController : MonoBehaviour
         {
             ResetCamera();
         }
-        SmoothFollow();
+        FollowRot();
         Stabilize();
 
     }

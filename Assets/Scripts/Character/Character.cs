@@ -5,17 +5,33 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour
 {
     //values
+    [SerializeField] private float speed = 2f;
+    [SerializeField] protected float turnSpeed = 2f;
+    [SerializeField] protected float AscendSpeed = 2f;
     [SerializeField] protected float verticalSpeed = 2f;
     [SerializeField] protected float horizontalSpeed = 2f;
-    [SerializeField] private float speed = 2f;
-    [SerializeField] protected float AscendSpeed = 2f;
-    [SerializeField] protected float turnSpeed = 2f;
     [SerializeField] protected float rotateSpeed = 2f;
-    public Quaternion myQuat, targetQuat;
-    public float quatSpeed = 1f;
-    public float stabilize = 0.1f;
-    public float velocity;
-    public float restrictAngle = Mathf.Abs(80);
+    [SerializeField] protected float strafeSpeed = 2f;
+
+    protected float velocity;
+    protected float restrictAngle = Mathf.Abs(80);
+    
+    //script reference
+    [HideInInspector] public CameraController camerascript;
+
+    //bools
+    [SerializeField] protected bool isMoving;
+    [SerializeField] protected bool turning;
+    [SerializeField] protected bool rolling = false;
+    [SerializeField] protected bool isStrafing;
+    //abilitys unlocks from base class
+    [SerializeField] protected bool canBarrellRoll;
+    [SerializeField] protected bool canStrafe;
+    [SerializeField] protected bool canTurn;
+    
+
+    
+
     protected float health = 100;
     protected float experience = 0;
     private const float healthMax = 100.0f;
@@ -23,22 +39,17 @@ public abstract class Character : MonoBehaviour
     private const float experiencePenalty = 25.0f;
     private const float deathpenaltytime = 2.0f;
     private bool ready;
-    public bool rolling = false;
-    public bool isMoving;
+    
     private bool eating;
     protected Animator m_animator;
-    public CameraController camerascript;
+   
     private Vector3 lastposition = Vector3.zero;
     private Vector3 MovementInputVector;
     private Vector3 rotationInputVector;
     private AudioSource musicSource;
     private AudioSource SFXsource;
     protected GameObject cameraClone;
-    //bools
-    public bool hasjustRolled;
-    public bool barrelRoll;
-
-    public float Rotatingspeed;
+   
     private Vector3 moveDirection;
     private Vector3 surfaceNormal;
     private Vector3 capsuleNormal;
@@ -175,16 +186,18 @@ public abstract class Character : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    ///  Altitude & Forward/Backwards
+    /// </summary>
     protected virtual void Move()
     {
         isMoving = false;
-        Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
+        //Vector3 inputvectorX = (Input.GetAxisRaw("Horizontal") * Vector3.up * turnSpeed);
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * Speed) * Time.deltaTime;
-        
-        
-        if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
+        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
+
+        //inputvectorX.magnitude != 0 ||
+        if (inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
             isMoving = true;
         }
@@ -206,14 +219,74 @@ public abstract class Character : MonoBehaviour
         {
             MovementInputVector = inputvectorY + inputvectorZ;
         }
-        rotationInputVector = inputvectorX;
+        //rotationInputVector = inputvectorX;
         if (!eating)
         {
             transform.Translate(MovementInputVector);
-            transform.Rotate(rotationInputVector);
+            //transform.Rotate(rotationInputVector);
         }
     }
 
+    /// <summary>
+    /// A and D keys turn
+    /// </summary>
+    protected virtual void Turn()//I put this separately from "Move" -method, because it has bool check
+    {
+        if (canTurn)
+        {
+            isMoving = false;
+            
+            
+            float rotation = (Input.GetAxisRaw("Horizontal") * turnSpeed * Time.deltaTime);
+            transform.Rotate(0, rotation, 0);
+
+        }
+        
+    }
+    protected virtual void Strafe()//For carnivores
+    {
+        if(canStrafe)
+        {
+            
+            Vector3 inputStrafeZ = new Vector3(1,0,0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
+            transform.Translate(inputStrafeZ);
+            if (inputStrafeZ.magnitude !=0)
+            {
+                isStrafing = true;
+                isMoving = true;
+            }
+            else
+            {
+                isStrafing = false;
+            }
+            //float inputStrafeZ = Input.GetAxisRaw("Horizontal") * strafeSpeed * Time.deltaTime;
+            //transform.Translate(0, 0, inputStrafeZ);
+
+        }
+    }
+    protected virtual void BarrellRoll()
+    {
+
+        if (canBarrellRoll)
+        {
+            Vector3 inputRotationZ = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Rotation") * rotateSpeed);
+            transform.Rotate(inputRotationZ);
+            if (inputRotationZ.magnitude != 0)
+            {
+                rolling = true;
+
+            }
+            else
+            {
+                rolling = false;
+            }
+
+        }
+
+    }
+    
+
+   
     /// <summary>
     /// Checks if player can move in wanted direction
     /// returns true if there is not another bject's collider in way
@@ -282,31 +355,7 @@ public abstract class Character : MonoBehaviour
     }
 
 
-    protected virtual void BarrelRoll()
-    {
-        if (barrelRoll)
-        {
-            if (Input.GetKey(KeyCode.Q))
-            {
-                transform.Rotate(0, 0, Rotatingspeed);
-                rolling = true;
-            }
-            if (Input.GetKey(KeyCode.E))
-            {
-                transform.Rotate(0, 0, -Rotatingspeed);
-                rolling = true;
-            }
-            if (Input.GetKeyUp(KeyCode.Q))
-            {
-                rolling = false;
-
-            }
-            if (Input.GetKeyUp(KeyCode.E))
-            {
-                rolling = false;
-            }
-        }
-    }
+  
 
     protected virtual void Awake()
     {
@@ -349,6 +398,8 @@ public abstract class Character : MonoBehaviour
         //Stabilize();
         CanMove(MovementInputVector);
         Move();
-        BarrelRoll();
+        BarrellRoll();
+        Turn();
+        Strafe();
     }
 }
