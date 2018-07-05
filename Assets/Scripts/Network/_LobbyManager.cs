@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class _LobbyManager : NetworkLobbyManager {
 
     public static _LobbyManager Instance;
+
+    [SerializeField] private GameObject UI = null;
 
     // TODO: Make a menu dictionary that is possible to edit in Unity inspector.
     // And edit switchEnabledGameObject() to work with dictonaries
@@ -12,25 +15,24 @@ public class _LobbyManager : NetworkLobbyManager {
     [SerializeField] private GameObject hostUI = null;
     [SerializeField] private GameObject clientUI = null;
 
+    [SerializeField] private GameObject insertNameError = null;
     [SerializeField] private Text hostingText = null;
     [SerializeField] private Text clientAddressText = null;
+    [SerializeField] private string hostUIMessage = "Hosting match in\n";
 
-    // Used in other scripts
+    // Used also in other scripts
     [SerializeField] public GameObject playerListContent = null;
     [SerializeField] public InputField playerName = null;
 
-    [SerializeField] private string hostUIMessage = "Hosting match in\n";
-
     private bool hosting = false;
+
 
     private void Awake ()
     {
         Instance = this;
-    }
-
-    private void OnEnable()
-    {
+        DontDestroyOnLoad(gameObject);
         switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 0);
+        insertNameError.SetActive(false);
     }
 
     // Each Pressed method is used in UI buttons (Button in Unity Editor -> OnClick())
@@ -41,7 +43,7 @@ public class _LobbyManager : NetworkLobbyManager {
         {
             if (playerName.text == "")
             {
-                Debug.Log("_LobbyManager, HostGamePressed(): Insert name!");
+                insertNameError.SetActive(true);
             }
             else
             {
@@ -64,7 +66,7 @@ public class _LobbyManager : NetworkLobbyManager {
     {
         if (playerName.text == "")
         {
-            Debug.Log("_LobbyManager, HostGamePressed(): Insert name!");
+            insertNameError.SetActive(true);
         }
         else
         {
@@ -116,6 +118,7 @@ public class _LobbyManager : NetworkLobbyManager {
 
         hosting = false;
         switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 0);
+        insertNameError.SetActive(false);
         Debug.Log("Hosting stopped.");
     }
 
@@ -138,6 +141,7 @@ public class _LobbyManager : NetworkLobbyManager {
         if (!hosting)
         {
             switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 0);
+            insertNameError.SetActive(false);
         }
         Debug.Log("Client exited.");
     }
@@ -153,8 +157,20 @@ public class _LobbyManager : NetworkLobbyManager {
         base.OnLobbyServerPlayersReady();
 
         Debug.Log("Players are ready!");
+    }
 
-        CheckReadyToBegin();
+    public override void OnLobbyClientSceneChanged(NetworkConnection conn)
+    {
+        base.OnLobbyClientSceneChanged(conn);
+
+        if (SceneManager.GetActiveScene().name == playScene)
+        {
+            UI.SetActive(false);
+        }
+        else
+        {
+            UI.SetActive(true);
+        }
     }
 
     // Enables only one of the objects in GameObject[] and disables others (NEEDS REPLACEMENT! See the top TODO)
