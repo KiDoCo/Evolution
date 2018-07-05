@@ -33,7 +33,7 @@ public class Gamemanager : NetworkBehaviour
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
     public  List<Transform>             PlayerSpawnPointList = new List<Transform>();
-    public  List<Character>                  PlayerList      = new List<Character>();
+    public  List<Character>             PlayerList           = new List<Character>();
 
     //Strings
     private string gameScene       = "DemoScene";

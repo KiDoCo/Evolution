@@ -36,8 +36,11 @@ public abstract class Character : MonoBehaviour
     private GameObject cameraClone;
     //bools
     public bool hasjustRolled;
-
     public float Rotatingspeed;
+
+    private float angle;
+    private Vector3 input;
+    private Vector3 forward;
     private Vector3 moveDirection;
     private Vector3 surfaceNormal;
     private Vector3 capsuleNormal;
@@ -46,6 +49,14 @@ public abstract class Character : MonoBehaviour
     private Vector3 colPoint;
     private CapsuleCollider col;
     private bool collided = false;
+    private float groundAngle;
+    private RaycastHit hitInfo;
+
+    public float Height = 0.5f;
+    public float HeightPadding = 0.05f;
+    public LayerMask ground;
+    public float MaxGroundAngle = 120f;
+    public bool debug;
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -162,8 +173,10 @@ public abstract class Character : MonoBehaviour
 
 
 
-    protected virtual void Move(Vector3 dir)
+    protected virtual void Move()
     {
+        if (groundAngle >= MaxGroundAngle) return;
+
         isMoving = false;
         Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * speed) * Time.deltaTime;
@@ -178,12 +191,12 @@ public abstract class Character : MonoBehaviour
             isMoving = false;
         }
 
-       
+
         MovementInputVector = inputvectorY + inputvectorZ;
         rotationInputVector = inputvectorX;
         if (!eating)
         {
-            transform.Translate(dir);
+            transform.Translate(MovementInputVector);
             transform.Rotate(rotationInputVector);
         }
     }
@@ -193,9 +206,12 @@ public abstract class Character : MonoBehaviour
     /// returns true if there is not another bject's collider in way
     /// and false if player would collide with another collider
     /// </summary>
-    protected bool CanMove(Vector3 dir)
+    protected bool CheckCollision()
     {
+        collided = false;
 
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit;
         float distanceToPoints = col.height / 2 - col.radius;
 
         //calculating start and end point  of capsuleCollider for capsuleCast to use
@@ -206,17 +222,15 @@ public abstract class Character : MonoBehaviour
         float castDistance = 0.5f;
 
         //shoot capsuleCast
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, dir, castDistance);
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, transform.forward, castDistance);
 
         foreach (RaycastHit objectHit in hits)
         {
-
-
             if (objectHit.transform.tag == "Ground")
             {
-                colPoint = objectHit.point;
+                collided = true;
 
-                RaycastHit hit;
+                colPoint = objectHit.point;
 
                 Physics.Raycast(point1, objectHit.point, out hit);
                 Debug.DrawRay(point1, objectHit.point, Color.red);
@@ -230,22 +244,101 @@ public abstract class Character : MonoBehaviour
                     surfaceNormal = hit.normal;
                 }
 
+                if (Physics.Raycast(ray, out hitInfo, 0.5f))
+                {
+                    if (groundAngle >= MaxGroundAngle) return false;
+                    //moveDirection = Vector3.Cross(MovementInputVector, surfaceNormal);
+                    //transform.Translate(moveDirection* speed * Time.deltaTime);
+                      CalculateGroundAngle();
+                    //Quaternion rotation = Quaternion.FromToRotation(forward, surfaceNormal);
+                    //transform.position += forward * speed * Time.deltaTime;
+                    transform.position = Vector3.Lerp(transform.position, transform.position +Vector3.forward * Height, 5 * Time.deltaTime);
+                    //transform.rotation = Quaternion.Slerp(transform.rotation, rotation, turnSpeed);
+                }
+
+                //if (Physics.Raycast(transform.position, -Vector3.up, out hitInfo, Height + HeightPadding, ground))
+
                 return false;
             }
         }
-
         return true;
+    }
+
+    /// <summary>
+    /// use to calculate forward in case of collision
+    /// </summary>
+    private void CalculateForward()
+    {
+        if(!collided)
+        {
+            forward = transform.forward;
+            return;
+        }
+        forward = Vector3.Cross(MovementInputVector, surfaceNormal);
+    }
+
+    /// <summary>
+    /// calculate ground angle 
+    /// </summary>
+    private void CalculateGroundAngle()
+    {
+        if(!collided)
+        {
+            groundAngle = 90;
+            return;
+        }
+        groundAngle = Vector3.Angle(surfaceNormal, transform.forward);
+    }
+
+    /// <summary>
+    /// raycast ground
+    /// </summary>
+    private void CheckGround()
+    {
+        if(Physics.Raycast(transform.position, Vector3.forward, out hitInfo, Height + HeightPadding, ground))
+        {
+            if(Vector3.Distance(transform.position, hitInfo.point) < Height)
+            {
+                transform.position = Vector3.Lerp(transform.position, transform.position + (-Vector3.forward) * Height, 5 * Time.deltaTime);
+            }
+            collided = true;
+           transform.position += forward * speed * Time.deltaTime;
+        }
+        else
+        {
+            collided = false;
+        }
+    }
+
+    private void DebugCollision()
+    {
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(ray, out hitInfo, 0.5f))
+        {
+            Debug.DrawLine(ray.origin, hitInfo.point, Color.red);          
+        }
+        else
+        {
+            Debug.DrawLine(ray.origin, ray.origin + ray.direction * 0.5f, Color.green);
+        }
     }
 
     private void ChangeDirection()
     {
-        moveDirection = Vector3.ProjectOnPlane(moveDirection, surfaceNormal);
-        //moveDirection = Vector3.Cross(colPoint, surfaceNormal);
-        //moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
-        //moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hitInfo;
 
-
-        Move(moveDirection);
+        if (Physics.Raycast(ray, out hitInfo, 0.5f))
+        {
+            Debug.DrawLine(ray.origin, hitInfo.point, Color.red);
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
+        }
+        else
+        {
+            Debug.DrawLine(ray.origin, ray.origin + ray.direction * 0.5f, Color.green);
+        }
     }
 
     /// <summary>
@@ -307,22 +400,23 @@ public abstract class Character : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
         }
 
-        CanMove(MovementInputVector);
+
     }
 
     protected virtual void FixedUpdate()
     {
-        moveDirection = MovementInputVector;
-
         Stabilize();
-        if (CanMove(moveDirection))
-        {
-            Move(moveDirection);
-        }
-        else
-        {
-            ChangeDirection();
-        }
+
+
+        //DebugCollision();
+        CheckGround();
+        CalculateForward();
+        CalculateGroundAngle();
+        CheckCollision();
+        Move();
         BarrelRoll();
+
+        //ChangeDirection();
+
     }
 }
