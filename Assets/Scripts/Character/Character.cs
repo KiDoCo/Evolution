@@ -250,10 +250,10 @@ public abstract class Character : MonoBehaviour
                     //moveDirection = Vector3.Cross(MovementInputVector, surfaceNormal);
                     //transform.Translate(moveDirection* speed * Time.deltaTime);
                       CalculateGroundAngle();
-                    //Quaternion rotation = Quaternion.FromToRotation(forward, surfaceNormal);
+                    Quaternion rotation = Quaternion.FromToRotation(forward, surfaceNormal);
                     //transform.position += forward * speed * Time.deltaTime;
-                    transform.position = Vector3.Lerp(transform.position, transform.position +Vector3.forward * Height, 5 * Time.deltaTime);
-                    //transform.rotation = Quaternion.Slerp(transform.rotation, rotation, turnSpeed);
+                    //transform.position = Vector3.Lerp(transform.position, transform.position + Vector3.forward * Height, 5 * Time.deltaTime);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, turnSpeed);
                 }
 
                 //if (Physics.Raycast(transform.position, -Vector3.up, out hitInfo, Height + HeightPadding, ground))
