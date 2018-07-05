@@ -19,7 +19,7 @@ RenderSettings:
   m_FogMode: 3
   m_FogDensity: 0.03
   m_LinearFogStart: 0
-  m_LinearFogEnd: 300
+  m_LinearFogEnd: 50
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -27,7 +27,7 @@ RenderSettings:
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 0}
-  m_HaloStrength: 0.5
+  m_HaloStrength: 0.447
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
@@ -14314,8 +14314,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 951538560}
-  m_LocalRotation: {x: -0.015487006, y: 0.9244815, z: 0.037761576, w: 0.379036}
-  m_LocalPosition: {x: -66.333755, y: 20.232986, z: -64.694244}
+  m_LocalRotation: {x: 0.33601826, y: -0.098913684, z: 0.035506085, w: 0.9359739}
+  m_LocalPosition: {x: 49.927322, y: 300.76956, z: -448.76807}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}
@@ -27954,8 +27954,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1780965395}
-  m_LocalRotation: {x: -0.015487006, y: 0.9244815, z: 0.037761576, w: 0.379036}
-  m_LocalPosition: {x: -66.333755, y: 20.2304, z: -64.694244}
+  m_LocalRotation: {x: 0.33601826, y: -0.098913684, z: 0.035506085, w: 0.9359739}
+  m_LocalPosition: {x: 49.927322, y: 300.76697, z: -448.76807}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}
@@ -34098,8 +34098,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2115615593}
-  m_LocalRotation: {x: -0.015487006, y: 0.9244815, z: 0.037761576, w: 0.379036}
-  m_LocalPosition: {x: -66.333755, y: 20.23169, z: -64.694244}
+  m_LocalRotation: {x: 0.33601826, y: -0.098913684, z: 0.035506085, w: 0.9359739}
+  m_LocalPosition: {x: 49.927322, y: 300.76828, z: -448.76807}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}

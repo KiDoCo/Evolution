@@ -102,6 +102,5 @@ public class CameraController : MonoBehaviour
        SmoothFollow();
         Stabilize();
         ControlCamera();
-
     }
 }
