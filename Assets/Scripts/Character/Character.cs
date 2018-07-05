@@ -5,8 +5,9 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour
 {
     //values
-    [SerializeField] private float speed = 2f;
-    [SerializeField] protected float turnSpeed = 2f;
+    public float SpeedValue = 2f; //very important value that can be affected
+    [SerializeField] protected float speed = 2f; // speed in character movement
+    protected float turnSpeed = 2f;
     [SerializeField] protected float AscendSpeed = 2f;
     [SerializeField] protected float verticalSpeed = 2f;
     [SerializeField] protected float horizontalSpeed = 2f;
@@ -32,6 +33,13 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
+
+    //timer bool variables
+    [SerializeField] protected bool timerStart;
+    [SerializeField] protected bool coolTimer;
+    //timer values
+    [SerializeField] protected float dashTime = 6f;
+    [SerializeField] protected float coolTime = 6f;
 
 
 
@@ -298,12 +306,34 @@ public abstract class Character : MonoBehaviour
             {
                 isDashing = true;
                 isMoving = true;
+                StartCoroutine(DashTimer());
             }
             else
             {
                 isDashing = false;
+                //StopCoroutine(DashTimer());
             }
         }
+    }
+    public IEnumerator DashTimer()
+    {
+        timerStart = true;
+        yield return new WaitForSeconds(6);
+        
+        canDash = false;
+        timerStart = false;
+        yield return StartCoroutine(CoolTimer());
+        
+
+    }
+    IEnumerator CoolTimer()
+    {
+        canDash = false;
+        coolTimer = true;
+        yield return new WaitForSeconds(6);
+        coolTimer = false;
+        canDash = true;
+
     }
     
 
@@ -376,8 +406,6 @@ public abstract class Character : MonoBehaviour
     }
 
 
-  
-
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
@@ -388,6 +416,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Start()
     {
+        speed = SpeedValue; // can change character speed (by adding value in editor or by a code)
         //Component search
         m_animator = gameObject.GetComponent<Animator>();
         //cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
@@ -424,4 +453,5 @@ public abstract class Character : MonoBehaviour
         Strafe();
         Dash();
     }
+   
 }

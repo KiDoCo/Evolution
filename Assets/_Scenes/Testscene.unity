@@ -8444,14 +8444,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454403b8f5f6317479775b3ec12e4130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 14
-  turnSpeed: 2
+  SpeedValue: 14
+  speed: 2
   AscendSpeed: 2
   verticalSpeed: 2
   horizontalSpeed: 2
   rotateSpeed: 2
   strafeSpeed: 14
-  dashSpeed: 60
+  dashSpeed: 30
   camerascript: {fileID: 0}
   isMoving: 0
   turning: 0
@@ -8462,6 +8462,8 @@ MonoBehaviour:
   canStrafe: 1
   canTurn: 0
   canDash: 1
+  timerStart: 0
+  coolTimer: 0
 --- !u!1 &576881602
 GameObject:
   m_ObjectHideFlags: 0
