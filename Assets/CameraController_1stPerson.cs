@@ -15,11 +15,11 @@ public class CameraController_1stPerson : MonoBehaviour
     [SerializeField] float distanceDamp = 10f;
     [SerializeField] float rotationalDamp = 10f;
     [SerializeField] Vector3 velocity = Vector3.one;
-    [SerializeField] float RotationsSpeed = 2f;
+    
     [HideInInspector] public float m_FieldOfView = 60f;
     public float FOVValue = 30f;
 
-    public bool FreeCamera;
+    
     public Camera Camera1stCamera;
 
     //Script references

@@ -48,6 +48,7 @@ public class Carnivore2 : Character
         
     }
 
+
     protected override void Update()
     {
         base.Update();
@@ -67,7 +68,31 @@ public class Carnivore2 : Character
         MouseMove();
         Restrict();
         Stabilize();
+        Strafe();
+      
         //Charge();
+    }
+
+
+    protected virtual void Strafe()//For carnivores?
+    {
+        if (canStrafe) //bools are checked/unchecked in editor
+        {
+
+            Vector3 inputStrafeZ = new Vector3(1, 0, 0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
+            transform.Translate(inputStrafeZ);
+            if (inputStrafeZ.magnitude != 0)
+            {
+                isStrafing = true;
+                isMoving = true;
+            }
+            else
+            {
+                isStrafing = false;
+            }
+
+
+        }
     }
 
     /// <summary>

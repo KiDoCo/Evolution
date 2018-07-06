@@ -23,6 +23,10 @@ public class CameraController : MonoBehaviour
     [HideInInspector] public Herbivore Herbivorescript;
     [HideInInspector] public static CameraController cam;
 
+    //FOV
+    public float FOVValue = 60f;
+    [HideInInspector] public float m_FieldOfView = 60f;
+
 
     //reset point
     Vector3 startOffset = Vector3.zero;
@@ -45,6 +49,8 @@ public class CameraController : MonoBehaviour
 
         cam = this;
         startOffset = offset;
+        m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
+
 
     }
 

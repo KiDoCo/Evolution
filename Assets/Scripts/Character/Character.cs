@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class Character : MonoBehaviour
 {
     //values
     public float SpeedValue = 2f;   //very important value that can be affected
     protected float speed = 2f;     // speed in character movement
-    protected float turnSpeed = 2f;     //herbivore A & D turn
+    [SerializeField] protected float turnSpeed = 2f;     //herbivore A & D turn
     [SerializeField] protected float AscendSpeed = 2f; //altitude shift & ctrl
     [SerializeField] protected float verticalSpeed = 2f; //mouse movement vertical speed
     [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
@@ -28,7 +29,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected bool isStrafing;
     [SerializeField] protected bool isDashing;
 
-    //ability unlock bools in base class
+    //ability unlock bools used in editor
     [SerializeField] protected bool canBarrellRoll;
     [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
@@ -205,11 +206,11 @@ public abstract class Character : MonoBehaviour
     protected virtual void Move()
     {
         isMoving = false;
-        //Vector3 inputvectorX = (Input.GetAxisRaw("Horizontal") * Vector3.up * turnSpeed);
+       
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
         Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
 
-        //inputvectorX.magnitude != 0 ||
+        
         if (inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
             isMoving = true;
@@ -232,18 +233,18 @@ public abstract class Character : MonoBehaviour
         {
             MovementInputVector = inputvectorY + inputvectorZ;
         }
-        //rotationInputVector = inputvectorX;
+       
         if (!eating)
         {
             transform.Translate(MovementInputVector);
-            //transform.Rotate(rotationInputVector);
+           
         }
     }
 
     /// <summary>
     /// A and D keys turn
     /// </summary>
-    protected virtual void Turn()//It is separately from "Move" -method, because it has bool check
+    protected virtual void Turn()// is separately from "Move" -method, because it has bool check
     {
         if (canTurn)
         {
@@ -256,26 +257,7 @@ public abstract class Character : MonoBehaviour
         }
         
     }
-    protected virtual void Strafe()//For carnivores?
-    {
-        if(canStrafe) //bools are checked/unchecked in editor
-        {
-            
-            Vector3 inputStrafeZ = new Vector3(1,0,0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
-            transform.Translate(inputStrafeZ);
-            if (inputStrafeZ.magnitude !=0)
-            {
-                isStrafing = true;
-                isMoving = true;
-            }
-            else
-            {
-                isStrafing = false;
-            }
-           
-
-        }
-    }
+    
     protected virtual void BarrellRoll() //if needed 
     {
 
@@ -452,7 +434,6 @@ public abstract class Character : MonoBehaviour
         Move();
         BarrellRoll();
         Turn();
-        Strafe();
         Dash();
     }
    

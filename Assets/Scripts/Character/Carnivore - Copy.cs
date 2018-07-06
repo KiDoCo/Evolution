@@ -85,7 +85,7 @@ public class Carnivore : Character
     {
 
         base.FixedUpdate();
-        Strafe();
+        //Strafe();
         Dash();
         Stabilize();
         
