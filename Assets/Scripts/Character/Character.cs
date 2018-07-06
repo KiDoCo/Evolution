@@ -5,15 +5,15 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour
 {
     //values
-    public float SpeedValue = 2f; //very important value that can be affected
-    [SerializeField] protected float speed = 2f; // speed in character movement
-    protected float turnSpeed = 2f;
-    [SerializeField] protected float AscendSpeed = 2f;
-    [SerializeField] protected float verticalSpeed = 2f;
-    [SerializeField] protected float horizontalSpeed = 2f;
-    [SerializeField] protected float rotateSpeed = 2f;
-    [SerializeField] protected float strafeSpeed = 2f;
-    [SerializeField] protected float dashSpeed = 20f;
+    public float SpeedValue = 2f;   //very important value that can be affected
+    protected float speed = 2f;     // speed in character movement
+    protected float turnSpeed = 2f;     //herbivore A & D turn
+    [SerializeField] protected float AscendSpeed = 2f; //altitude shift & ctrl
+    [SerializeField] protected float verticalSpeed = 2f; //mouse movement vertical speed
+    [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
+    [SerializeField] protected float rotateSpeed = 2f; //barrelroll speed
+    [SerializeField] protected float strafeSpeed = 2f; //carnivore strafe
+    [SerializeField] protected float dashSpeed = 20f; //herbivore sprint
 
     protected float velocity;
     protected float restrictAngle = Mathf.Abs(80);
@@ -28,13 +28,14 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected bool isStrafing;
     [SerializeField] protected bool isDashing;
 
-    //ability unlocks from base class
+    //ability unlock bools in base class
     [SerializeField] protected bool canBarrellRoll;
     [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
+    
 
-    //timer bool variables
+    //timer bools
     [SerializeField] protected bool timerStart;
     [SerializeField] protected bool coolTimer;
     //timer values
@@ -242,7 +243,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// A and D keys turn
     /// </summary>
-    protected virtual void Turn()//I put this separately from "Move" -method, because it has bool check
+    protected virtual void Turn()//It is separately from "Move" -method, because it has bool check
     {
         if (canTurn)
         {
@@ -255,9 +256,9 @@ public abstract class Character : MonoBehaviour
         }
         
     }
-    protected virtual void Strafe()//For carnivores
+    protected virtual void Strafe()//For carnivores?
     {
-        if(canStrafe)
+        if(canStrafe) //bools are checked/unchecked in editor
         {
             
             Vector3 inputStrafeZ = new Vector3(1,0,0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
@@ -271,12 +272,11 @@ public abstract class Character : MonoBehaviour
             {
                 isStrafing = false;
             }
-            //float inputStrafeZ = Input.GetAxisRaw("Horizontal") * strafeSpeed * Time.deltaTime;
-            //transform.Translate(0, 0, inputStrafeZ);
+           
 
         }
     }
-    protected virtual void BarrellRoll()
+    protected virtual void BarrellRoll() //if needed 
     {
 
         if (canBarrellRoll)
@@ -296,7 +296,7 @@ public abstract class Character : MonoBehaviour
         }
 
     }
-    protected virtual void Dash()
+    protected virtual void Dash() // sprint for herbivores
     {
         if (canDash)
         {
@@ -315,10 +315,13 @@ public abstract class Character : MonoBehaviour
             }
         }
     }
-    public IEnumerator DashTimer()
+
+    
+
+    public IEnumerator DashTimer() //used in Dash();
     {
         timerStart = true;
-        yield return new WaitForSeconds(6);
+        yield return new WaitForSeconds(dashTime);
         
         canDash = false;
         timerStart = false;
@@ -326,11 +329,12 @@ public abstract class Character : MonoBehaviour
         
 
     }
+    // -->
     IEnumerator CoolTimer()
     {
         canDash = false;
         coolTimer = true;
-        yield return new WaitForSeconds(6);
+        yield return new WaitForSeconds(coolTime);
         coolTimer = false;
         canDash = true;
 
@@ -425,8 +429,6 @@ public abstract class Character : MonoBehaviour
 
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
-        Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
-        Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         isMoving = true;
         //UIManager.Instance.InstantiateMatchUI(this);
        // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);

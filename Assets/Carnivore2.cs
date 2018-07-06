@@ -7,23 +7,37 @@ public class Carnivore2 : Character
 {
 
 
-    //object references
-    [HideInInspector] public static Carnivore2 carniv;
+    //bools
+    public bool IsCharging;
+    [SerializeField] protected bool canCharge;
+    [SerializeField] protected float chargeSpeed = 50f;
+
+    [SerializeField] protected bool canMouseMove = true;
+    [SerializeField] protected float chargeTime = 2f;
+    [SerializeField] protected float chargeCoolTime = 6f;
     
+    //script reference
+    [HideInInspector] public CameraController_1stPerson Camera1stScript;
+    [HideInInspector] public static Carnivore2 carniv;
 
     public void MouseMove()
     {
-        float v = verticalSpeed * Input.GetAxis("Mouse Y");
-        float h = horizontalSpeed * Input.GetAxis("Mouse X");
-        transform.Rotate(v, h, 0);
+        if (canMouseMove)
+        {
+            float v = verticalSpeed * Input.GetAxis("Mouse Y");
+            float h = horizontalSpeed * Input.GetAxis("Mouse X");
+            transform.Rotate(v, h, 0);
+        }
+        
 
     }
     protected override void Awake()
     {
         base.Awake();
-        canStrafe = true;
+        //check these bools in editor
+        canStrafe = true; 
         canTurn = false;
-        canDash = true;
+        canCharge = true;
     }
 
     protected override void Start()
@@ -53,6 +67,74 @@ public class Carnivore2 : Character
         MouseMove();
         Restrict();
         Stabilize();
+        //Charge();
+    }
+
+    /// <summary>
+    /// IN TESTING
+    /// </summary>
+    public void Charge() 
+    {
+        if (canCharge) //ability check
+        {
+            if (!IsCharging)
+            {
+                canMouseMove = true;
+                CameraController_1stPerson.cam1.m_FieldOfView = CameraController_1stPerson.cam1.FOVValue; //reset CAM FOV in camerascipt
+            }
+            if (IsCharging) // put down mousecontrols when charging
+            {
+                canMouseMove = false;
+                CameraController_1stPerson.cam1.m_FieldOfView += 60f;
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.LeftShift)) //charge function
+            {
+               
+                Vector3 inputVectorX = new Vector3(0, 0, chargeSpeed) * Time.deltaTime;
+                transform.Translate(inputVectorX);
+                if (inputVectorX.magnitude != 0)
+                {
+                    IsCharging = true;
+                    isMoving = true;
+                    StartCoroutine(ChargeTimer());
+                    
+
+
+                }
+            }
+           
+            else
+            {
+                IsCharging = false;
+                StopAllCoroutines();
+            }
+        }
+    } 
+
+
+    public IEnumerator ChargeTimer() //Charge uses this
+    {
+        timerStart = true;
+        yield return new WaitForSeconds(chargeTime);
+
+        canCharge = false;
+        canMouseMove = false;
+        timerStart = false;
+        yield return StartCoroutine(CoolTimer());
+
+
+    }
+   
+    IEnumerator CoolTimer() //-->
+    {
+        canCharge = false;
+        coolTimer = true;
+        yield return new WaitForSeconds(coolTime);
+        canCharge = true;
+        coolTimer = false;
+        canMouseMove = true;
 
     }
 

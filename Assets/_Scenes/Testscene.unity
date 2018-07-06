@@ -333,8 +333,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 19715615}
-  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
-  m_LocalPosition: {x: -42.309006, y: 33.866554, z: 9.063599}
+  m_LocalRotation: {x: -0, y: 0.10018809, z: -0, w: 0.99496853}
+  m_LocalPosition: {x: -45.283325, y: 33.42559, z: 9.435989}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}
@@ -755,6 +755,80 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 300771aae0b5c6048a03d73f67f73ab3, type: 3}
   m_IsPrefabParent: 0
+--- !u!1 &79270863
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 79270866}
+  - component: {fileID: 79270865}
+  - component: {fileID: 79270864}
+  m_Layer: 0
+  m_Name: Water4Simple (1)Reflection1stPerson Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!45 &79270864
+Skybox:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 79270863}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
+--- !u!20 &79270865
+Camera:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 79270863}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967279
+  m_RenderingPath: 1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &79270866
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 79270863}
+  m_LocalRotation: {x: 0, y: 0.8660254, z: 0, w: -0.50000006}
+  m_LocalPosition: {x: 188.42589, y: 46.427174, z: 253.37239}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 28
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &107597600
 Prefab:
   m_ObjectHideFlags: 0
@@ -829,6 +903,80 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 32ad59f5569ef2941830a44b0eff6145, type: 3}
   m_IsPrefabParent: 0
+--- !u!1 &119143398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 119143401}
+  - component: {fileID: 119143400}
+  - component: {fileID: 119143399}
+  m_Layer: 0
+  m_Name: Water4SimpleReflection1stPerson Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!45 &119143399
+Skybox:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119143398}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
+--- !u!20 &119143400
+Camera:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119143398}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967279
+  m_RenderingPath: 1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &119143401
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 119143398}
+  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalPosition: {x: 188.42589, y: 46.428463, z: 253.37239}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 26
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &119504640
 Prefab:
   m_ObjectHideFlags: 0
@@ -7267,8 +7415,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 403577256}
-  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
-  m_LocalPosition: {x: -42.309006, y: 33.865257, z: 9.063599}
+  m_LocalRotation: {x: -0, y: 0.104528494, z: -0, w: -0.9945219}
+  m_LocalPosition: {x: -45.283325, y: 33.424294, z: 9.435989}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644707221}
@@ -7577,7 +7725,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 431731346}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_r_backfin1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7610,7 +7758,7 @@ GameObject:
   - component: {fileID: 447563513}
   - component: {fileID: 447563515}
   - component: {fileID: 447563514}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FishProto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7887,7 +8035,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 489130282}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_r_eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8118,7 +8266,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &529037443
 GameObject:
@@ -8203,7 +8351,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 536627366}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_l_eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8245,7 +8393,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 563842158}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_l_backfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8279,7 +8427,7 @@ GameObject:
   - component: {fileID: 574882742}
   - component: {fileID: 574882741}
   - component: {fileID: 574882745}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Carnivore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8422,7 +8570,7 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 574882739}
-  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalRotation: {x: 0, y: 0.69484675, z: -0, w: -0.7191579}
   m_LocalPosition: {x: 191.71, y: 10.491, z: 253.922}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
@@ -8432,11 +8580,12 @@ Transform:
   - {fileID: 1535040443}
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 80.5, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 271.97, z: 0}
 --- !u!114 &574882745
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 114687053845773002, guid: dd73ce60dac15ed4082bb162fd29583c,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 574882739}
   m_Enabled: 1
@@ -8444,13 +8593,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454403b8f5f6317479775b3ec12e4130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedValue: 14
+  SpeedValue: 20
   speed: 2
-  AscendSpeed: 2
+  AscendSpeed: 20
   verticalSpeed: 2
   horizontalSpeed: 2
   rotateSpeed: 2
-  strafeSpeed: 14
+  strafeSpeed: 40
   dashSpeed: 30
   camerascript: {fileID: 0}
   isMoving: 0
@@ -8464,6 +8613,14 @@ MonoBehaviour:
   canDash: 1
   timerStart: 0
   coolTimer: 0
+  dashTime: 6
+  coolTime: 6
+  IsCharging: 0
+  canCharge: 1
+  ChargeSpeed: 50
+  canMouseMove: 1
+  chargeTime: 2
+  chargeCoolTime: 20
 --- !u!1 &576881602
 GameObject:
   m_ObjectHideFlags: 0
@@ -8473,7 +8630,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 576881603}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_l_backfin1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8606,7 +8763,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 615351346}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13621,8 +13778,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 714614823}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 240.25027, y: 52.540146, z: 220.71548}
+  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalPosition: {x: 188.42589, y: 46.42976, z: 253.37239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -13637,7 +13794,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 725516382}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_jaw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13995,7 +14152,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 751371077}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_spine2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15293,7 +15450,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 955518543}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_r_frontfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15433,7 +15590,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 974600677}
   m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
-  m_LocalPosition: {x: 188.9289, y: 46.489754, z: 253.45656}
+  m_LocalPosition: {x: 188.42589, y: 46.42976, z: 253.37239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -15921,7 +16078,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1041836588}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_topfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20798,7 +20955,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1103535011}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21061,7 +21218,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1134305634}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_topfin_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21143,7 +21300,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1139628569}
   m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
-  m_LocalPosition: {x: 188.9289, y: 46.488457, z: 253.45656}
+  m_LocalPosition: {x: 188.42589, y: 46.428463, z: 253.37239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -21170,13 +21327,13 @@ GameObject:
   - component: {fileID: 1145459632}
   - component: {fileID: 1145459631}
   - component: {fileID: 1145459630}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FishCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1145459629
 Transform:
   m_ObjectHideFlags: 0
@@ -21185,7 +21342,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1145459628}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.13, z: -0.94}
+  m_LocalPosition: {x: 0, y: 0.06, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 574882744}
@@ -21294,7 +21451,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1160822934}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_r_frontfin1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26908,7 +27065,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1334405580}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_spine1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27616,6 +27773,80 @@ MonoBehaviour:
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: 8e8fbfe3f1c0b0e4a805d985bb452b5e, type: 3}
   m_PrefabInternal: {fileID: 1430701979}
+--- !u!1 &1432651514
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1432651517}
+  - component: {fileID: 1432651516}
+  - component: {fileID: 1432651515}
+  m_Layer: 0
+  m_Name: Water4Simple (2)Reflection1stPerson Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!45 &1432651515
+Skybox:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1432651514}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
+--- !u!20 &1432651516
+Camera:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1432651514}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967279
+  m_RenderingPath: 1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &1432651517
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1432651514}
+  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalPosition: {x: 188.42589, y: 46.42976, z: 253.37239}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 27
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1441198333
 GameObject:
   m_ObjectHideFlags: 0
@@ -27815,7 +28046,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1456252325}
   m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
-  m_LocalPosition: {x: 188.9289, y: 46.487167, z: 253.45656}
+  m_LocalPosition: {x: 188.42589, y: 46.427174, z: 253.37239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -28346,14 +28577,15 @@ Transform:
 --- !u!1 &1535040442
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 1083340429580200, guid: dd73ce60dac15ed4082bb162fd29583c,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1535040443}
   - component: {fileID: 1535040444}
-  m_Layer: 0
-  m_Name: GameObject
+  m_Layer: 8
+  m_Name: Pivotpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28362,11 +28594,12 @@ GameObject:
 --- !u!4 &1535040443
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 4336688783335272, guid: dd73ce60dac15ed4082bb162fd29583c,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1535040442}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.05, y: 0, z: 0.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 574882744}
@@ -28375,7 +28608,8 @@ Transform:
 --- !u!82 &1535040444
 AudioSource:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 82239876081345776, guid: dd73ce60dac15ed4082bb162fd29583c,
+    type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1535040442}
   m_Enabled: 1
@@ -28476,7 +28710,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1542864005}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_l_frontfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28806,8 +29040,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1598881372}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 240.25027, y: 52.53756, z: 220.71548}
+  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalPosition: {x: 188.42589, y: 46.427174, z: 253.37239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -29420,8 +29654,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1682169021}
-  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
-  m_LocalPosition: {x: 191.4002, y: 46.868137, z: 253}
+  m_LocalRotation: {x: 0, y: 0.8660254, z: 0, w: -0.50000006}
+  m_LocalPosition: {x: 188.42589, y: 46.427174, z: 253.37239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -29521,7 +29755,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1710263798}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_spine4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29740,7 +29974,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1766962118}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_r_backfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29903,8 +30137,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1774200272}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 240.25027, y: 52.53885, z: 220.71548}
+  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalPosition: {x: 188.42589, y: 46.428463, z: 253.37239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -35300,47 +35534,36 @@ GameObject:
   - component: {fileID: 1924471190}
   - component: {fileID: 1924471189}
   - component: {fileID: 1924471188}
-  - component: {fileID: 1924471187}
   - component: {fileID: 1924471186}
   m_Layer: 0
-  m_Name: CarnivoreCamera
+  m_Name: 1stPerson Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1924471186
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114187430326988594, guid: 8c9002e2c9ecea04c8c63d0f36c0415f,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1924471185}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1924471187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114540255015382484, guid: 8c9002e2c9ecea04c8c63d0f36c0415f,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1924471185}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4be9ea4337ee2654b802643b6cbbb7c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 275936ab173aa8541b27914cf22beb20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  offset: {x: 0, y: 2, z: -10}
-  distanceDamp: 0.15
-  rotationalDamp: 10
-  velocity: {x: 0, y: 0, z: 0}
+  target: {fileID: 1535040443}
+  offset: {x: 0, y: 0.2, z: 1}
+  distanceDamp: 0.025
+  rotationalDamp: 20
+  velocity: {x: 1, y: 1, z: 1}
   RotationsSpeed: 2
-  FreeCamera: 0
-  Herbivorescript: {fileID: 0}
+  m_FieldOfView: 30
+  FOVValue: 60
+  FreeCamera: 1
+  Camera1stCamera: {fileID: 1924471191}
+  Carnivorescript: {fileID: 0}
 --- !u!114 &1924471188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35414,13 +35637,13 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1924471185}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 240.25, y: 4.83, z: 220.71548}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: -0.86602545, z: 0, w: 0.49999994}
+  m_LocalPosition: {x: 188.42567, y: 10.941, z: 253.37239}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: -120, z: 0}
 --- !u!1 &1936885638
 GameObject:
   m_ObjectHideFlags: 0
@@ -35734,7 +35957,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4582253081090262, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114252917376091746, guid: 0247f83a354ed3044b8def18bfc70964,
         type: 2}
@@ -35965,7 +36188,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 2034469299}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_l_frontfin1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36242,7 +36465,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 2104387964}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_protofish_spine3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
