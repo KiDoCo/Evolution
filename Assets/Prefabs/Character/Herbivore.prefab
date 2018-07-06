@@ -985,7 +985,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalSpeed: 2
   horizontalSpeed: 2
-  speed: 2
+  speed: 4
   AscendSpeed: 2
   turnSpeed: 2
   rotateSpeed: 2
@@ -1001,7 +1001,7 @@ MonoBehaviour:
   hasjustRolled: 0
   Rotatingspeed: 0
   Height: 0.5
-  HeightPadding: 0.05
+  HeightPadding: 0.5
   ground:
     serializedVersion: 2
     m_Bits: 32768

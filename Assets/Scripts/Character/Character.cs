@@ -51,8 +51,9 @@ public abstract class Character : MonoBehaviour
     private bool collided = false;
     private float groundAngle;
     private RaycastHit hitInfo;
+    int i = 0;
 
-    public float Height = 0.5f;
+    public float Height = 0.3f;
     public float HeightPadding = 0.05f;
     public LayerMask ground;
     public float MaxGroundAngle = 120f;
@@ -175,7 +176,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Move()
     {
-        if (groundAngle >= MaxGroundAngle) return;
+
 
         isMoving = false;
         Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
@@ -206,11 +207,14 @@ public abstract class Character : MonoBehaviour
     /// returns true if there is not another bject's collider in way
     /// and false if player would collide with another collider
     /// </summary>
-    protected bool CheckCollision()
+    protected void CheckCollision()
     {
         collided = false;
 
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray rayForward = new Ray(transform.position, transform.forward);
+        Ray rayBack = new Ray(transform.position, -transform.forward);
+        Ray rayUp = new Ray(transform.position, transform.up);
+        Ray rayDown = new Ray(transform.position, -transform.up);
         RaycastHit hit;
         float distanceToPoints = col.height / 2 - col.radius;
 
@@ -222,46 +226,58 @@ public abstract class Character : MonoBehaviour
         float castDistance = 0.5f;
 
         //shoot capsuleCast
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, transform.forward, castDistance);
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, MovementInputVector, castDistance);
 
         foreach (RaycastHit objectHit in hits)
         {
             if (objectHit.transform.tag == "Ground")
             {
-                collided = true;
+                //collided = true;
 
-                colPoint = objectHit.point;
+                //colPoint = objectHit.point;
 
-                Physics.Raycast(point1, objectHit.point, out hit);
-                Debug.DrawRay(point1, objectHit.point, Color.red);
+                //Physics.Raycast(point1, objectHit.point, out hit);
+                //Debug.DrawRay(point1, objectHit.point, Color.red);
 
-                if (Vector3.Angle(objectHit.normal, hit.normal) > 5)
+                if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
                 {
                     surfaceNormal = objectHit.normal;
                 }
                 else
                 {
-                    surfaceNormal = hit.normal;
+                    surfaceNormal = hitInfo.normal;
                 }
 
-                if (Physics.Raycast(ray, out hitInfo, 0.5f))
+                //if (Physics.Raycast(rayDown, out hitInfo, 0.5f))
+                //{
+                //    Quaternion rotation = Quaternion.FromToRotation(MovementInputVector, hitInfo.normal);
+
+                //    transform.position = Vector3.Lerp(transform.position, transform.position + hitInfo.normal * Height, speed * Time.deltaTime);
+                //}
+                if (Physics.Raycast(rayForward, out hitInfo, 0.3f) || Physics.Raycast(rayBack, out hitInfo, 0.6f) || Physics.Raycast(rayUp, out hitInfo, 0.3f) || Physics.Raycast(rayDown, out hitInfo, 0.2f))
                 {
-                    if (groundAngle >= MaxGroundAngle) return false;
-                    //moveDirection = Vector3.Cross(MovementInputVector, surfaceNormal);
-                    //transform.Translate(moveDirection* speed * Time.deltaTime);
-                      CalculateGroundAngle();
-                    Quaternion rotation = Quaternion.FromToRotation(forward, surfaceNormal);
+
+                    collided = true;
+                    Debug.Log("Collided: " + (i++));
+
+
+                    //if (groundAngle >= MaxGroundAngle) return;
+                    //moveDirection = Vector3.Cross(forward, surfaceNormal);
+                    //Quaternion rotation = Quaternion.FromToRotation(forward, surfaceNormal);
+                    //var rotation = Quaternion.LookRotation(MovementInputVector);
+                    //Quaternion rotation = Quaternion.Euler(hitInfo.normal);
                     //transform.position += forward * speed * Time.deltaTime;
-                    //transform.position = Vector3.Lerp(transform.position, transform.position + Vector3.forward * Height, 5 * Time.deltaTime);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, turnSpeed);
+                    if (Vector3.Distance(transform.position, hitInfo.point) < Height + HeightPadding)
+                    {
+                        transform.position = Vector3.Lerp(transform.position, transform.position + hitInfo.normal * Height, 5* Time.deltaTime);
+                    }
+                    transform.position += forward * speed * Time.deltaTime;
+                    //transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.5f);
+                    //transform.rotation = Quaternion.Slerp(transform.rotation, rotation, turnSpeed);
                 }
 
-                //if (Physics.Raycast(transform.position, -Vector3.up, out hitInfo, Height + HeightPadding, ground))
-
-                return false;
             }
         }
-        return true;
     }
 
     /// <summary>
@@ -269,7 +285,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     private void CalculateForward()
     {
-        if(!collided)
+        if (!collided)
         {
             forward = transform.forward;
             return;
@@ -282,12 +298,12 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     private void CalculateGroundAngle()
     {
-        if(!collided)
+        if (!collided)
         {
             groundAngle = 90;
             return;
         }
-        groundAngle = Vector3.Angle(surfaceNormal, transform.forward);
+        groundAngle = Vector3.Angle(MovementInputVector,hitInfo.normal);
     }
 
     /// <summary>
@@ -295,14 +311,14 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     private void CheckGround()
     {
-        if(Physics.Raycast(transform.position, Vector3.forward, out hitInfo, Height + HeightPadding, ground))
+        if (Physics.Raycast(transform.position, MovementInputVector, out hitInfo, Height + HeightPadding, ground))
         {
-            if(Vector3.Distance(transform.position, hitInfo.point) < Height)
+            if (Vector3.Distance(transform.position, hitInfo.point) < Height + HeightPadding)
             {
-                transform.position = Vector3.Lerp(transform.position, transform.position + (-Vector3.forward) * Height, 5 * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, transform.position + MovementInputVector * Height, 5 * Time.deltaTime);
             }
             collided = true;
-           transform.position += forward * speed * Time.deltaTime;
+            //transform.position += forward * speed * Time.deltaTime;
         }
         else
         {
@@ -317,29 +333,15 @@ public abstract class Character : MonoBehaviour
 
         if (Physics.Raycast(ray, out hitInfo, 0.5f))
         {
-            Debug.DrawLine(ray.origin, hitInfo.point, Color.red);          
-        }
-        else
-        {
-            Debug.DrawLine(ray.origin, ray.origin + ray.direction * 0.5f, Color.green);
-        }
-    }
-
-    private void ChangeDirection()
-    {
-        Ray ray = new Ray(transform.position, transform.forward);
-        RaycastHit hitInfo;
-
-        if (Physics.Raycast(ray, out hitInfo, 0.5f))
-        {
             Debug.DrawLine(ray.origin, hitInfo.point, Color.red);
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
         }
         else
         {
             Debug.DrawLine(ray.origin, ray.origin + ray.direction * 0.5f, Color.green);
         }
     }
+
+
 
     /// <summary>
     /// Reset z rotation to 0 every frame
@@ -399,7 +401,7 @@ public abstract class Character : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
         }
-
+    
 
     }
 
@@ -407,12 +409,12 @@ public abstract class Character : MonoBehaviour
     {
         Stabilize();
 
-
         //DebugCollision();
-        CheckGround();
+        //CheckGround();
         CalculateForward();
         CalculateGroundAngle();
         CheckCollision();
+        if (groundAngle >= MaxGroundAngle) return;
         Move();
         BarrelRoll();
 
