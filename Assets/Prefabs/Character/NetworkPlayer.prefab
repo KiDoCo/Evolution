@@ -139,6 +139,7 @@ MonoBehaviour:
   SmoothSpeed: 1
   playerCamera: {fileID: 1597591401362812, guid: 50bfa31a4a9ef9f4eb55c341c4e5b134,
     type: 2}
+  pauseMenu: {fileID: 1831237039453952, guid: 033e2c1afd017de48bfa2e5684f32d9a, type: 2}
 --- !u!114 &114806188705551162
 MonoBehaviour:
   m_ObjectHideFlags: 1

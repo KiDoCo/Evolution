@@ -20,17 +20,12 @@ public class _LobbyPlayer : NetworkLobbyPlayer {
     {
         base.OnClientEnterLobby();
 
-        transform.SetParent(_LobbyManager.Instance.playerListContent.transform, false);
+        transform.SetParent(_LobbyManager.Instance.PlayerListContent.transform, false);
 
         if (isClient)
         {
             updateNameText();
         }
-    }
-
-    public override void OnClientExitLobby()
-    {
-        base.OnClientExitLobby();
     }
 
     public override void OnStartLocalPlayer()
@@ -39,7 +34,7 @@ public class _LobbyPlayer : NetworkLobbyPlayer {
 
         readyButton.SetActive(true);
 
-        CmdChangePlayerName(_LobbyManager.Instance.playerName.text);
+        CmdChangePlayerName(_LobbyManager.Instance.PlayerName);
     }
 
     public override void OnClientReady(bool readyState)

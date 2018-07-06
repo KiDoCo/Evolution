@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class _LobbyManager : NetworkLobbyManager {
 
@@ -20,12 +21,14 @@ public class _LobbyManager : NetworkLobbyManager {
     [SerializeField] private Text clientAddressText = null;
     [SerializeField] private string hostUIMessage = "Hosting match in\n";
 
-    // Used also in other scripts
-    [SerializeField] public GameObject playerListContent = null;
-    [SerializeField] public InputField playerName = null;
+    [SerializeField] private GameObject playerListContent = null;
+    public GameObject PlayerListContent { get { return playerListContent; } }
+    [SerializeField] private InputField playerName = null;
+    public string PlayerName { get { return playerName.text; } }
 
     private bool hosting = false;
-
+    public bool Hosting { get { return hosting; } }
+    private string externalIP = "";
 
     private void Awake ()
     {
@@ -107,7 +110,8 @@ public class _LobbyManager : NetworkLobbyManager {
         base.OnLobbyStartHost();
 
         hosting = true;
-        hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;
+        StartCoroutine(GetExternalIP());
+        UpdateText(hostingText, hostUIMessage + networkAddress + ":" + networkPort);
         switchEnabledGameObject(new GameObject[] {mainUI, hostUI, clientUI}, 1);
         Debug.Log("Hosting started...");
     }
@@ -128,7 +132,7 @@ public class _LobbyManager : NetworkLobbyManager {
 
         if (!hosting)
         {
-            clientAddressText.text = networkAddress + ":" + networkPort;
+            UpdateText(clientAddressText, networkAddress + ":" + networkPort);
             switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 2);
         }
         Debug.Log("Client joined!");
@@ -171,6 +175,39 @@ public class _LobbyManager : NetworkLobbyManager {
         {
             UI.SetActive(true);
         }
+    }
+
+    public override void OnLobbyServerSceneChanged(string sceneName)
+    {
+        base.OnLobbyServerSceneChanged(sceneName);
+
+        if (sceneName == lobbyScene)
+        {
+            /*foreach (NetworkLobbyPlayer player in lobbySlots)AndroidActivityIndicatorStyle
+            {
+                player.SendNotReadyToBeginMessage();
+            }*/
+        }
+    }
+
+    IEnumerator GetExternalIP()
+    {
+        using (WWW www = new WWW("https://api.ipify.org"))
+        {
+            yield return www;
+            externalIP = www.text;
+            UpdateText(hostingText, hostUIMessage + externalIP + ":" + networkPort);
+        }
+    }
+
+    private void SetExternalIP(string IP)
+    {
+        externalIP = IP;
+    }
+
+    private void UpdateText(Text textElement, string message)
+    {
+        textElement.text = message;
     }
 
     // Enables only one of the objects in GameObject[] and disables others (NEEDS REPLACEMENT! See the top TODO)
