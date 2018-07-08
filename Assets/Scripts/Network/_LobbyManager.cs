@@ -181,12 +181,14 @@ public class _LobbyManager : NetworkLobbyManager {
     {
         base.OnLobbyServerSceneChanged(sceneName);
 
+        Debug.Log("Scene changed! Players: " + numPlayers);
+
         if (sceneName == lobbyScene)
         {
-            /*foreach (NetworkLobbyPlayer player in lobbySlots)AndroidActivityIndicatorStyle
+            foreach (NetworkLobbyPlayer player in lobbySlots)
             {
                 player.SendNotReadyToBeginMessage();
-            }*/
+            }
         }
     }
 
