@@ -11,33 +11,39 @@ public class _LobbyManager : NetworkLobbyManager {
     [SerializeField] private GameObject UI = null;
 
     // TODO: Make a menu dictionary that is possible to edit in Unity inspector.
-    // And edit switchEnabledGameObject() to work with dictonaries
+    // And edit switchUIWindow() to work with dictonaries
     [SerializeField] private GameObject mainUI = null;
     [SerializeField] private GameObject hostUI = null;
     [SerializeField] private GameObject clientUI = null;
+    private GameObject[] UIWindows;
 
     [SerializeField] private GameObject insertNameError = null;
     [SerializeField] private Text hostingText = null;
     [SerializeField] private Text clientAddressText = null;
     [SerializeField] private string hostUIMessage = "Hosting match in\n";
-
     [SerializeField] private GameObject playerListContent = null;
-    public GameObject PlayerListContent { get { return playerListContent; } }
     [SerializeField] private InputField playerName = null;
-    public string PlayerName { get { return playerName.text; } }
 
-    private bool hosting = false;
-    public bool Hosting { get { return hosting; } }
+    public GameObject PlayerListContent { get { return playerListContent; } }
+    public string PlayerName { get { return playerName.text; } }
+    public bool Hosting { get { return thisIsHosting; } }
+
+    private bool thisIsHosting = false;
     private string externalIP = "";
 
     private void Awake ()
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 0);
+
+        // Resets UI
+        UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
+        switchUIWindow(UIWindows, 0);
+        UI.SetActive(true);
         insertNameError.SetActive(false);
     }
 
+    // --- Button methods
     // Each Pressed method is used in UI buttons (Button in Unity Editor -> OnClick())
 
     public void HostGamePressed()
@@ -60,7 +66,7 @@ public class _LobbyManager : NetworkLobbyManager {
     {
         if (isNetworkActive)
         {
-            // OnLobbyStopHost()
+            // Calls OnLobbyStopHost() etc.
             StopHost();
         }
     }
@@ -73,7 +79,7 @@ public class _LobbyManager : NetworkLobbyManager {
         }
         else
         {
-            // OnLobbyClientEnter()
+            // Calls OnLobbyClientEnter() etc.
             StartClient();
         }
     }
@@ -82,12 +88,12 @@ public class _LobbyManager : NetworkLobbyManager {
     {
         if (isNetworkActive)
         {
-            // OnLobbyClientExit()
+            // Calls OnLobbyClientExit() etc.
             StopClient();
         }
     }
 
-    // InputField update methods
+    // --- InputField update methods
 
     public void IPChanged(string IP)
     {
@@ -103,37 +109,37 @@ public class _LobbyManager : NetworkLobbyManager {
         }
     }
 
-    // Lobby network methods
+    // --- Lobby network methods
 
     public override void OnLobbyStartHost()
     {
         base.OnLobbyStartHost();
 
-        hosting = true;
-        StartCoroutine(GetExternalIP());
-        UpdateText(hostingText, hostUIMessage + networkAddress + ":" + networkPort);
-        switchEnabledGameObject(new GameObject[] {mainUI, hostUI, clientUI}, 1);
-        Debug.Log("Hosting started...");
+        thisIsHosting = true;
+        StartCoroutine(GetPublicIP());
+        hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;  // Temp message before public IP is updated
+        switchUIWindow(UIWindows, 1);   // Host window
+        Debug.Log("Hosting started");
     }
 
     public override void OnLobbyStopHost()
     {
         base.OnLobbyStopHost();
 
-        hosting = false;
-        switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 0);
+        thisIsHosting = false;
+        switchUIWindow(UIWindows, 0);   // Main window
         insertNameError.SetActive(false);
-        Debug.Log("Hosting stopped.");
+        Debug.Log("Hosting stopped");
     }
 
     public override void OnLobbyClientEnter()
     {
         base.OnLobbyClientEnter();
 
-        if (!hosting)
+        if (!thisIsHosting)
         {
-            UpdateText(clientAddressText, networkAddress + ":" + networkPort);
-            switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 2);
+            clientAddressText.text = networkAddress + ":" + networkPort;
+            switchUIWindow(UIWindows, 2);   // Client window
         }
         Debug.Log("Client joined!");
     }
@@ -142,31 +148,19 @@ public class _LobbyManager : NetworkLobbyManager {
     {
         base.OnLobbyClientExit();
 
-        if (!hosting)
+        if (!thisIsHosting)
         {
-            switchEnabledGameObject(new GameObject[] { mainUI, hostUI, clientUI }, 0);
+            switchUIWindow(UIWindows, 0);   // Main window
             insertNameError.SetActive(false);
         }
-        Debug.Log("Client exited.");
-    }
-
-    public override void OnLobbyServerConnect(NetworkConnection conn)
-    {
-        base.OnLobbyServerConnect(conn);
-        Debug.Log("Client " + conn.connectionId + " connected!");
-    }
-
-    public override void OnLobbyServerPlayersReady()
-    {
-        base.OnLobbyServerPlayersReady();
-
-        Debug.Log("Players are ready!");
+        Debug.Log("Client exited");
     }
 
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
     {
         base.OnLobbyClientSceneChanged(conn);
 
+        // Disables UI if players are in game
         if (SceneManager.GetActiveScene().name == playScene)
         {
             UI.SetActive(false);
@@ -177,43 +171,20 @@ public class _LobbyManager : NetworkLobbyManager {
         }
     }
 
-    public override void OnLobbyServerSceneChanged(string sceneName)
-    {
-        base.OnLobbyServerSceneChanged(sceneName);
+    // --- Other private methods
 
-        Debug.Log("Scene changed! Players: " + numPlayers);
-
-        if (sceneName == lobbyScene)
-        {
-            foreach (NetworkLobbyPlayer player in lobbySlots)
-            {
-                player.SendNotReadyToBeginMessage();
-            }
-        }
-    }
-
-    IEnumerator GetExternalIP()
+    private IEnumerator GetPublicIP()
     {
         using (WWW www = new WWW("https://api.ipify.org"))
         {
             yield return www;
             externalIP = www.text;
-            UpdateText(hostingText, hostUIMessage + externalIP + ":" + networkPort);
+            hostingText.text = hostUIMessage + externalIP + ":" + networkPort;
         }
     }
 
-    private void SetExternalIP(string IP)
-    {
-        externalIP = IP;
-    }
-
-    private void UpdateText(Text textElement, string message)
-    {
-        textElement.text = message;
-    }
-
     // Enables only one of the objects in GameObject[] and disables others (NEEDS REPLACEMENT! See the top TODO)
-    private void switchEnabledGameObject(GameObject[] obj, int index)
+    private void switchUIWindow(GameObject[] obj, int index)
     {
         for (int o = 0; o < obj.Length; o++)
         {

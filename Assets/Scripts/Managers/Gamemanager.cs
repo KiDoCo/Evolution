@@ -39,10 +39,12 @@ public class Gamemanager : NetworkBehaviour
     private string gameScene       = "DemoScene";
     private string foodSourceName  = "FoodSource";
     private string playerSpawnName = "player";
+    private string menuScene       = "Menu";
 
     //Prefabs
     public  GameObject CameraPrefab;
     public  GameObject BerryPrefab;
+
 #pragma warning restore
     
     //Properties
@@ -257,6 +259,8 @@ public class Gamemanager : NetworkBehaviour
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
-        LoadGame();
+
+        //LoadGame();
+        SceneManager.LoadSceneAsync(menuScene);
     }
 }

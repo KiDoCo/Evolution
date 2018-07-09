@@ -13,6 +13,8 @@ public class PauseMenu : NetworkBehaviour {
         disconnectButton.SetActive(!_LobbyManager.Instance.Hosting);
     }
 
+    // Each Pressed method is used in UI buttons (Button in Unity Editor -> OnClick())
+
     public void DisconnectPressed()
     {
         if (_LobbyManager.Instance != null)
