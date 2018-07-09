@@ -8,60 +8,73 @@ public class CameraController_1stPerson : MonoBehaviour
 
 
 
-    [SerializeField] Transform target;
+    //[SerializeField] Transform target;
+
+    public Transform target;
 
     //values
     [SerializeField] Vector3 offset = new Vector3(0f, 2f, -10f);
-    [SerializeField] float distanceDamp = 10f;
-    [SerializeField] float rotationalDamp = 10f;
-    [SerializeField] Vector3 velocity = Vector3.one;
+    [SerializeField] protected float distanceDamp = 10f;
+    [SerializeField] protected float rotationalDamp = 10f;
+    Vector3 velocity = Vector3.one;
+
+    //fixed damp values (Set Dampening käyttää näitä)
+    [SerializeField] protected float distanceDampValue = 0.025f;
+    [SerializeField] protected float rotationalDampValue = 10f;
+    
+    [SerializeField] protected float fastDistanceDamp = 0.2f;
+    [SerializeField] protected float fastRotationDamp = 1000;
+    
     
     [HideInInspector] public float m_FieldOfView = 60f;
     public float FOVValue = 30f;
 
     
-    public Camera Camera1stCamera;
+    public Camera Camera1st;
 
-    //Script references
-    [HideInInspector] public static CameraController_1stPerson cam1;
-    [HideInInspector] public Carnivore2 Carnivorescript;
+   
+   
 
     //camera reset point
     Vector3 startOffset = Vector3.zero;
 
 
 #pragma warning restore
-    public Transform Target
+    Transform Target
     {
         get
         {
             return target;
         }
-
+    
         set
         {
             target = value;
         }
     }
 
-    private void Start()
+    protected void Start()
     {
 
-        cam1 = this;
+        distanceDamp = distanceDampValue; // reset damping values to fixed values
+        rotationalDamp = rotationalDampValue; // --"--
+
         m_FieldOfView = FOVValue; // set camera Field of view to fixed value
         startOffset = offset; //set camera default location
-        if (target == null) Debug.Log("Missing look target");
-        Camera1stCamera.fieldOfView = 60f;
-        Camera1stCamera.cullingMask = 1 << 0; //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
+        if (target == null) Debug.LogError("Missing target to look at");
+        Camera1st.fieldOfView = 60f;
+        Camera1st.cullingMask = 1 << 0; //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
 
     }
 
-    void FixedUpdate()
+    public void LateUpdate()
     {
 
+        SetDampening(); //this has to be first
         FollowRot();
         Stabilize();
         CameraFOV();
+        
 
     }
     public void InstantiateCamera(Character test)
@@ -83,7 +96,7 @@ public class CameraController_1stPerson : MonoBehaviour
     /// <summary>
     /// Follows target movement and rotation smoothly (using distanceDamp and rotationalDamp values, offset is camera distance from target)
     /// </summary>
-    void FollowRot()
+    public void FollowRot()
     {
         //movement
         Vector3 toPos = target.position - (target.rotation * offset);
@@ -100,7 +113,7 @@ public class CameraController_1stPerson : MonoBehaviour
     /// <summary>
     /// Needed to stabilize camera
     /// </summary>
-    void Stabilize()
+    public void Stabilize()
     {
 
         float z = transform.eulerAngles.z;
@@ -110,7 +123,7 @@ public class CameraController_1stPerson : MonoBehaviour
     }
 
    
-    void ResetCamera() //back to original fixed offset point
+    public void ResetCamera() //back to original fixed offset point
     {
         offset = startOffset;
     }
@@ -118,22 +131,40 @@ public class CameraController_1stPerson : MonoBehaviour
     /// <summary>
     /// changing camera FOV with F key (in testing)
     /// </summary>
-    void CameraFOV()
+    public void CameraFOV()
     {
-        if (Input.GetKeyDown(KeyCode.F) || Carnivore2.carniv.IsCharging) // if carnie is charging, FOV increases to make "cool" effect
+        if (Input.GetKeyDown(KeyCode.F)) //|| target.GetComponent<Carnivore2>().isDashing) // if carnie is charging, FOV increases to make "cool" effect
         {
             Debug.Log("FOV");
             m_FieldOfView = 90f;
-            Camera1stCamera.fieldOfView = m_FieldOfView;
+            Camera1st.fieldOfView = m_FieldOfView;
         }
         if (Input.GetKeyUp(KeyCode.F))
         {
             m_FieldOfView = FOVValue; //reset camera FOV default
-            Camera1stCamera.fieldOfView = m_FieldOfView;
+            Camera1st.fieldOfView = m_FieldOfView;
         }
 
 
     }
 
+    /// <summary>
+    /// Camera follows strickly when strafing and ascending/descending
+    /// </summary>
+    public void SetDampening() 
+    {
+        if (target.GetComponent<Carnivore2>().isStrafing) 
+        {
+            distanceDamp = 0;
+            
+        }
+        else if (target.GetComponent<Carnivore2>().isMovingVertical)
+        {
+            distanceDamp = 0;
+        }
+        else 
+            distanceDamp = distanceDampValue;
+
+    }
 
 }

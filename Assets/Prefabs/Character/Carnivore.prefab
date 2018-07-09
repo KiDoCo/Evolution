@@ -980,7 +980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpeedValue: 20
-  speed: 2
+  turnSpeed: 2
   AscendSpeed: 20
   verticalSpeed: 2
   horizontalSpeed: 2
@@ -991,8 +991,9 @@ MonoBehaviour:
   isMoving: 0
   turning: 0
   rolling: 0
-  isStrafing: 0
   isDashing: 0
+  isStrafing: 0
+  isMovingVertical: 0
   canBarrellRoll: 0
   canStrafe: 1
   canTurn: 0
@@ -1003,10 +1004,12 @@ MonoBehaviour:
   coolTime: 6
   IsCharging: 0
   canCharge: 1
-  ChargeSpeed: 50
+  chargeSpeed: 50
   canMouseMove: 1
   chargeTime: 2
   chargeCoolTime: 20
+  Camera1stScript: {fileID: 0}
+  Camera1: {fileID: 0}
 --- !u!114 &114779759895996194
 MonoBehaviour:
   m_ObjectHideFlags: 1

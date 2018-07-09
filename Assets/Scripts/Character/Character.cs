@@ -26,8 +26,10 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected bool isMoving;
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
-    [SerializeField] protected bool isStrafing;
-    [SerializeField] protected bool isDashing;
+    public bool isDashing;
+    public bool isStrafing; //1st person kamera käyttää näitä
+    public bool isMovingVertical; // --"--
+
 
     //ability unlock bools used in editor
     [SerializeField] protected bool canBarrellRoll;
@@ -42,6 +44,8 @@ public abstract class Character : MonoBehaviour
     //timer values
     [SerializeField] protected float dashTime = 6f;
     [SerializeField] protected float coolTime = 6f;
+
+  
 
 
 
@@ -214,13 +218,26 @@ public abstract class Character : MonoBehaviour
         if (inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
             isMoving = true;
+           
+           
         }
         else
         {
             isMoving = false;
+            isMovingVertical = false; 
+        }
+        if (inputvectorZ.magnitude != 0)
+        {
+            isMovingVertical = true;
+        }
+        else if (inputvectorZ.magnitude == 0)
+        {
+            isMovingVertical = false; //oltava tarkistus myös täällä
         }
 
-        if(collided)
+
+
+        if (collided)
         {
             moveDirection = Vector3.Cross(colPoint, surfaceNormal);
             moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
@@ -395,9 +412,10 @@ public abstract class Character : MonoBehaviour
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
+       
 
         musicSource = GetComponentInChildren<AudioSource>();
-        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
     protected virtual void Start()
@@ -412,6 +430,7 @@ public abstract class Character : MonoBehaviour
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
         isMoving = true;
+
         //UIManager.Instance.InstantiateMatchUI(this);
        // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }

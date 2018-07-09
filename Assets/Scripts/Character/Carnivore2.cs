@@ -16,9 +16,8 @@ public class Carnivore2 : Character
     [SerializeField] protected float chargeTime = 2f;
     [SerializeField] protected float chargeCoolTime = 6f;
     
-    //script reference
-    [HideInInspector] public CameraController_1stPerson Camera1stScript;
-    [HideInInspector] public static Carnivore2 carniv;
+    //objects 
+    [SerializeField] GameObject Camera1;
 
     public void MouseMove()
     {
@@ -43,8 +42,10 @@ public class Carnivore2 : Character
     protected override void Start()
     {
         base.Start();
-        carniv = this;
-        
+
+        GameObject cam = Instantiate(Camera1); // Instantioi cameran ja pistää cam muuttujaksi
+
+        cam.GetComponent<CameraController_1stPerson>().target = this.transform; //pääsee käsiksi koodiin ja kohteeseen
         
     }
 
@@ -105,12 +106,12 @@ public class Carnivore2 : Character
             if (!IsCharging)
             {
                 canMouseMove = true;
-                CameraController_1stPerson.cam1.m_FieldOfView = CameraController_1stPerson.cam1.FOVValue; //reset CAM FOV in camerascipt
+               // CameraController_1stPerson.cam1.m_FieldOfView = CameraController_1stPerson.cam1.FOVValue; //reset CAM FOV in camerascipt
             }
             if (IsCharging) // put down mousecontrols when charging
             {
                 canMouseMove = false;
-                CameraController_1stPerson.cam1.m_FieldOfView += 60f;
+               // CameraController_1stPerson.cam1.m_FieldOfView += 60f;
             }
 
 
