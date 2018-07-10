@@ -983,8 +983,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  verticalSpeed: 2
-  horizontalSpeed: 2
+  verticalSpeed: 1
+  horizontalSpeed: 1
   speed: 4
   AscendSpeed: 2
   turnSpeed: 2
@@ -1001,11 +1001,11 @@ MonoBehaviour:
   hasjustRolled: 0
   Rotatingspeed: 0
   Height: 0.5
-  HeightPadding: 0.5
+  HeightPadding: 0.3
   ground:
     serializedVersion: 2
     m_Bits: 32768
-  MaxGroundAngle: 120
+  MaxGroundAngle: 150
   debug: 1
   myT: {fileID: 0}
   y: 0
