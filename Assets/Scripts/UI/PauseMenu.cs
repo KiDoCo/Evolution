@@ -9,25 +9,25 @@ public class PauseMenu : NetworkBehaviour {
 
     private void Awake()
     {
-        stopGameButton.SetActive(_LobbyManager.Instance.Hosting);
-        disconnectButton.SetActive(!_LobbyManager.Instance.Hosting);
+        stopGameButton.SetActive(NetworkGameManager.Instance.Hosting);
+        disconnectButton.SetActive(!NetworkGameManager.Instance.Hosting);
     }
 
-    // Each Pressed method is used in UI buttons (Button in Unity Editor -> OnClick())
+    // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
 
-    public void DisconnectPressed()
+    public void B_Disconnect()
     {
-        if (_LobbyManager.Instance != null)
+        if (NetworkGameManager.Instance != null)
         {
-            _LobbyManager.Instance.ServerReturnToLobby();
+            NetworkGameManager.Instance.ServerReturnToLobby();
         }
     }
 
-    public void StopGamePressed()
+    public void B_StopGame()
     {
-        if (_LobbyManager.Instance != null)
+        if (NetworkGameManager.Instance != null)
         {
-            _LobbyManager.Instance.SendReturnToLobby();
+            NetworkGameManager.Instance.SendReturnToLobby();
         }
     }
 

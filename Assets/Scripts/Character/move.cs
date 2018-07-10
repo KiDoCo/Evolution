@@ -6,7 +6,7 @@ public enum Species { carnivore, herbivore};
 
 public class move : MonoBehaviour
 {
-    public Quaternion        myQuat, targetQuat;
+    //public Quaternion        myQuat, targetQuat;
     public float             verticalSpeed     = 2f;
     public float             horizontalSpeed   = 2f;
     public float             speed             = 2f;
@@ -28,7 +28,7 @@ public class move : MonoBehaviour
     private bool             eating;
     private Animator         m_animator;
     public  CameraController camerascript;
-    private Vector3          lastposition      = Vector3.zero;
+    //private Vector3          lastposition      = Vector3.zero;
     private Vector3          MovementInputVector;
     private Vector3          rotationInputVector;
     private AudioSource      musicSource;
@@ -214,8 +214,8 @@ public class move : MonoBehaviour
 
     private void Start()
     {
-        Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
-        Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
+        //Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
+        //Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         m_animator = gameObject.GetComponent<Animator>();
         isMoving = true;
         cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);

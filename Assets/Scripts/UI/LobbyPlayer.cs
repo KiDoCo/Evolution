@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
-public class _LobbyPlayer : NetworkLobbyPlayer {
+public class LobbyPlayer : NetworkLobbyPlayer {
 
     // Text component in child object
     [SerializeField] private Text playerNameText = null;
@@ -25,7 +25,7 @@ public class _LobbyPlayer : NetworkLobbyPlayer {
         Debug.Log("Client enter lobby");
 
         // Puts client in the player list
-        transform.SetParent(_LobbyManager.Instance.PlayerListContent.transform, false);
+        transform.SetParent(NetworkGameManager.Instance.PlayerListContent.transform, false);
 
         // Resets player ready state
         readyText.SetActive(false);
@@ -46,10 +46,10 @@ public class _LobbyPlayer : NetworkLobbyPlayer {
         notReadyButtonText.SetActive(false);
         readyButton.SetActive(true);
 
-        if (_LobbyManager.Instance != null)
-            CmdChangePlayerName(_LobbyManager.Instance.PlayerName);
+        if (NetworkGameManager.Instance != null)
+            CmdChangePlayerName(NetworkGameManager.Instance.PlayerName);
         else
-            Debug.Log("_LobbyPlayer, OnStartLocalPlayer(): _LobbyManager instance not found!");
+            Debug.Log("_LobbyPlayer, OnStartLocalPlayer(): NetworkGameManager instance not found!");
     }
 
     public override void OnClientReady(bool readyState)
@@ -68,7 +68,9 @@ public class _LobbyPlayer : NetworkLobbyPlayer {
         }
     }
 
-    public void PlayerReadyPressed()
+    // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
+
+    public void B_PlayerReady()
     {
         if (!readyToBegin)
         {

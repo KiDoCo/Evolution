@@ -260,7 +260,6 @@ public class Gamemanager : NetworkBehaviour
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
 
-        //LoadGame();
         SceneManager.LoadSceneAsync(menuScene);
     }
 }

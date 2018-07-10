@@ -4,9 +4,9 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class _LobbyManager : NetworkLobbyManager {
+public class NetworkGameManager : NetworkLobbyManager {
 
-    public static _LobbyManager Instance;
+    public static NetworkGameManager Instance;
 
     [SerializeField] private GameObject UI = null;
 
@@ -44,9 +44,9 @@ public class _LobbyManager : NetworkLobbyManager {
     }
 
     // --- Button methods
-    // Each Pressed method is used in UI buttons (Button in Unity Editor -> OnClick())
+    // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
 
-    public void HostGamePressed()
+    public void B_HostGame()
     {
         if (!isNetworkActive)
         {
@@ -62,7 +62,7 @@ public class _LobbyManager : NetworkLobbyManager {
         }
     }
 
-    public void EndHostedGamePressed()
+    public void B_EndHostedGame()
     {
         if (isNetworkActive)
         {
@@ -71,7 +71,7 @@ public class _LobbyManager : NetworkLobbyManager {
         }
     }
 
-    public void JoinGamePressed()
+    public void B_JoinGame()
     {
         if (playerName.text == "")
         {
@@ -84,7 +84,7 @@ public class _LobbyManager : NetworkLobbyManager {
         }
     }
 
-    public void DisconnectGamePressed()
+    public void B_DisconnectGame()
     {
         if (isNetworkActive)
         {
