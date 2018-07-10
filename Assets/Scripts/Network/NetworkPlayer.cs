@@ -8,7 +8,6 @@ public class NetworkPlayer : NetworkBehaviour {
     [SerializeField] private float MovSpeed = 10f;            // Max player speed
     [SerializeField] private float SmoothSpeed = 1f;          // How fast player gets to max speed
     [SerializeField] private GameObject playerCamera = null;
-    [SerializeField] private GameObject pauseMenu = null;
 
     private Vector3 currentVelocity = Vector3.zero;
 
@@ -39,8 +38,9 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            Instantiate(playerCamera);
-            Instantiate(pauseMenu);
+            GameObject camera = Instantiate(playerCamera);
+            camera.GetComponent<CameraMovement>().FollowedPlayer = this.gameObject;
+            UIManager.Instance.InstantiateInGameUI();
         }
     }
 }

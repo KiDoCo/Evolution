@@ -3,12 +3,18 @@ using UnityEngine.Networking;
 
 public class PauseMenu : NetworkBehaviour {
 
-    [SerializeField] private GameObject UI = null;
+    [SerializeField] public GameObject UI = null;
     [SerializeField] private GameObject disconnectButton = null;
     [SerializeField] private GameObject stopGameButton = null;
 
+    public static PauseMenu Instance;
+
     private void Awake()
     {
+        Instance = this;
+
+        UI.SetActive(false);
+
         stopGameButton.SetActive(NetworkGameManager.Instance.Hosting);
         disconnectButton.SetActive(!NetworkGameManager.Instance.Hosting);
     }
@@ -28,14 +34,6 @@ public class PauseMenu : NetworkBehaviour {
         if (NetworkGameManager.Instance != null)
         {
             NetworkGameManager.Instance.SendReturnToLobby();
-        }
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            UI.SetActive(!UI.activeSelf);
         }
     }
 }

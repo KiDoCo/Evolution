@@ -1037,13 +1037,13 @@ MonoBehaviour:
   m_ShowLobbyGUI: 0
   m_MaxPlayers: 4
   m_MaxPlayersPerConnection: 1
-  m_MinPlayers: 2
+  m_MinPlayers: 1
   m_LobbyPlayerPrefab: {fileID: 114493853544814176, guid: f7d2adf45033c40488da639df377bb54,
     type: 2}
   m_GamePlayerPrefab: {fileID: 1100167678837076, guid: f188fec62dbe04644a02f0cfc6995ed6,
     type: 2}
   m_LobbyScene: Menu
-  m_PlayScene: NetworkInGame
+  m_PlayScene: DemoScene
   lobbySlots: []
   UI: {fileID: 1678181856082178}
   mainUI: {fileID: 1115911705310670}

@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/_Scenes/Menu.unity
     guid: 336afd0adc738bf448ff7853028afcc5
   - enabled: 1
-    path: Assets/_Scenes/NetworkInGame.unity
-    guid: 16c06171a5f7a724eb6e04b6919146f0
+    path: Assets/_Scenes/DemoScene.unity
+    guid: c47b7b2accf818543b7c1a97f3b909ee
   m_configObjects: {}

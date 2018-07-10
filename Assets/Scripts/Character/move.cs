@@ -228,7 +228,7 @@ public class move : MonoBehaviour
     {
         InteractionChecker();
 
-        UIManager.Instance.InstantiateMatchUI(this);
+        UIManager.Instance.UpdateMatchUI(this);
 
         if(Input.GetKeyDown(KeyCode.Space))
         {

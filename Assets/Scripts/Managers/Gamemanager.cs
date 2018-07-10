@@ -32,7 +32,6 @@ public class Gamemanager : NetworkBehaviour
     public  List<GameObject>            foodsources;
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
-    public  List<Transform>             PlayerSpawnPointList = new List<Transform>();
     public  List<move>                  PlayerList           = new List<move>();
 
     //Strings
@@ -98,15 +97,9 @@ public class Gamemanager : NetworkBehaviour
             FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
         }
 
-        for (int i = 0; i < GameObject.FindGameObjectsWithTag(playerSpawnName).Length; i++)
-        {
-            PlayerSpawnPointList.Add(GameObject.FindGameObjectsWithTag(playerSpawnName)[i].transform);
-        }
-
         yield return new WaitForSeconds(1.0f);
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
-        SpawnPlayers();
         SpawnFoodSources();
         EventManager.Broadcast(EVENT.DoAction);
         FoodSpawnPointList.Clear();
@@ -124,7 +117,6 @@ public class Gamemanager : NetworkBehaviour
     private IEnumerator Respawn(move player)
     {
         player.gameObject.SetActive(false);
-        player.transform.position = PlayerSpawnPointList[Random.Range(0, PlayerSpawnPointList.ToArray().Length)].position;
         yield return new WaitForSeconds(deathPenaltyTime);
         player.gameObject.SetActive(true);
         EventManager.SoundBroadcast(EVENT.PlayMusic, player.GetComponent<AudioSource>(), (int)MusicEvent.Ambient);
@@ -158,16 +150,6 @@ public class Gamemanager : NetworkBehaviour
         PlayerList.Remove(player);
         player.CameraClone.GetComponent<CameraController>().CameraPlaceOnDeath(player);
         player.gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// Spawns The player to the match map
-    /// </summary>
-    private void SpawnPlayers()
-    {
-        //list of player and loop it to every individual player
-        GameObject clone = Instantiate(herbivorePrefabs[0], PlayerSpawnPointList[0].position, Quaternion.identity);
-        clone.name = "Player";
     }
 
     /// <summary>
