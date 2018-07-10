@@ -23,12 +23,14 @@ public abstract class Character : MonoBehaviour
     [HideInInspector] public CameraController camerascript;
 
     //bools
-    [SerializeField] protected bool isMoving;
+    protected bool isMoving;
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
+    public bool isReversing; //3rd person camera käyttää
     public bool isDashing;
     public bool isStrafing; //1st person kamera käyttää näitä
     public bool isMovingVertical; // --"--
+    public bool isMovingForward;
 
 
     //ability unlock bools used in editor
@@ -210,29 +212,46 @@ public abstract class Character : MonoBehaviour
     protected virtual void Move()
     {
         isMoving = false;
+        
+
+        //tarkista peruuttaako
+        
+        if (Input.GetAxisRaw("Vertical") < 0)
+        {
+            isReversing = true;
+            isMovingForward = false;
+           
+
+        }
+        if (Input.GetAxisRaw("Vertical") > 0)
+        {
+            isReversing = false;
+            isMovingForward = true;
+
+        }
+        else if (Input.GetAxisRaw("Vertical") ==0)
+        {
+            isReversing = false;
+            isMovingForward = false;
+        }
+            
        
+
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
         Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
-
-        
-        if (inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
+        Turn();
+        if(inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
             isMoving = true;
-           
-           
         }
-        else
-        {
-            isMoving = false;
-            isMovingVertical = false; 
-        }
+      //tarkista nouseeko laskeeko
         if (inputvectorZ.magnitude != 0)
         {
             isMovingVertical = true;
         }
         else if (inputvectorZ.magnitude == 0)
         {
-            isMovingVertical = false; //oltava tarkistus myös täällä
+            isMovingVertical = false; 
         }
 
 
@@ -254,7 +273,7 @@ public abstract class Character : MonoBehaviour
         if (!eating)
         {
             transform.Translate(MovementInputVector);
-           
+
         }
     }
 
@@ -265,10 +284,12 @@ public abstract class Character : MonoBehaviour
     {
         if (canTurn)
         {
-            isMoving = false;
-            
             
             float rotation = (Input.GetAxisRaw("Horizontal") * turnSpeed * Time.deltaTime);
+            if(rotation != 0)
+            {
+                isMoving = true;
+            }
             transform.Rotate(0, rotation, 0);
 
         }
@@ -285,6 +306,7 @@ public abstract class Character : MonoBehaviour
             if (inputRotationZ.magnitude != 0)
             {
                 rolling = true;
+                isMoving = true;
 
             }
             else
@@ -304,7 +326,7 @@ public abstract class Character : MonoBehaviour
             if (inputVectorX.magnitude != 0)
             {
                 isDashing = true;
-                isMoving = true;
+                
                 StartCoroutine(DashTimer());
             }
             else
@@ -429,7 +451,7 @@ public abstract class Character : MonoBehaviour
 
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
-        isMoving = true;
+        
 
         //UIManager.Instance.InstantiateMatchUI(this);
        // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
@@ -452,7 +474,6 @@ public abstract class Character : MonoBehaviour
         CanMove(MovementInputVector);
         Move();
         BarrellRoll();
-        Turn();
         Dash();
     }
    

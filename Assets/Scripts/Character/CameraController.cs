@@ -8,16 +8,22 @@ public class CameraController : MonoBehaviour
 
 
 
-    [SerializeField] Transform target;
+    [SerializeField] public Transform target;
 
     //values
     [SerializeField] Vector3 offset = new Vector3(0f, 2f, -10f);
     [SerializeField] float distanceDamp = 10f;
+    [SerializeField] float distanceDampValue = 0.4f;
+    [SerializeField] float distanceDampValueB = 0.02f; //used in reverse movement
+    [SerializeField] float distanceDampValueV = 0.02f; //used in vertical movement
     [SerializeField] float rotationalDamp = 10f;
+    [SerializeField] float rotationalDampValue = 5f;
     [SerializeField] Vector3 velocity = Vector3.one;
     [SerializeField] float RotationsSpeed = 2f;
 
     public bool FreeCamera;
+    public Camera Camera3rd;
+    public bool reset;
 
     //Script references
     [HideInInspector] public Herbivore Herbivorescript;
@@ -50,6 +56,8 @@ public class CameraController : MonoBehaviour
         cam = this;
         startOffset = offset;
         m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
+        distanceDamp = distanceDampValue;
+        rotationalDamp = rotationalDampValue;
 
 
     }
@@ -58,7 +66,7 @@ public class CameraController : MonoBehaviour
     {
         if (target == null) return;
 
-
+        SetDampening();
         ControlCamera();
         if (Input.GetKey(KeyCode.R))
         {
@@ -66,6 +74,8 @@ public class CameraController : MonoBehaviour
         }
         FollowRot();
         Stabilize();
+       
+
 
     }
     public void InstantiateCamera(Character test)
@@ -120,7 +130,10 @@ public class CameraController : MonoBehaviour
 
     void ResetCamera()
     {
-        offset = startOffset;
+        
+            offset = startOffset;
+        
+        
     }
 
     void ControlCamera()// Camera input
@@ -145,6 +158,25 @@ public class CameraController : MonoBehaviour
         {
             ResetCamera();
         }
+    }
+
+    /// <summary>
+    /// Checks if target is backing up or changing altitude, then changes camera values
+    /// </summary>
+    void SetDampening()
+    {
+        if (target.GetComponent<Herbivore>().isReversing)
+        {
+            distanceDamp = distanceDampValueB;
+        }
+        else if (target.GetComponent<Herbivore>().isMovingVertical)
+        {
+            distanceDamp = distanceDampValueV;
+        }
+
+        else
+            distanceDamp = distanceDampValue;
+        
     }
 
 

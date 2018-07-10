@@ -67,8 +67,10 @@ public class CameraController_1stPerson : MonoBehaviour
 
     }
 
-    public void LateUpdate()
+    public void FixedUpdate()
     {
+
+        if (target == null) return;
 
         SetDampening(); //this has to be first
         FollowRot();
@@ -149,7 +151,7 @@ public class CameraController_1stPerson : MonoBehaviour
     }
 
     /// <summary>
-    /// Camera follows strickly when strafing and ascending/descending
+    /// Camera follows more stricktly when doing these things
     /// </summary>
     public void SetDampening() 
     {
@@ -159,6 +161,14 @@ public class CameraController_1stPerson : MonoBehaviour
             
         }
         else if (target.GetComponent<Carnivore2>().isMovingVertical)
+        {
+            distanceDamp = 0;
+        }
+        else if (target.GetComponent<Carnivore2>().isReversing)
+        {
+            distanceDamp = 0;
+        }
+        else if (target.GetComponent<Carnivore2>().isMovingForward)
         {
             distanceDamp = 0;
         }

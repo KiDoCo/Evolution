@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4486441491452142}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_topfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,7 +34,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4407677810980356}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_r_backfin1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4008251608576578}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_r_eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -64,13 +64,31 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4607010724462388}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1221551049590014
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4989532509983118}
+  - component: {fileID: 20025972525857344}
+  - component: {fileID: 124693880382483794}
+  - component: {fileID: 81887727291076530}
+  m_Layer: 9
+  m_Name: Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
 --- !u!1 &1400019072056678
 GameObject:
   m_ObjectHideFlags: 1
@@ -79,7 +97,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4840612606654590}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_spine1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +113,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4858390874593444}
   - component: {fileID: 137277027422839274}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FishProto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +128,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4603840231567990}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_l_frontfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +147,7 @@ GameObject:
   - component: {fileID: 136574025905355464}
   - component: {fileID: 82769841182586898}
   - component: {fileID: 114252917376091746}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Herbivore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,7 +162,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4964220317380896}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_l_backfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,7 +177,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4074167741309498}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_spine2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,7 +192,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4016418279951488}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_l_eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,7 +208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4012812262404282}
   - component: {fileID: 82152775220376910}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: AudioSFXSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,7 +223,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4203907469742490}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_r_frontfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +238,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4465952947967382}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_r_backfin2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,8 +253,23 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4454813654264972}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_r_frontfin1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1587082470509372
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4190843811897274}
+  m_Layer: 9
+  m_Name: Pivotpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -254,7 +287,7 @@ GameObject:
   - component: {fileID: 124526422719982118}
   - component: {fileID: 81182928661806310}
   - component: {fileID: 114779759895996194}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FishCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -269,7 +302,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4104345575953478}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_l_frontfin1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -284,7 +317,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4755654695440344}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_l_backfin1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -299,7 +332,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4892390268822620}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_spine3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -314,7 +347,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4923451151370890}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_spine4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -329,7 +362,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4346889326167862}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_jaw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,7 +377,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4407305634596754}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -359,7 +392,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4119862574615118}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: bn_protofish_topfin_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -459,6 +492,19 @@ Transform:
   - {fileID: 4486441491452142}
   m_Father: {fileID: 4840612606654590}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4190843811897274
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1587082470509372}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4582253081090262}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4203907469742490
 Transform:
@@ -565,17 +611,19 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1445834569832970}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 210.45479, y: 4.75, z: 220.71548}
+  m_LocalRotation: {x: 0, y: 0.646124, z: 0, w: 0.76323247}
+  m_LocalPosition: {x: 191.4, y: 10.5, z: 253}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4407305634596754}
   - {fileID: 4858390874593444}
   - {fileID: 4032790131577872}
   - {fileID: 4012812262404282}
+  - {fileID: 4989532509983118}
+  - {fileID: 4190843811897274}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 80.5, z: 0}
 --- !u!4 &4603840231567990
 Transform:
   m_ObjectHideFlags: 1
@@ -691,6 +739,55 @@ Transform:
   m_Father: {fileID: 4755654695440344}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4989532509983118
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1221551049590014}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1.34}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4582253081090262}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &20025972525857344
+Camera:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1221551049590014}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
 --- !u!20 &20887064550388704
 Camera:
   m_ObjectHideFlags: 1
@@ -733,6 +830,13 @@ AudioListener:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1625852404598158}
+  m_Enabled: 1
+--- !u!81 &81887727291076530
+AudioListener:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1221551049590014}
   m_Enabled: 1
 --- !u!82 &82152775220376910
 AudioSource:
@@ -953,25 +1057,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  verticalSpeed: 2
-  horizontalSpeed: 2
-  speed: 2
-  AscendSpeed: 2
-  turnSpeed: 2
+  SpeedValue: 20
+  turnSpeed: 200
+  AscendSpeed: 15
+  verticalSpeed: 1
+  horizontalSpeed: 1
   rotateSpeed: 2
-  myQuat: {x: 0, y: 0, z: 0, w: 0}
-  targetQuat: {x: 0, y: 0, z: 0, w: 0}
-  quatSpeed: 1
-  stabilize: 0.1
-  velocity: 0
-  restrictAngle: 80
-  rolling: 0
-  isMoving: 0
+  strafeSpeed: 2
+  dashSpeed: 20
   camerascript: {fileID: 0}
-  hasjustRolled: 0
-  Rotatingspeed: 0
-  myT: {fileID: 0}
-  y: 0
+  turning: 0
+  rolling: 0
+  isReversing: 0
+  isDashing: 0
+  isStrafing: 0
+  isMovingVertical: 0
+  canBarrellRoll: 0
+  canStrafe: 0
+  canTurn: 1
+  canDash: 1
+  timerStart: 0
+  coolTimer: 0
+  dashTime: 6
+  coolTime: 6
+  CameraClone: {fileID: 0}
+  Camera3rd: {fileID: 0}
 --- !u!114 &114779759895996194
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -990,6 +1100,13 @@ Behaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1625852404598158}
+  m_Enabled: 1
+--- !u!124 &124693880382483794
+Behaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1221551049590014}
   m_Enabled: 1
 --- !u!136 &136574025905355464
 CapsuleCollider:

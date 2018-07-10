@@ -9,8 +9,9 @@ public class Herbivore : Character
     
     //object references
     [HideInInspector] public static Herbivore herbiv;
-    public new GameObject  CameraClone;
+    [SerializeField] new GameObject  CameraClone;
     [SerializeField] GameObject Camera3rd;
+    
  
     public void MouseMove()
     {
@@ -19,6 +20,7 @@ public class Herbivore : Character
         transform.Rotate(v, h, 0);
                 
     }
+    
     protected override void Awake()
     {
         base.Awake();
@@ -29,9 +31,7 @@ public class Herbivore : Character
         base.Start();
 
         GameObject cam = Instantiate(Camera3rd);
-        cam.GetComponent<CameraController_1stPerson>().target = this.transform;
-
-        herbiv = this;
+        cam.GetComponent<CameraController>().target = this.transform;
         canBarrellRoll = true;
         canTurn = true;
         //CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
@@ -54,7 +54,7 @@ public class Herbivore : Character
     {
         base.FixedUpdate();
         
-        if (!CameraClone.GetComponent<CameraController>().FreeCamera) // muista tämä tapa viitata toiseen scriptiin
+        if (!CameraClone.GetComponent<CameraController>().FreeCamera) 
         {
             MouseMove();
         }
