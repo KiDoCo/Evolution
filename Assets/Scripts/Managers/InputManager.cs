@@ -4,8 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.IO;
 
-public enum KeyInput { Horizontal, Vertical, Rotation, Jump, Mouse }
-
+public enum KeyInput { Horizontal, Vertical, Rotation, Jump, Ability, Eat }
 public class InputManager : MonoBehaviour
 {
 
@@ -13,77 +12,31 @@ public class InputManager : MonoBehaviour
     private int xboxController = 0;
     private int playstationController = 0;
     private bool waitingForKey;
+    private bool coroutinerunning;
+    private string tempCode;
     private Event keyevent;
-    private KeyCode tempCode;
     private StoredInformation storage;
-    private string gameDataProjectFilePath = "/StreamingAssets/data.json";
+    private string gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
 
-    public Dictionary<KeyCode, float> InputDictionary = new Dictionary<KeyCode, float>();
-
-    [SerializeField] private Dictionary<KeyCode, float> DefaultInputDictionary = new Dictionary<KeyCode, float>();
-
-    public void AssignKeyboardInput(KeyCode input, float keyvalue)
+    //Lists and dictionaries
+    private List<AxisBase> InputAxes = new List<AxisBase>();
+    [SerializeField]
+    private List<AxisBase> DefaultAxes = new List<AxisBase>();
+    /// <summary>
+    /// Assings a keycode and a value to the keycode which is determined in button
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="keyvalue"></param>
+    public void AssignKeyboardInput(AxisBase axis)
     {
-        Debug.Log("Key pressed :" + input + " And Value :" + keyvalue);
-        if (!InputDictionary.ContainsKey(input))
+        if(!storage.configurations.Contains(axis))
         {
-            InputDictionary.Add(input, keyvalue);
+        storage.configurations.Add(axis);
         }
-        else
-        {
-            InputDictionary.Remove(input);
-            InputDictionary.Add(input, keyvalue);
-        }
-         if (!storage.keys.Contains(input))
-          {
-            storage.keys.Add(input);
-            storage.values.Add(keyvalue);
-          }
-          else
-          {
-            storage.values.RemoveAt(storage.keys.FindIndex(x => x == input));
-            storage.keys.Remove(input);
-            storage.keys.Add(input);
-            storage.values.Add(keyvalue);
-          }
-
+        InputAxes.Add(axis);
         SaveInput();
-        tempCode = KeyCode.None;
-    }
-    /// <summary>
-    /// Loads data from json file 
-    /// </summary>
-    private void LoadInput()
-    {
-        string filepath = Application.dataPath + gameDataProjectFilePath;
-        if (File.Exists(filepath))
-        {
-            string dataAsJson = File.ReadAllText(filepath);
-            storage = JsonUtility.FromJson<StoredInformation>(dataAsJson);
-        }
-        else
-        {
-            storage = new StoredInformation();
-
-        }
-        for(int i = 0; i < storage.keys.ToArray().Length; i++)
-        {
-            InputDictionary.Add(storage.keys[i], storage.values[i]);
-
-        }
-        Debug.Log(InputDictionary.ToArray().Length);
     }
 
-    /// <summary>
-    /// Saves data to json file
-    /// </summary>
-    private void SaveInput()
-    {
-        string dataAsJson = JsonUtility.ToJson(storage);
-
-        string filePath = Application.dataPath + gameDataProjectFilePath;
-        File.WriteAllText(filePath, dataAsJson);
-    }
 
     public void AssignControllerButtons()
     {
@@ -102,75 +55,110 @@ public class InputManager : MonoBehaviour
         Debug.Log("No controller detected!");
     }
 
+    #region Save/load Allaxes
+    public void LoadAllAxes()
+    {
+        for (int i = 0; i < InputAxes.Count; i++)
+        {
+            AxisBase a = InputAxes[i];
+
+            int p = (int)storage.configurations.Find(x => x.AxisName + "pKey" == a.AxisName).Pkey;
+            int n = (int)storage.configurations.Find(x => x.AxisName + "nKey" == a.AxisName).Nkey;
+
+            a.Pkey = (KeyCode)p;
+            a.Nkey = (KeyCode)n;
+        }
+    }
+
+    public void SaveAllAxes()
+    {
+        for (int i = 0; i < InputAxes.Count; i++)
+        {
+            AssignKeyboardInput(InputAxes[i]);
+        }
+    }
+    #endregion
+
+    #region InputSave/Load
+    //Omat keitokset
+    /// <summary>
+    /// Loads data from json file 
+    /// </summary>
+    private void LoadInput()
+    {
+        string filepath = Application.dataPath + gameDataProjectFilePath;
+        if (File.Exists(filepath))
+        {
+            string dataAsJson = File.ReadAllText(filepath);
+            storage = JsonUtility.FromJson<StoredInformation>(dataAsJson);
+        }
+        else
+        {
+            storage = new StoredInformation();
+
+        }
+        if (storage.configurations.Count <= 0)
+        {
+            for(int i = 0; i < DefaultAxes.ToArray().Length; i++)
+            {
+                storage.configurations.Add(DefaultAxes[i]);
+            }
+        }
+        for (int i = 0; i < storage.configurations.ToArray().Length; i++)
+        {
+            InputAxes.Add(storage.configurations[i]);
+            InputAxes.Add(storage.configurations[i]);
+        }
+        Debug.Log("loaded");
+    }
 
     /// <summary>
-    /// Function for button (Value is given in editor
+    /// Saves data to json file
     /// </summary>
-    /// <param name="value"></param>
-    public void Button(float value)
+    private void SaveInput()
     {
-        StartCoroutine(Assign(value));
-    }
+        string dataAsJson = JsonUtility.ToJson(storage);
 
-    private IEnumerator WaitForKey()
+        string filePath = Application.dataPath + gameDataProjectFilePath;
+        File.WriteAllText(filePath, dataAsJson);
+    }
+    #endregion InputSave/Load Handles saving and loading of input
+
+    #region Getters
+    public float GetAxis(string name)
     {
-        while (!keyevent.isKey)
+        float v = 0;
+
+        for (int i = 0; i < InputAxes.Count; i++)
         {
-            Debug.Log("Called waitforkey");
-            yield return null;
+            if (InputAxes[i].AxisName == name)
+            {
+                v = InputAxes[i].Axis;
+            }
         }
-
-    }
-    private IEnumerator Assign(float value)
-    {
-        waitingForKey = true;
-        yield return WaitForKey();
-        AssignKeyboardInput(tempCode, value);
+        return v;
     }
 
-    public float GetKey(KeyCode key)
+    public bool GetButton(string name)
     {
-        return InputDictionary[key];
-    }
+        bool retVal = false;
 
-    public float GetKeyDown(KeyCode key)
-    {
-
-        return InputDictionary[key];
-    }
-
-    private void LateUpdate()
-    {
-
-    }
-
-    //Unity Methods
-
-    private void OnGUI()
-    {
-        keyevent = Event.current;
-
-        if (keyevent.isKey && waitingForKey)
+        for (int i = 0; i < InputAxes.Count; i++)
         {
-            tempCode = keyevent.keyCode;
-            waitingForKey = false;
+            if (InputAxes[i].AxisName == name)
+            {
+                retVal = InputAxes[i].positive;
+            }
         }
-
+        return retVal;
     }
+    #endregion Input getters
+
+    #region UnityMethdods
 
     private void Awake()
     {
-        if (DefaultInputDictionary.Count > 0) return;
-
-        DefaultInputDictionary.Add(KeyCode.A, 1.0f);
-        DefaultInputDictionary.Add(KeyCode.D, -1.0f);
-        DefaultInputDictionary.Add(KeyCode.W, 1.0f);
-        DefaultInputDictionary.Add(KeyCode.S, -1.0f);
-        DefaultInputDictionary.Add(KeyCode.Q, 1.0f);
-        DefaultInputDictionary.Add(KeyCode.E, -1.0f);
-        DefaultInputDictionary.Add(KeyCode.Space, 1.0f);
-        DefaultInputDictionary.Add(KeyCode.LeftControl, -1.0f);
-        DefaultInputDictionary.Add(KeyCode.Mouse0, 1.0f);
+        Instance = this;
     }
 
     private void Start()
@@ -189,30 +177,51 @@ public class InputManager : MonoBehaviour
             xboxController = 1;
         }
 
-
-        if (InputDictionary.Count <= 0)
+        if (InputAxes.Count <= 0)
         {
-            Debug.Log("is empty");
-            for (int i = 0; i < DefaultInputDictionary.Count; i++)
+            for (int i = 0; i < storage.configurations.Count; i++)
             {
-                AssignKeyboardInput(DefaultInputDictionary.ElementAt(i).Key, DefaultInputDictionary.ElementAt(i).Value);
+                AssignKeyboardInput(storage.configurations[i]);
             }
         }
-        else
-        {
-
-        }
+        Debug.Log("Start loaded");
     }
+    #endregion
 }
+
+#region Serialized Classes
+    //No touchie boios
 
 [System.Serializable]
 public class StoredInformation
 {
-    public List<KeyCode> keys;
-    public List<float> values;
-
+    public List<AxisBase> configurations = new List<AxisBase>();
     public string SaveToString()
     {
         return JsonUtility.ToJson(this);
     }
 }
+
+[System.Serializable]
+public class AxisBase
+{
+    public string AxisName;
+
+    public KeyCode Pkey;
+    public KeyCode Nkey;
+    [HideInInspector]
+    public bool positive;
+    [HideInInspector]
+    public bool negative;
+    [HideInInspector]
+    public float Axis;
+    public float TargetAxis;
+    public float Sensitivity = 3;
+    public string PkeyDescription;
+    public string NkeyDescription;
+    [HideInInspector]
+    public AxisButton NUIButton;
+    [HideInInspector]
+    public AxisButton PUIButton;
+}
+#endregion

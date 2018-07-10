@@ -125,6 +125,7 @@ GameObject:
   - component: {fileID: 368256337}
   - component: {fileID: 368256336}
   - component: {fileID: 368256340}
+  - component: {fileID: 368256341}
   m_Layer: 0
   m_Name: ManagerHolder
   m_TagString: Untagged
@@ -197,6 +198,78 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46fb5140c214c1244843a5e5f1014946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &368256341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 368256335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf57f9434c544e642b45993e7dd5cbf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultAxes:
+  - AxisName: Horizontal
+    Pkey: 97
+    Nkey: 100
+    positive: 0
+    negative: 0
+    Axis: 0
+    TargetAxis: 0
+    Sensitivity: 3
+    PkeyDescription: Left
+    NkeyDescription: Right
+    NUIButton: {fileID: 0}
+    PUIButton: {fileID: 0}
+  - AxisName: Vertical
+    Pkey: 119
+    Nkey: 115
+    positive: 0
+    negative: 0
+    Axis: 0
+    TargetAxis: 0
+    Sensitivity: 3
+    PkeyDescription: Forward
+    NkeyDescription: Backwards
+    NUIButton: {fileID: 0}
+    PUIButton: {fileID: 0}
+  - AxisName: Rotation
+    Pkey: 113
+    Nkey: 101
+    positive: 0
+    negative: 0
+    Axis: 0
+    TargetAxis: 0
+    Sensitivity: 3
+    PkeyDescription: Left
+    NkeyDescription: Right
+    NUIButton: {fileID: 0}
+    PUIButton: {fileID: 0}
+  - AxisName: Ability
+    Pkey: 9
+    Nkey: 0
+    positive: 0
+    negative: 0
+    Axis: 0
+    TargetAxis: 0
+    Sensitivity: 1000
+    PkeyDescription: Use
+    NkeyDescription: 
+    NUIButton: {fileID: 0}
+    PUIButton: {fileID: 0}
+  - AxisName: Eat
+    Pkey: 323
+    Nkey: 0
+    positive: 0
+    negative: 0
+    Axis: 0
+    TargetAxis: 0
+    Sensitivity: 1000
+    PkeyDescription: Use
+    NkeyDescription: 
+    NUIButton: {fileID: 0}
+    PUIButton: {fileID: 0}
 --- !u!1 &1005475912
 GameObject:
   m_ObjectHideFlags: 0

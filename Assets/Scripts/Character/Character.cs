@@ -34,6 +34,9 @@ public abstract class Character : MonoBehaviour
     private AudioSource musicSource;
     private AudioSource SFXsource;
     protected GameObject cameraClone;
+    private Event e;
+    private string temp;
+    string input;
     //bools
     public bool hasjustRolled;
 
@@ -76,7 +79,6 @@ public abstract class Character : MonoBehaviour
         }
     }
     public GameObject CameraClone { get { return cameraClone; } }
-
     protected float Speed
     {
         get
@@ -173,14 +175,18 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-
-
     protected virtual void Move()
     {
         isMoving = false;
-        Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
-        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * Speed) * Time.deltaTime;
+        Debug.Log(InputManager.Instance.GetAxis("Horizontal"));
+        Vector3 inputvectorX = (Vector3.up * InputManager.Instance.GetAxis("Horizontal") * turnSpeed);
+        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Rotation") * Vector3.up * Speed) * Time.deltaTime;
+
+        //Old move set
+        //Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
+        //Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+        //Vector3 inputvectorZ = (Input.GetAxisRaw("Rotation") * Vector3.up * Speed) * Time.deltaTime;
 
         if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
@@ -191,7 +197,7 @@ public abstract class Character : MonoBehaviour
             isMoving = false;
         }
 
-        if(collided)
+        if (collided)
         {
             moveDirection = Vector3.Cross(colPoint, surfaceNormal);
             moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
@@ -211,6 +217,8 @@ public abstract class Character : MonoBehaviour
             transform.Rotate(rotationInputVector);
         }
     }
+
+
 
     /// <summary>
     /// Checks if player can move in wanted direction
@@ -291,6 +299,19 @@ public abstract class Character : MonoBehaviour
         rolling = true;
     }
 
+    private void OnGUI()
+    {
+        e = Event.current;
+        if (e.keyCode.ToString().ToLower() == "none")
+        {
+            return;
+        }
+        else
+        {
+            temp = e.keyCode.ToString().ToLower();
+        }
+    }
+
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
@@ -306,7 +327,7 @@ public abstract class Character : MonoBehaviour
         cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
         cameraClone.name = "FollowCamera";
 
-
+        Debug.Log("Loading character start");
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
         Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
@@ -314,6 +335,8 @@ public abstract class Character : MonoBehaviour
         isMoving = true;
         UIManager.Instance.InstantiateMatchUI(this);
         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        InputManager.Instance.SaveAllAxes();
+        InputManager.Instance.LoadAllAxes();
     }
 
     protected virtual void Update()
