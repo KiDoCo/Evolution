@@ -17,6 +17,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     [SerializeField] private GameObject clientUI = null;
     private GameObject[] UIWindows;
 
+    // All these components are child objects in this gameobject (assigned in Unity Editor)
     [SerializeField] private GameObject insertNameError = null;
     [SerializeField] private Text hostingText = null;
     [SerializeField] private Text clientAddressText = null;
