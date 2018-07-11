@@ -11,7 +11,7 @@ public class Hook : MonoBehaviour {
     private GameObject hitObject;
 
     public bool hitTarget;
-    [SerializeField]private string targetTag;
+    [SerializeField] private string targetTag = "";
 
 
 	void Start ()

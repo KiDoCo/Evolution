@@ -7,12 +7,21 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
+    [SerializeField] private GameObject hud = null;
+    [SerializeField] private GameObject pauseMenu = null;
+
     //Match UI
-    public void InstantiateMatchUI(Character source)
+	public void UpdateMatchUI(Character source)
     {
         HUDController.instance.MaxHealth   = (int)source.Maxhealth;
         HUDController.instance.CurProgress = source.Experience;
         HUDController.instance.CurHealth   = (int)source.Health;
+    }
+
+    public void InstantiateInGameUI()
+    {
+        Instantiate(hud);
+        Instantiate(pauseMenu);
     }
 
     public void UpdateCharacterExperience()
@@ -32,6 +41,7 @@ public class UIManager : MonoBehaviour
     {
 
     }
+
     private void MatchResultScreen(Character source)
     {
 
@@ -45,13 +55,21 @@ public class UIManager : MonoBehaviour
     //unity methods
     private void Start()
     {
+
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-        Cursor.lockState = CursorLockMode.Locked;
+
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
         }
     }
 }

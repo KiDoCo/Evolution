@@ -32,17 +32,17 @@ public class Gamemanager : NetworkBehaviour
     public  List<GameObject>            foodsources;
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
-    public  List<Transform>             PlayerSpawnPointList = new List<Transform>();
-    public  List<Character>             PlayerList           = new List<Character>();
 
     //Strings
     private string gameScene       = "DemoScene";
     private string foodSourceName  = "FoodSource";
     private string playerSpawnName = "player";
+    private string menuScene       = "Menu";
 
     //Prefabs
     public  GameObject CameraPrefab;
     public  GameObject BerryPrefab;
+
 #pragma warning restore
     
     //Properties
@@ -96,15 +96,11 @@ public class Gamemanager : NetworkBehaviour
             FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
         }
 
-        for (int i = 0; i < GameObject.FindGameObjectsWithTag(playerSpawnName).Length; i++)
-        {
-            PlayerSpawnPointList.Add(GameObject.FindGameObjectsWithTag(playerSpawnName)[i].transform);
-        }
 
         yield return new WaitForSeconds(1.0f);
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
-        SpawnPlayers();
+
         SpawnFoodSources();
         EventManager.Broadcast(EVENT.DoAction);
         FoodSpawnPointList.Clear();
@@ -119,10 +115,10 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
+
     private IEnumerator Respawn(Character player)
     {
         player.gameObject.SetActive(false);
-        player.transform.position = PlayerSpawnPointList[Random.Range(0, PlayerSpawnPointList.ToArray().Length)].position;
         yield return new WaitForSeconds(deathPenaltyTime);
         player.gameObject.SetActive(true);
         EventManager.SoundBroadcast(EVENT.PlayMusic, player.GetComponent<AudioSource>(), (int)MusicEvent.Ambient);
@@ -148,6 +144,7 @@ public class Gamemanager : NetworkBehaviour
     /// <summary>
     /// Ends the match for a single player
     /// </summary>
+
     public void EndMatchForPlayer(Character player)
     {
         //some client magix röh röh
@@ -158,17 +155,7 @@ public class Gamemanager : NetworkBehaviour
         player.gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// Spawns The player to the match map
-    /// </summary>
-    private void SpawnPlayers()
-    {
-        //list of player and loop it to every individual player
-        GameObject clone = Instantiate(herbivorePrefabs[0], PlayerSpawnPointList[0].position, Quaternion.identity);
-        clone.name = "Player";
-    }
 
-    /// <summary>
     /// Spawns the sources to the environment
     /// </summary>
     private void SpawnFoodSources()
@@ -222,6 +209,7 @@ public class Gamemanager : NetworkBehaviour
     /// Checks if the player can be spawned
     /// </summary>
     /// <param name="player"></param>
+
     public void RespawnPlayer(Character player)
     {
         if (lifeCount > 0)
@@ -257,6 +245,7 @@ public class Gamemanager : NetworkBehaviour
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
-        LoadGame();
+
+        SceneManager.LoadSceneAsync(menuScene);
     }
 }

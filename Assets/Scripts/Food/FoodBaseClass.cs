@@ -20,9 +20,9 @@ public class FoodBaseClass : MonoBehaviour, IEatable
 
     //collider variables
     private const float radiusMultiplier  = 1.5f;
-    private float       vectoroffset      = 0.55f;
+    //private float       vectoroffset      = 0.55f;
     private Collider    coralCollider;
-    private BoxCollider box;
+    //private BoxCollider box;
     private AudioSource source;
     private Vector3     originalPos;
 
@@ -175,7 +175,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
-        box = coralCollider.GetComponent<BoxCollider>();
+        //box = coralCollider.GetComponent<BoxCollider>();
         source = GetComponent<AudioSource>();
         Gamemanager.Instance.FoodPlaceList.Add(this);
     }
