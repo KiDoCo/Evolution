@@ -18,7 +18,7 @@ public abstract class Character : MonoBehaviour
     public float restrictAngle = Mathf.Abs(80);
     protected float health = 100;
     protected float experience = 0;
-    private const float healthMax = 100.0f;
+    private const float healthMax = 2;
     private const float waitTime = 1.0f;
     private const float experiencePenalty = 25.0f;
     private const float deathpenaltytime = 2.0f;
@@ -178,15 +178,9 @@ public abstract class Character : MonoBehaviour
     protected virtual void Move()
     {
         isMoving = false;
-        Debug.Log(InputManager.Instance.GetAxis("Horizontal"));
-        Vector3 inputvectorX = (Vector3.up * InputManager.Instance.GetAxis("Horizontal") * turnSpeed);
-        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Rotation") * Vector3.up * Speed) * Time.deltaTime;
-
-        //Old move set
-        //Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
-        //Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-        //Vector3 inputvectorZ = (Input.GetAxisRaw("Rotation") * Vector3.up * Speed) * Time.deltaTime;
+        Vector3 inputvectorX = (InputManager.Instance.GetAxis(KeyInput.Horizontal.ToString()) * Vector3.up * turnSpeed);
+        Vector3 inputvectorY = (InputManager.Instance.GetAxis(KeyInput.Vertical.ToString()) * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (InputManager.Instance.GetAxis(KeyInput.Jump.ToString()) * Vector3.up * Speed) * Time.deltaTime;
 
         if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
@@ -286,7 +280,7 @@ public abstract class Character : MonoBehaviour
     {
         rolling = false;
         //BARREL ROLL
-        float inputValue = Input.GetAxisRaw("Rotation") * rotateSpeed;
+        float inputValue = Input.GetAxisRaw(KeyInput.Rotation.ToString()) * rotateSpeed;
 
         if (inputValue == 0) return;
 
@@ -335,8 +329,6 @@ public abstract class Character : MonoBehaviour
         isMoving = true;
         UIManager.Instance.InstantiateMatchUI(this);
         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
-        InputManager.Instance.SaveAllAxes();
-        InputManager.Instance.LoadAllAxes();
     }
 
     protected virtual void Update()

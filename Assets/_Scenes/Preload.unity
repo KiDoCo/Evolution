@@ -211,8 +211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DefaultAxes:
   - AxisName: Horizontal
-    Pkey: 97
-    Nkey: 100
+    Pkey: 100
+    Nkey: 97
     positive: 0
     negative: 0
     Axis: 0
@@ -302,11 +302,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   NodeLocations: []
-  speed: 0
-  escapeSpeed: 0
-  visionRange: 0
-  maxVisionAngle: 0
-  escapeTimer: 0
+  speed: 2
+  escapeSpeed: 2
+  visionRange: 2
+  maxVisionAngle: 4
+  escapeTimer: 5
   enemy: {fileID: 1445834569832970, guid: dd73ce60dac15ed4082bb162fd29583c, type: 2}
   fishPrefab: {fileID: 1896606498718602, guid: 5f872a3ae431cd347966da54bb339f9d, type: 2}
 --- !u!4 &1005475914

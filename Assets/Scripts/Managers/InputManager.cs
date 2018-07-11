@@ -23,18 +23,22 @@ public class InputManager : MonoBehaviour
     [SerializeField]
     private List<AxisBase> DefaultAxes = new List<AxisBase>();
     /// <summary>
-    /// Assings a keycode and a value to the keycode which is determined in button
+    /// Assigns a new axis and stores the information
     /// </summary>
     /// <param name="input"></param>
     /// <param name="keyvalue"></param>
     public void AssignKeyboardInput(AxisBase axis)
     {
-        if(!storage.configurations.Contains(axis))
+        if (!storage.configurations.Contains(axis))
         {
-        storage.configurations.Add(axis);
+            storage.configurations.Add(axis);
         }
-        InputAxes.Add(axis);
-        SaveInput();
+        else
+        {
+            storage.configurations.Remove(storage.configurations.Find(x => x.AxisName == axis.AxisName));
+            storage.configurations.Add(axis);
+        }
+        StorageToInput();
     }
 
 
@@ -55,32 +59,31 @@ public class InputManager : MonoBehaviour
         Debug.Log("No controller detected!");
     }
 
-    #region Save/load Allaxes
+    private void StorageToInput()
+    {
+        InputAxes = storage.configurations;
+        SaveInput();
+    }
+
+    #region Save/load All axes
+
+   //Methods that handle loading and saving of axes changes
+
     public void LoadAllAxes()
     {
         for (int i = 0; i < InputAxes.Count; i++)
         {
             AxisBase a = InputAxes[i];
 
-            int p = (int)storage.configurations.Find(x => x.AxisName + "pKey" == a.AxisName).Pkey;
-            int n = (int)storage.configurations.Find(x => x.AxisName + "nKey" == a.AxisName).Nkey;
+            int p = (int)InputAxes.Find(x => x.AxisName == a.AxisName).Pkey;
+            int n = (int)InputAxes.Find(x => x.AxisName == a.AxisName).Nkey;
 
             a.Pkey = (KeyCode)p;
             a.Nkey = (KeyCode)n;
         }
     }
 
-    public void SaveAllAxes()
-    {
-        for (int i = 0; i < InputAxes.Count; i++)
-        {
-            AssignKeyboardInput(InputAxes[i]);
-        }
-    }
-    #endregion
 
-    #region InputSave/Load
-    //Omat keitokset
     /// <summary>
     /// Loads data from json file 
     /// </summary>
@@ -90,26 +93,25 @@ public class InputManager : MonoBehaviour
         if (File.Exists(filepath))
         {
             string dataAsJson = File.ReadAllText(filepath);
-            storage = JsonUtility.FromJson<StoredInformation>(dataAsJson);
+            if (dataAsJson != null)
+            {
+                storage = JsonUtility.FromJson<StoredInformation>(dataAsJson);
+            }
         }
         else
         {
             storage = new StoredInformation();
 
         }
+
+        if (storage.configurations == null) return;
+
         if (storage.configurations.Count <= 0)
         {
-            for(int i = 0; i < DefaultAxes.ToArray().Length; i++)
-            {
-                storage.configurations.Add(DefaultAxes[i]);
-            }
+            storage.configurations = DefaultAxes;
         }
-        for (int i = 0; i < storage.configurations.ToArray().Length; i++)
-        {
-            InputAxes.Add(storage.configurations[i]);
-            InputAxes.Add(storage.configurations[i]);
-        }
-        Debug.Log("loaded");
+
+        InputAxes = storage.configurations;
     }
 
     /// <summary>
@@ -125,6 +127,11 @@ public class InputManager : MonoBehaviour
     #endregion InputSave/Load Handles saving and loading of input
 
     #region Getters
+    /// <summary>
+    /// Used to get users input when key is held down
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public float GetAxis(string name)
     {
         float v = 0;
@@ -138,7 +145,11 @@ public class InputManager : MonoBehaviour
         }
         return v;
     }
-
+    /// <summary>
+    /// Used to get the users input when button is held down
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public bool GetButton(string name)
     {
         bool retVal = false;
@@ -184,13 +195,41 @@ public class InputManager : MonoBehaviour
                 AssignKeyboardInput(storage.configurations[i]);
             }
         }
-        Debug.Log("Start loaded");
+        LoadAllAxes();
+    }
+
+    private void FixedUpdate()
+    {
+        for(int i = 0; i < InputAxes.Count; i++)
+        {
+            AxisBase a = InputAxes[i];
+
+            a.negative = (Input.GetKey(a.Nkey));
+            a.positive = (Input.GetKey(a.Pkey));
+
+            if(a.negative)
+            {
+                a.TargetAxis--;
+            }
+
+            if(a.positive)
+            {
+                a.TargetAxis++;
+            }
+
+            if(!a.positive && !a.negative)
+            {
+                a.TargetAxis = 0;
+            }
+            
+            a.Axis = Mathf.MoveTowards(a.Axis, a.TargetAxis, Time.deltaTime * a.Sensitivity);
+        }
     }
     #endregion
 }
 
 #region Serialized Classes
-    //No touchie boios
+//No touchie boios
 
 [System.Serializable]
 public class StoredInformation
@@ -215,7 +254,7 @@ public class AxisBase
     public bool negative;
     [HideInInspector]
     public float Axis;
-    public float TargetAxis;
+    private float targetAxis;
     public float Sensitivity = 3;
     public string PkeyDescription;
     public string NkeyDescription;
@@ -223,5 +262,18 @@ public class AxisBase
     public AxisButton NUIButton;
     [HideInInspector]
     public AxisButton PUIButton;
+
+    public float TargetAxis
+    {
+        get
+        {
+            return targetAxis;
+        }
+
+        set
+        {
+            targetAxis = Mathf.Clamp(value, -1, 1);
+        }
+    }
 }
 #endregion
