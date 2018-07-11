@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Carnivore : Character
+public class Carnivore2 : Character
 {
 
 
