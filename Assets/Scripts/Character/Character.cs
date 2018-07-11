@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Character : MonoBehaviour
 {
+
     //values
     public float SpeedValue = 2f;   //very important value that can be affected
     protected float speed = 2f;     // speed in character movement
@@ -19,8 +20,12 @@ public abstract class Character : MonoBehaviour
     protected float velocity;
     protected float restrictAngle = Mathf.Abs(80);
     
+    
+    
+    
     //script reference
     [HideInInspector] public CameraController camerascript;
+
 
     //bools
     protected bool isMoving;

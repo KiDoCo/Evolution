@@ -11,6 +11,12 @@ public class Herbivore : Character
     [HideInInspector] public static Herbivore herbiv;
     [SerializeField] new GameObject  CameraClone;
     [SerializeField] GameObject Camera3rd;
+
+    Quaternion targetRotation;
+    public Quaternion TargetRotation
+    {
+        get { return targetRotation; }
+    }
     
  
     public void MouseMove()
@@ -28,6 +34,7 @@ public class Herbivore : Character
 
     protected override void Start()
     {
+        targetRotation = transform.rotation;
         base.Start();
 
         GameObject cam = Instantiate(Camera3rd);

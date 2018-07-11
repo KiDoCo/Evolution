@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 81812026616519396}
   - component: {fileID: 114703077202592306}
   - component: {fileID: 114689218469743634}
+  - component: {fileID: 114154801377839884}
   m_Layer: 0
   m_Name: 3rdPerson Camera
   m_TagString: Untagged
@@ -37,13 +38,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1953833088195292}
-  m_LocalRotation: {x: -0, y: 0.646124, z: -0, w: 0.76323247}
-  m_LocalPosition: {x: 191.4, y: 10.5, z: 253}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 190.28, y: 10.55, z: 253}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!20 &20080875289540046
 Camera:
   m_ObjectHideFlags: 1
@@ -61,7 +62,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 2000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -87,6 +88,38 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1953833088195292}
   m_Enabled: 1
+--- !u!114 &114154801377839884
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1953833088195292}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f1af73f71c6c045be84c2fc8b102b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  lookSmooth: 100
+  offsetFromTarget: {x: 0, y: 0.2, z: -1}
+  targetPosOffset: {x: 0, y: 0.2, z: 0}
+  distanceFromTarget: -1
+  xTilt: 10
+  zoomSmooth: 100
+  maxZoom: -2
+  minZoom: -15
+  xRotation: -20
+  yRotation: -180
+  maxXRotation: 25
+  minXRotation: -85
+  vOrbitSmooth: 150
+  hOrbitSmooth: 150
+  ORBIT_HORIZONTAL_SNAP: OrbitHorizontalSnap
+  ORBIT_HORIZONTAL: OrbitHorizontal
+  ORBIT_VERTICAL: OrbitVertical
+  ZOOM: Mouse ScrollWheel
+  velocity: {x: 1, y: 1, z: 1}
+  distanceDamp: 0.03
 --- !u!114 &114689218469743634
 MonoBehaviour:
   m_ObjectHideFlags: 1

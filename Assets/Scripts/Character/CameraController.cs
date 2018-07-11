@@ -112,7 +112,7 @@ public class CameraController : MonoBehaviour
 
         Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
         transform.position = curPos;
-
+        //rotation
         Quaternion toRot = Quaternion.LookRotation(target.position - transform.position, target.up);
         Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
         transform.rotation = curRot;
