@@ -38,21 +38,17 @@ public abstract class Character : MonoBehaviour
     public bool hasjustRolled;
     public float Rotatingspeed;
 
-    private float angle;
-    private Vector3 input;
-    private Vector3 forward;
-    private Vector3 moveDirection;
+    private Vector3 colPosition;
     private Vector3 surfaceNormal;
-    private Vector3 capsuleNormal;
-    private Vector3 colDirection;
-    private Vector3 colNormal;
     private Vector3 colPoint;
     private CapsuleCollider col;
     private bool collided = false;
     private float groundAngle;
     private RaycastHit hitInfo;
     int i = 0;
-    Vector3 dir;
+    private Vector3 dir;
+    private bool grounded = false;
+    Vector3 curNormal = Vector3.up;
 
     public float Height = 0.3f;
     public float HeightPadding = 0.05f;
@@ -177,6 +173,8 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Move()
     {
+        if (groundAngle >= MaxGroundAngle)
+            return;
 
 
         isMoving = false;
@@ -211,12 +209,15 @@ public abstract class Character : MonoBehaviour
     protected void CheckCollision()
     {
         collided = false;
+        grounded = false;
 
         //initialize rays
         Ray rayForward = new Ray(transform.position, transform.forward);
         Ray rayBack = new Ray(transform.position, -transform.forward);
         Ray rayUp = new Ray(transform.position, transform.up);
         Ray rayDown = new Ray(transform.position, -transform.up);
+        Ray rayRight = new Ray(transform.position, transform.right);
+        Ray rayLeft = new Ray(transform.position, -transform.right);
         float distanceToPoints = col.height / 2 - col.radius;
 
         //calculating start and end point  of capsuleCollider for capsuleCast to use
@@ -224,9 +225,7 @@ public abstract class Character : MonoBehaviour
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
 
         float radius = col.radius * 1.1f;
-        float castDistance = 0.5f;
-
-
+        float castDistance = Height + HeightPadding;
 
         //shoot capsuleCast
         RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, dir, castDistance);
@@ -236,33 +235,56 @@ public abstract class Character : MonoBehaviour
         {
             if (objectHit.transform.tag == "Ground" || objectHit.transform.tag == "Player")
             {
-               
-               if (Physics.Raycast(rayForward, out hitInfo, Height) || Physics.Raycast(rayBack, out hitInfo, Height) || Physics.Raycast(rayUp, out hitInfo,col.radius *0.9f) || Physics.Raycast(rayDown, out hitInfo, col.radius * 0.9f))
+                
+                if (Physics.Raycast(transform.position, -transform.up, out hitInfo, Height + 2))
                 {
-                    currentLerpTime = 0;
+                    if (groundAngle >= MaxGroundAngle)
+                        return;
+
+                    RaycastHit hitA;
+
+
+                    if (Physics.Raycast(transform.position, -curNormal, out hitA))
+                    {
+                        curNormal = Vector3.Lerp(curNormal, hitA.normal, 4 * Time.deltaTime);
+                    }
+
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, curNormal), hitInfo.normal), Time.deltaTime * 5.0f);
+                    if (Vector3.Distance(transform.position, colPoint) < (Height + HeightPadding))
+                    {
+                        transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * Height, Time.deltaTime * 5.0f);
+                        grounded = true;
+                    }
+                }
+
+
+                if (Physics.Raycast(rayForward, out hitInfo, Height) || Physics.Raycast(rayBack, out hitInfo, Height) || Physics.Raycast(rayUp, out hitInfo, col.radius * 0.8f))
+                {
+                    if (groundAngle >= MaxGroundAngle)
+                        return;
 
                     if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
                     {
-                        surfaceNormal = objectHit.normal;
+                        curNormal = objectHit.normal;
                         colPoint = objectHit.point;
+                        colPosition = objectHit.transform.localPosition;
                     }
                     else
                     {
-                        surfaceNormal = hitInfo.normal;
+                        curNormal = hitInfo.normal;
                         colPoint = hitInfo.point;
+                        colPosition = objectHit.transform.localPosition;
                     }
-                 
+
                     collided = true;
-                    //Debug.Log("Collided: " + (i++));
 
-                    if (Vector3.Distance(transform.position, colPoint) < (Height + HeightPadding))
-                    {
-                        float perc = currentLerpTime / lerpTime;
-
-                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Height, perc);
-                    }
-                    transform.forward += dir * speed * Time.deltaTime;
                 }
+
+                if (Vector3.Distance(transform.position, colPoint) < (Height + HeightPadding))
+                {
+                    transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, 4 * Time.deltaTime);
+                }
+               
             }
         }
     }
@@ -280,16 +302,27 @@ public abstract class Character : MonoBehaviour
         groundAngle = Vector3.Angle(dir, hitInfo.normal);
     }
 
-    float lerpTime = 1f;
-    float currentLerpTime = 0;
+ 
+
 
     private void ChangeDirection()
     {
-        if (groundAngle >= MaxGroundAngle)
-            return;
+        //Debug.Log("Should change direction...");
 
-        Debug.Log("Should change direction...");
-        //TODO: add alternative direction along the collider 
+        //if (Physics.Raycast(transform.position, -Vector3.up, out hitInfo, col.radius))
+        //    grounded = true;
+
+        //Debug.DrawLine(transform.position, transform.position + dir * Height * 2, Color.blue);
+        //Debug.DrawLine(transform.position, transform.position - Vector3.up * Height * 2, Color.red);
+
+        //RaycastHit hitA;
+        transform.Translate(-MovementInputVector);
+
+        //if (Physics.Raycast(transform.position, -curNormal, out hitA))
+        //{
+        //    curNormal = Vector3.Lerp(curNormal, hitA.normal, 4 * Time.deltaTime);
+        //}
+
     }
 
     /// <summary>
@@ -351,7 +384,7 @@ public abstract class Character : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
         }
 
-     
+
     }
 
     protected virtual void FixedUpdate()
@@ -360,20 +393,16 @@ public abstract class Character : MonoBehaviour
         dir = transform.TransformDirection(MovementInputVector);
         CalculateGroundAngle();
         CheckCollision();
-       
-        if(!collided)
+
+        if (!collided)
         {
             Move();
             BarrelRoll();
         }
         else
         {
-            currentLerpTime += Time.deltaTime;
-            if(currentLerpTime > lerpTime)
-            {
-                currentLerpTime = lerpTime;
-            }
-            ChangeDirection();
+            //if (grounded) return;
+            //ChangeDirection();
         }
     }
 }

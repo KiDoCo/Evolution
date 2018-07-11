@@ -1000,12 +1000,12 @@ MonoBehaviour:
   camerascript: {fileID: 0}
   hasjustRolled: 0
   Rotatingspeed: 0
-  Height: 0.5
-  HeightPadding: 0.3
+  Height: 1
+  HeightPadding: 0.5
   ground:
     serializedVersion: 2
     m_Bits: 32768
-  MaxGroundAngle: 150
+  MaxGroundAngle: 180
   debug: 1
   myT: {fileID: 0}
   y: 0
