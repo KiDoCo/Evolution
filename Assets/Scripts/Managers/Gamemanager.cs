@@ -80,12 +80,6 @@ public class Gamemanager : NetworkBehaviour
     private IEnumerator StartMatch()
     {
         yield return new WaitForSeconds(2.0f);
-        //check the player selection and add them to a list
-        for (int i = 0; i < PlayerList.ToArray().Length; i++)
-        {
-            //playerselection blah blah 
-            //playerlist.add(playerselection[i])
-        }
         lifeCount = maxLifeCount; 
         //Stop for a moment to scene to load
         yield return new WaitForSeconds(2.0f);
@@ -150,7 +144,6 @@ public class Gamemanager : NetworkBehaviour
         //some client magix röh röh
 
         //Remove player from list and place camera to fixed point of the map
-        PlayerList.Remove(player);
         player.CameraClone.GetComponent<CameraController>().CameraPlaceOnDeath(player);
         player.gameObject.SetActive(false);
     }

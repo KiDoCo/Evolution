@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Carnivore2 : Character
+public class Carnivore : Character
 {
-
-
     //bools
     public bool IsCharging;
     [SerializeField] protected bool canCharge;
