@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 [System.Serializable]
-public abstract class Character : MonoBehaviour
+public abstract class Character : NetworkBehaviour
 {
     //values
     public float SpeedValue = 2f;   //very important value that can be affected
@@ -451,7 +452,7 @@ public abstract class Character : MonoBehaviour
 
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
-        
+        Cursor.visible = false;
 
         //UIManager.Instance.InstantiateMatchUI(this);
        // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
@@ -459,17 +460,11 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
-
         CanMove(MovementInputVector);
     }
 
     protected virtual void FixedUpdate()
     {
-
         //Stabilize();
         CanMove(MovementInputVector);
         Move();

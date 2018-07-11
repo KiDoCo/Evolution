@@ -177,7 +177,8 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         coralCollider = GetComponent<Collider>();
         //box = coralCollider.GetComponent<BoxCollider>();
         source = GetComponent<AudioSource>();
-        Gamemanager.Instance.FoodPlaceList.Add(this);
+        if (Gamemanager.Instance != null)
+            Gamemanager.Instance.FoodPlaceList.Add(this);
     }
 
     public void Start()

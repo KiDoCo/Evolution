@@ -68,6 +68,8 @@ GameObject:
   - component: {fileID: 136552196544218160}
   - component: {fileID: 82896623564635142}
   - component: {fileID: 114775384018827416}
+  - component: {fileID: 114529929787364956}
+  - component: {fileID: 114456772712730534}
   m_Layer: 9
   m_Name: Herbivore
   m_TagString: Untagged
@@ -1082,7 +1084,6 @@ MonoBehaviour:
   coolTimer: 0
   dashTime: 6
   coolTime: 6
-  CameraClone: {fileID: 0}
   Camera3rd: {fileID: 0}
 --- !u!114 &114223286702815470
 MonoBehaviour:
@@ -1096,6 +1097,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 982aae529381c164ca28fdce0f2120b7, type: 2}
+--- !u!114 &114456772712730534
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1063323722126642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1835b6d47ad5c564f850805f3cfeaf7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 1
+  m_SendInterval: 0.1
+  m_SyncRotationAxis: 7
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_VelocityThreshold: 0.0001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
+--- !u!114 &114529929787364956
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1063323722126642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 2
+    i1: 71
+    i2: 248
+    i3: 58
+    i4: 53
+    i5: 78
+    i6: 211
+    i7: 4
+    i8: 75
+    i9: 141
+    i10: 239
+    i11: 24
+    i12: 191
+    i13: 199
+    i14: 9
+    i15: 100
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
 --- !u!114 &114775384018827416
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1131,8 +1185,7 @@ MonoBehaviour:
   coolTimer: 0
   dashTime: 3
   coolTime: 5
-  CameraClone: {fileID: 0}
-  Camera3rd: {fileID: 0}
+  Camera3rd: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
 --- !u!124 &124711288741485302
 Behaviour:
   m_ObjectHideFlags: 1

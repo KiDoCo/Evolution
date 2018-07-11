@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3323685506
+CRC: 2332301092
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 369050d4b62fbad83b9318e925612045
+    Hash: 39196becfe18f8e692809316d9e4d4ea
   TypeTreeHash:
     serializedVersion: 2
-    Hash: da449c689de8604121f5aac31d2bfafd
+    Hash: 408dc7521443b85466a4278fa060cf34
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -38,11 +38,17 @@ ClassTypes:
 - Class: 95
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 11500000, guid: fb6536a3b1235d24496ee4772094987d, type: 3}
+  Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4be9ea4337ee2654b802643b6cbbb7c5, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 9b17d407cc45d47419bb41f2cb96e649, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
+  Script: {fileID: 11500000, guid: fb6536a3b1235d24496ee4772094987d, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1835b6d47ad5c564f850805f3cfeaf7f, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 124
@@ -54,4 +60,4 @@ ClassTypes:
 Assets:
 - Assets/Prefabs/Character/Herbivore.prefab
 Dependencies:
-- C:/Users/JoonasTuo/Desktop/Evolution/Assets/StreamingAssets/AssetBundles/music.mfg
+- C:/Users/AapoRit/Desktop/Evolution/Assets/StreamingAssets/AssetBundles/music.mfg

@@ -19,54 +19,65 @@ public class Carnivore : Character
 
     public void MouseMove()
     {
-        if (canMouseMove)
+        if (!PauseMenu.Instance.UI.activeSelf)
         {
-            float v = verticalSpeed * Input.GetAxis("Mouse Y");
-            float h = horizontalSpeed * Input.GetAxis("Mouse X");
-            transform.Rotate(v, h, 0);
+            if (canMouseMove)
+            {
+                float v = verticalSpeed * Input.GetAxis("Mouse Y");
+                float h = horizontalSpeed * Input.GetAxis("Mouse X");
+                transform.Rotate(v, h, 0);
+            }
         }
-        
 
     }
     protected override void Awake()
     {
         base.Awake();
-
     }
 
     protected override void Start()
     {
-        base.Start();
+        if (isLocalPlayer)
+        {
+            base.Start();
 
-        GameObject cam = Instantiate(Camera1); // Instantioi cameran ja pistää cam muuttujaksi
+            GameObject cam = Instantiate(Camera1); // Instantioi cameran ja pistää cam muuttujaksi
 
-        cam.GetComponent<CameraController_1stPerson>().target = this.transform; //pääsee käsiksi koodiin ja kohteeseen
-        
+            cam.GetComponent<CameraController_1stPerson>().target = this.transform; //pääsee käsiksi koodiin ja kohteeseen
+
+            UIManager.Instance.InstantiateInGameUI();
+        }
     }
 
 
     protected override void Update()
     {
-        base.Update();
+        if (isLocalPlayer)
+        {
+            base.Update();
 
-        if (isMoving)
-        {
-            m_animator.SetBool("isMoving", true);
-        }
-        if (!isMoving)
-        {
-            m_animator.SetBool("isMoving", false);
+            if (isMoving)
+            {
+                m_animator.SetBool("isMoving", true);
+            }
+            if (!isMoving)
+            {
+                m_animator.SetBool("isMoving", false);
+            }
         }
     }
     protected override void FixedUpdate()
     {
-        base.FixedUpdate();
-        MouseMove();
-        Restrict();
-        Stabilize();
-        Strafe();
-      
-        //Charge();
+        if (isLocalPlayer)
+        {
+            base.FixedUpdate();
+            MouseMove();
+            Restrict();
+            Stabilize();
+            Strafe();
+
+            //Charge();
+        }
     }
 
 

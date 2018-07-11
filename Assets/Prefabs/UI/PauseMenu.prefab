@@ -201,7 +201,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114256736739736670}
-        m_MethodName: B_StopGame
+        m_MethodName: B_BackToLobby
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -415,7 +415,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114256736739736670}
-        m_MethodName: B_Disconnect
+        m_MethodName: B_BackToLobby
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

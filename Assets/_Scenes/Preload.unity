@@ -185,7 +185,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodsources:
   - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
-  PlayerList: []
   CameraPrefab: {fileID: 1824946988335758, guid: 0576a07d4cfab8a42acea443ccd318a1,
     type: 2}
   BerryPrefab: {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117,
@@ -301,6 +300,12 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114353092562216092, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_GamePlayerPrefab
+      value: 
+      objectReference: {fileID: 1063323722126642, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 83c16fa1a9daede469d5f5a36209aed2, type: 2}
   m_IsPrefabParent: 0

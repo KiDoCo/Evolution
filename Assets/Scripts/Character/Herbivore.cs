@@ -5,22 +5,21 @@ using UnityEngine;
 
 public class Herbivore : Character
 {
-
-    
     //object references
     [HideInInspector] public static Herbivore herbiv;
-    [SerializeField] new GameObject  CameraClone;
     [SerializeField] GameObject Camera3rd;
-    
- 
+
+
     public void MouseMove()
     {
-        float v = verticalSpeed * Input.GetAxis("Mouse Y");
-        float h = horizontalSpeed * Input.GetAxis("Mouse X");
-        transform.Rotate(v, h, 0);
-                
+        if (!PauseMenu.Instance.UI.activeSelf)
+        {
+            float v = verticalSpeed * Input.GetAxis("Mouse Y");
+            float h = horizontalSpeed * Input.GetAxis("Mouse X");
+            transform.Rotate(v, h, 0);
+        }
     }
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -28,46 +27,53 @@ public class Herbivore : Character
 
     protected override void Start()
     {
-        base.Start();
+        if (isLocalPlayer)
+        {
+            base.Start();
 
-        GameObject cam = Instantiate(Camera3rd);
-        cam.GetComponent<CameraController>().target = this.transform;
-        canBarrellRoll = true;
-        canTurn = true;
-        //CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
+            GameObject cam = Instantiate(Camera3rd);
+            cam.GetComponent<CameraController>().target = this.transform;
+            canBarrellRoll = true;
+            canTurn = true;
+            //CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
+
+            UIManager.Instance.InstantiateInGameUI();
+        }
     }
 
     protected override void Update()
     {
-        base.Update();
-        
-        if(isMoving)
+        if (isLocalPlayer)
         {
-            m_animator.SetBool("isMoving", true);
-        }
-        if (!isMoving)
-        {
-            m_animator.SetBool("isMoving", false);
+            base.Update();
+
+            if (isMoving)
+            {
+                m_animator.SetBool("isMoving", true);
+            }
+            if (!isMoving)
+            {
+                m_animator.SetBool("isMoving", false);
+            }
         }
     }
     protected override void FixedUpdate()
     {
-        base.FixedUpdate();
-        
-        if (!CameraClone.GetComponent<CameraController>().FreeCamera) 
+        if (isLocalPlayer)
         {
-            MouseMove();
-        }
-        
-       
-        Restrict();
+            base.FixedUpdate();
 
-        if (!rolling)
-        {
-           Stabilize();
-        }
+            if (!Camera3rd.GetComponent<CameraController>().FreeCamera)
+            {
+                MouseMove();
+            }
 
-        
+            Restrict();
+
+            if (!rolling)
+            {
+                Stabilize();
+            }
+        }
     }
-    
 }

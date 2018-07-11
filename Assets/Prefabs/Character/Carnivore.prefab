@@ -117,6 +117,8 @@ GameObject:
   - component: {fileID: 136281019153297532}
   - component: {fileID: 82902269462009524}
   - component: {fileID: 114093146287343108}
+  - component: {fileID: 114751619814337314}
+  - component: {fileID: 114423972967708424}
   m_Layer: 8
   m_Name: Carnivore
   m_TagString: Untagged
@@ -193,7 +195,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4002626789114798}
   - component: {fileID: 137488018517704104}
-  - component: {fileID: 114609222067444956}
   m_Layer: 8
   m_Name: FishProto
   m_TagString: Untagged
@@ -984,7 +985,7 @@ MonoBehaviour:
   canMouseMove: 1
   chargeTime: 2
   chargeCoolTime: 20
-  Camera1: {fileID: 0}
+  Camera1: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9, type: 2}
 --- !u!114 &114306467401726188
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -997,17 +998,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 982aae529381c164ca28fdce0f2120b7, type: 2}
---- !u!114 &114609222067444956
+--- !u!114 &114423972967708424
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1329887410817820}
-  m_Enabled: 0
+  m_GameObject: {fileID: 1242143144456706}
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 1835b6d47ad5c564f850805f3cfeaf7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_TransformSyncMode: 1
+  m_SendInterval: 0.1
+  m_SyncRotationAxis: 7
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_VelocityThreshold: 0.0001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
+--- !u!114 &114751619814337314
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1242143144456706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 221
+    i1: 115
+    i2: 206
+    i3: 96
+    i4: 218
+    i5: 193
+    i6: 94
+    i7: 212
+    i8: 8
+    i9: 43
+    i10: 177
+    i11: 98
+    i12: 253
+    i13: 41
+    i14: 88
+    i15: 60
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
 --- !u!124 &124359911507282786
 Behaviour:
   m_ObjectHideFlags: 1
