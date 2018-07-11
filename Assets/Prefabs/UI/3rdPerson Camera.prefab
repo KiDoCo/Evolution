@@ -30,7 +30,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4599923784488548
 Transform:
   m_ObjectHideFlags: 1
@@ -101,10 +101,16 @@ MonoBehaviour:
   target: {fileID: 0}
   offset: {x: 0, y: 0.2, z: -1}
   distanceDamp: 0.04
+  distanceDampValue: 0.04
+  distanceDampValueB: 0.02
+  distanceDampValueV: 0.02
   rotationalDamp: 5
+  rotationalDampValue: 5
   velocity: {x: 0, y: 0, z: 0}
   RotationsSpeed: 2
   FreeCamera: 0
+  Camera3rd: {fileID: 20080875289540046}
+  reset: 0
   Herbivorescript: {fileID: 0}
   FOVValue: 60
   m_FieldOfView: 60

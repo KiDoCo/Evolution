@@ -30,7 +30,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4385922772924926
 Transform:
   m_ObjectHideFlags: 1
@@ -101,11 +101,11 @@ MonoBehaviour:
   target: {fileID: 0}
   offset: {x: 0, y: 0.2, z: 1}
   distanceDamp: 0.025
-  rotationalDamp: 10
+  rotationalDamp: 100
   distanceDampValue: 0.025
-  rotationalDampValue: 10
-  fastDistanceDamp: 0.2
-  fastRotationDamp: 1000
+  rotationalDampValue: 20
+  fastDistanceDamp: 0
+  fastRotationDamp: 20
   m_FieldOfView: 30
   FOVValue: 90
   Camera1st: {fileID: 20095017839008228}
