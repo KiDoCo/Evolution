@@ -48,9 +48,12 @@ public abstract class Character : MonoBehaviour
     int i = 0;
     private Vector3 dir;
     private bool grounded = false;
-    Vector3 curNormal = Vector3.up;
+    private Vector3 curNormal = Vector3.up;
+    private Vector3 curRight = Vector3.right;
+    private Vector3 curLeft = Vector3.left;
+    private bool canMove = true;
 
-    public float Height = 0.3f;
+    private float Height = 0.3f;
     public float HeightPadding = 0.05f;
     public LayerMask ground;
     public float MaxGroundAngle = 120f;
@@ -210,14 +213,15 @@ public abstract class Character : MonoBehaviour
     {
         collided = false;
         grounded = false;
+        canMove = true;
 
         //initialize rays
         Ray rayForward = new Ray(transform.position, transform.forward);
         Ray rayBack = new Ray(transform.position, -transform.forward);
         Ray rayUp = new Ray(transform.position, transform.up);
         Ray rayDown = new Ray(transform.position, -transform.up);
-        //Ray rayRight = new Ray(transform.position, transform.right);
-        //Ray rayLeft = new Ray(transform.position, -transform.right);
+        Ray rayRight = new Ray(transform.position, transform.right);
+        Ray rayLeft = new Ray(transform.position, -transform.right);
         float distanceToPoints = col.height / 2 - col.radius;
 
         //calculating start and end point  of capsuleCollider for capsuleCast to use
@@ -225,7 +229,9 @@ public abstract class Character : MonoBehaviour
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
 
         float radius = col.radius * 1.1f;
-        float castDistance = Height + HeightPadding;
+        float castDistance = 0.5f;
+        Height = col.height;
+        print("radius: " + radius);
 
         //shoot capsuleCast
         RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, dir, castDistance, ground); ;
@@ -233,31 +239,114 @@ public abstract class Character : MonoBehaviour
         // check al collisions for their type and move of not accordingly
         foreach (RaycastHit objectHit in hits)
         {
-            //if (objectHit.transform.tag == "Ground" || objectHit.transform.tag == "Player")
-            //{
 
-
-            if (Physics.Raycast(transform.position, -transform.up, out hitInfo, radius + 2))
+            if (Physics.Raycast(rayDown, out hitInfo, radius + 2))
             {
-                RaycastHit hitA;
+                RaycastHit hitDown;
                 grounded = true;
 
-                if (Physics.Raycast(transform.position, -curNormal, out hitA))
+                print("grounded");
+
+                if (Physics.Raycast(transform.position, -curNormal, out hitDown))
                 {
-                    curNormal = Vector3.Lerp(curNormal, hitA.normal, 4 * Time.deltaTime);
+                    curNormal = Vector3.Lerp(curNormal, hitDown.normal, 4 * Time.deltaTime);
                 }
 
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, curNormal), hitInfo.normal), Time.deltaTime * 5.0f);
-                //if (Vector3.Distance(transform.position, colPoint) < (Height + HeightPadding))
+                if (Vector3.Distance(transform.position, colPoint) < (Height + HeightPadding))
+                {
+                    transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius + HeightPadding), Time.deltaTime * 5.0f);
+                    grounded = true;
+                }
+
+            
+            }
+
+            if (Physics.CapsuleCast(point1, point2, radius, transform.forward, (Height + HeightPadding)))
+            {
+                canMove = false;
+                print("can't move");
+                if (grounded)
+                {
+                    if (groundAngle < MaxGroundAngle)
+                        canMove = true;
+                    print("can move");
+
+                }
+            }
+
+            if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
+            {
+                print("side collision right");
+
+                RaycastHit hitRight;
+
+                //if (!grounded)
                 //{
-                //    transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * Height, Time.deltaTime * 5.0f);
-                //    grounded = true;
+                if (Physics.Raycast(transform.position, curRight, out hitRight))
+                {
+                    curRight = Vector3.Lerp(curLeft, hitRight.normal, 4 * Time.deltaTime);
+                }
+
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.right, -curRight), Time.deltaTime * 5.0f);
                 //}
             }
 
+            if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+            {
+                print("side collision left");
+
+                RaycastHit hitLeft;
+
+                //if (!grounded)
+                //{
+                if (Physics.Raycast(transform.position, curLeft, out hitLeft))
+                {
+                    curLeft = Vector3.Lerp(curRight, hitLeft.normal, 4 * Time.deltaTime);
+                }
+
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(-transform.right, -curLeft), Time.deltaTime * 5.0f);
+                //}
+            }
+
+            //TODO: add side collision "sliding"
+            //if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
+            //{
+            //    print("side collision right");
+
+            //    RaycastHit hitRight;
+
+            //    if (!grounded)
+            //    {
+            //        if (Physics.Raycast(transform.position, curRight, out hitRight))
+            //        {
+            //            curRight = Vector3.Lerp(curRight, hitRight.normal, 4 * Time.deltaTime);
+            //        }
+
+            //        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(Vector3.Cross(transform.right, curRight), hitRight.normal), Time.deltaTime * 5.0f);
+            //    }
+            //}
+
+            //if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+            //{
+            //    print("side collision left");
+
+            //    RaycastHit hitLeft;
+
+            //    if (!grounded)
+            //    {
+            //        if (Physics.Raycast(transform.position, curLeft, out hitLeft))
+            //        {
+            //            curLeft = Vector3.Lerp(curLeft, hitLeft.normal, 4 * Time.deltaTime);
+            //        }
+
+            //        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(Vector3.Cross(-transform.right, curLeft), hitLeft.normal), Time.deltaTime * 5.0f);
+            //    }
+            //}
 
             if (Physics.Raycast(rayForward, out hitInfo, Height) || Physics.Raycast(rayBack, out hitInfo, Height) || Physics.Raycast(rayUp, out hitInfo, radius))
             {
+                print("collision: " + hitInfo);
 
                 if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
                 {
@@ -274,12 +363,13 @@ public abstract class Character : MonoBehaviour
 
                 collided = true;
 
-                if (Vector3.Distance(transform.position, colPoint) < (Height + HeightPadding))
-                {
-                    transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, 4 * Time.deltaTime);
-                }
             }
-            //}
+
+
+            if (Vector3.Distance(transform.position, colPoint) < (Height + HeightPadding))
+            {
+                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, 4 * Time.deltaTime);
+            }
         }
     }
 
@@ -294,15 +384,6 @@ public abstract class Character : MonoBehaviour
             return;
         }
         groundAngle = Vector3.Angle(dir, hitInfo.normal);
-    }
-
-    private void PushAway()
-    {
-        Vector3 moveDirection = colPoint - transform.position;
-
-        moveDirection = -moveDirection.normalized;
-
-        transform.Translate(moveDirection * 0.5f);
     }
 
     /// <summary>
@@ -363,8 +444,6 @@ public abstract class Character : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
         }
-
-
     }
 
     protected virtual void FixedUpdate()
@@ -374,10 +453,9 @@ public abstract class Character : MonoBehaviour
         CalculateGroundAngle();
         CheckCollision();
 
-        if (collided) return;
-        
-            Move();
-            BarrelRoll();
+        if (collided || !canMove) return;
 
+        Move();
+        BarrelRoll();
     }
 }

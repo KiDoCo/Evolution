@@ -510,7 +510,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1307832697468204}
   m_LocalRotation: {x: -0.70170546, y: -0, z: -0, w: 0.7124672}
-  m_LocalPosition: {x: 0, y: 0.003, z: -0.172}
+  m_LocalPosition: {x: 0, y: 0.038, z: -0.172}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4582253081090262}
@@ -595,7 +595,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1445834569832970}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 210.45479, y: 4.75, z: 220.71548}
+  m_LocalPosition: {x: 210.45479, y: 4.731, z: 220.71548}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4407305634596754}
@@ -1000,12 +1000,11 @@ MonoBehaviour:
   camerascript: {fileID: 0}
   hasjustRolled: 0
   Rotatingspeed: 0
-  Height: 1
   HeightPadding: 0.5
   ground:
     serializedVersion: 2
     m_Bits: 32768
-  MaxGroundAngle: 90
+  MaxGroundAngle: 150
   debug: 1
   myT: {fileID: 0}
   y: 0
@@ -1036,8 +1035,8 @@ CapsuleCollider:
   m_GameObject: {fileID: 1445834569832970}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
+  m_Enabled: 0
+  m_Radius: 0.2
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -1050,7 +1049,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 0.15
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
