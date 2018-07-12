@@ -259,21 +259,7 @@ public abstract class Character : MonoBehaviour
             isMovingVertical = false; 
         }
 
-
-
-        if (collided)
-        {
-            moveDirection = Vector3.Cross(colPoint, surfaceNormal);
-            moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
-            moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
-
-
-            MovementInputVector = moveDirection;
-        }
-        else
-        {
             MovementInputVector = inputvectorY + inputvectorZ;
-        }
        
         if (!eating)
         {
@@ -368,57 +354,7 @@ public abstract class Character : MonoBehaviour
     
 
    
-    /// <summary>
-    /// Checks if player can move in wanted direction
-    /// returns true if there is not another bject's collider in way
-    /// and false if player would collide with another collider
-    /// </summary>
-    protected bool CanMove(Vector3 dir)
-    {
-
-        float distanceToPoints = col.height / 2 - col.radius;
-
-        //calculating start and en point  of capuleCollider for capsuleCast to use
-        Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
-        Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
-
-        float radius = col.radius * 1.1f;
-        float castDistance = 0.5f;
-
-        //shoot capsuleCast
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, dir, castDistance);
-
-        foreach (RaycastHit objectHit in hits)
-        {
-            collided = false;
-
-            if (objectHit.transform.tag == "Ground")
-            {
-                colPoint = objectHit.point;
-
-                RaycastHit hit;
-
-                Physics.Raycast(point1, objectHit.point, out hit);
-                Debug.DrawRay(point1, objectHit.point, Color.red);
-
-                if (Vector3.Angle(objectHit.normal, hit.normal) > 5)
-                {
-                    surfaceNormal = objectHit.normal;
-                }
-                else
-                {
-                    surfaceNormal = hit.normal;
-                }
-
-                collided = true;
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
+   
 
     /// <summary>
     /// Reset z rotation to 0 every frame
@@ -469,14 +405,14 @@ public abstract class Character : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
         }
 
-        CanMove(MovementInputVector);
+       
     }
 
     protected virtual void FixedUpdate()
     {
 
         //Stabilize();
-        CanMove(MovementInputVector);
+       
         Move();
         BarrellRoll();
         Dash();

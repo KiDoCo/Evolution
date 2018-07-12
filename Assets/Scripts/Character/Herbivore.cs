@@ -11,6 +11,7 @@ public class Herbivore : Character
     [HideInInspector] public static Herbivore herbiv;
     [SerializeField] new GameObject  CameraClone;
     [SerializeField] GameObject Camera3rd;
+    public bool mouseInput;
 
     Quaternion targetRotation;
     public Quaternion TargetRotation
@@ -24,7 +25,14 @@ public class Herbivore : Character
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
-                
+
+        if (Input.GetAxisRaw("Mouse Y") != 0 || Input.GetAxisRaw("Mouse X") != 0)
+        {
+            mouseInput = true;
+        }
+        else
+            mouseInput = false;
+
     }
     
     protected override void Awake()
@@ -36,7 +44,7 @@ public class Herbivore : Character
     {
         targetRotation = transform.rotation;
         base.Start();
-
+        herbiv = this;
         GameObject cam = Instantiate(Camera3rd);
         cam.GetComponent<CameraController>().target = this.transform;
         canBarrellRoll = true;
@@ -61,7 +69,7 @@ public class Herbivore : Character
     {
         base.FixedUpdate();
         
-        if (!CameraClone.GetComponent<CameraController>().FreeCamera) 
+        if (!CameraClone.GetComponent<CameraController>().FreeCamera) //lock mouse move controls if looking around with camera
         {
             MouseMove();
         }

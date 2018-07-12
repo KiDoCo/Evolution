@@ -6,11 +6,17 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
 
+    //objects
+    public Transform target;
+    public Transform pivotpoint;
+    public Camera Camera3rd;
 
-
-    [SerializeField] public Transform target;
+    //bools
+    public bool FreeCamera;
+    public bool reset;
 
     //values
+    Vector3 velocity = Vector3.one;
     [SerializeField] Vector3 offset = new Vector3(0f, 2f, -10f);
     [SerializeField] float distanceDamp = 10f;
     [SerializeField] float distanceDampValue = 0.4f;
@@ -18,16 +24,17 @@ public class CameraController : MonoBehaviour
     [SerializeField] float distanceDampValueV = 0.02f; //used in vertical movement
     [SerializeField] float rotationalDamp = 10f;
     [SerializeField] float rotationalDampValue = 5f;
-    [SerializeField] Vector3 velocity = Vector3.one;
-    [SerializeField] float RotationsSpeed = 2f;
+    [SerializeField] float RotationsSpeed = 2f; //camera rotation speed
+    public float resetLerpValue = 5; // camera reset speed
 
-    public bool FreeCamera;
-    public Camera Camera3rd;
-    public bool reset;
-
-    //Script references
-    [HideInInspector] public Herbivore Herbivorescript;
-    [HideInInspector] public static CameraController cam;
+    //orbit
+    public float xRotation = -20;
+    public float yRotation = -180;
+    public float maxXRotation = 25;
+    public float minXRotation = -85;
+    public float vOrbitSmooth = 150;
+    public float hOrbitSmooth = 150;
+    float vOrbitInput, hOrbitInput;
 
     //FOV
     public float FOVValue = 60f;
@@ -36,6 +43,93 @@ public class CameraController : MonoBehaviour
 
     //reset point
     Vector3 startOffset = Vector3.zero;
+
+
+    //Followrot2(); values
+    Vector3 targetPos = Vector3.zero;
+    public float lookSmooth = 100f;
+    public Vector3 targetPosOffset = new Vector3(0, 1, 0);
+
+    [System.Serializable]
+    public class CollisionHandler
+    {
+        public LayerMask collisionLayer;
+        [HideInInspector] public bool colliding = false;
+        [HideInInspector] public Vector3[] adjustedCameraClipPoints;
+        [HideInInspector] public Vector3[] desiredCameraClipPoints;
+        Camera camera;
+
+        public void Initialize(Camera cam)
+        {
+           camera = cam;
+           adjustedCameraClipPoints = new Vector3[5];
+           desiredCameraClipPoints = new Vector3[5];
+        }
+        //get clip points and pass the values into array (Quaternion = cameras rotation)
+        public void UpdateCameraClipPoints(Vector3 cameraPosition, Quaternion atRotation, ref Vector3[] intoArray)
+        {
+            if (!camera) return;
+
+            //clear the contents of intoArray
+            intoArray = new Vector3[5];
+
+            //find clippoint coordinates with relation to our camera position
+            float z = camera.nearClipPlane;
+           // "cushion" between cameras position and collision
+            float x = Mathf.Tan(camera.fieldOfView / 3.41f) * z;
+            float y = x / camera.aspect;
+
+
+            //top left 
+            intoArray[0] = (atRotation) * new Vector3(-x, y, z) + cameraPosition; //added and rotated the point relative to camera
+
+            // top right
+            intoArray[1] = (atRotation) * new Vector3(x, y, z) + cameraPosition;
+
+            // bottom left
+            intoArray[2] = (atRotation) * new Vector3(-x, -y, z) + cameraPosition;
+
+            // bottom right
+            intoArray[3] = (atRotation) * new Vector3(x, -y, z) + cameraPosition;
+
+            //camera's position
+            intoArray[4] = cameraPosition - camera.transform.forward;
+        }
+
+        //check collisions with raycasts
+        bool CollisionDetectedAtClipPoints(Vector3[] clipPoints, Vector3 fromPosition)
+        {
+            for (int i = 0; i < clipPoints.Length; i++)
+            {
+                Ray ray = new Ray(fromPosition, clipPoints[i] - fromPosition);
+                float distance = Vector3.Distance(clipPoints[i], fromPosition);
+                if (Physics.Raycast(ray, distance, collisionLayer))
+                {
+                    return true;
+
+                }
+                
+            }
+            return false;
+        }
+
+        //finds out the distance from target and how far to move
+        public float GetAdjustedDistanceWithRayFrom(Vector3 from)
+        {
+            float distance = -1;
+            if (distance == -1)
+                return 0;
+            else
+                return distance;
+        }
+        //checks if colliding and if needed to move
+        public void CheckColliding(Vector3 targetPosition)
+        {
+
+        }
+    }
+
+
 #pragma warning restore
     public Transform Target
     {
@@ -52,35 +146,81 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-
-        cam = this;
+        GetInput();
         startOffset = offset;
         m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
         distanceDamp = distanceDampValue;
         rotationalDamp = rotationalDampValue;
 
-
     }
 
     void FixedUpdate()
     {
-        if (target == null) return;
+        if (target == null) Debug.LogError("Camera needs a target");
 
-        SetDampening();
-        ControlCamera();
+        if (pivotpoint == null) Debug.LogError("Camera needs a pivotpoint to look at");
+        
+        //testiä varten
         if (Input.GetKey(KeyCode.R))
         {
             ResetCamera();
         }
-        FollowRot();
+        
+        SetDampening();
+        ControlCamera();
+        SmoothFollow();
+        //SmoothRotate();
+        FollowRot2();
         Stabilize();
-       
-
-
+        //OrbitTarget();
+        Restrict();
     }
+
+
     public void InstantiateCamera(Character test)
     {
         Target = test.transform;
+    }
+
+
+    void GetInput()
+    {
+        vOrbitInput = Input.GetAxisRaw("Mouse X");
+        hOrbitInput = Input.GetAxisRaw("Mouse Y");
+    }
+
+    void OrbitTarget() //restict camera angle
+    {
+        xRotation += -Input.GetAxisRaw("Mouse X") * vOrbitSmooth * Time.deltaTime;
+        yRotation += -Input.GetAxisRaw("Mouse Y") * hOrbitSmooth * Time.deltaTime;
+
+        if (xRotation > maxXRotation)
+        {
+            xRotation = maxXRotation;
+        }
+        if (xRotation < minXRotation)
+        {
+            xRotation = minXRotation;
+        }
+    }
+
+    protected void Restrict()
+    {
+        if (transform.rotation.x > 15)
+        {
+            float x = transform.eulerAngles.x;
+            transform.Rotate(-x, 0, 0);
+        }
+
+        if (transform.rotation.x < -15)
+        {
+            float x = transform.eulerAngles.x;
+            transform.Rotate(-x, 0, 0);
+        }
+    }
+    protected void Restrict2()
+    {
+
     }
 
     /// <summary>
@@ -90,74 +230,6 @@ public class CameraController : MonoBehaviour
     public void CameraPlaceOnDeath(Character test)
     {
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
-    }
-
-    void SmoothFollow()// follow every frame
-    {
-        Vector3 toPos = target.position + (target.rotation * offset);
-
-        Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
-        transform.position = curPos;
-
-        //rotation, same up direction
-        transform.LookAt(target, target.up);
-
-    }
-
-
-    void FollowRot()//Alternative camera follow
-    {
-
-        Vector3 toPos = target.position + (target.rotation * offset);
-
-        Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
-        transform.position = curPos;
-        //rotation
-        Quaternion toRot = Quaternion.LookRotation(target.position - transform.position, target.up);
-        Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
-        transform.rotation = curRot;
-    }
-
-
-    void Stabilize()
-    {
-
-        float z = transform.eulerAngles.z;
-        //Debug.Log(z);
-        transform.Rotate(0, 0, -z);
-
-    }
-
-    void ResetCamera()
-    {
-        
-            offset = startOffset;
-        
-        
-    }
-
-    void ControlCamera()// Camera input
-    {
-
-        if (Input.GetMouseButton(2))
-        {
-            //FreeCamera = !FreeCamera;
-            FreeCamera = true;
-        }
-        else
-        {
-            FreeCamera = false;
-        }
-
-        if (FreeCamera)
-        {
-            Quaternion camTurnAngle = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * RotationsSpeed, Vector3.up);
-            offset = camTurnAngle * offset;
-        }
-        else if (!FreeCamera)
-        {
-            ResetCamera();
-        }
     }
 
     /// <summary>
@@ -173,11 +245,85 @@ public class CameraController : MonoBehaviour
         {
             distanceDamp = distanceDampValueV;
         }
-
         else
             distanceDamp = distanceDampValue;
-        
     }
 
 
+    void SmoothFollow()// follow every frame
+    {
+        Vector3 toPos = target.position + (target.rotation * offset);
+
+        Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
+        transform.position = curPos;
+
+    }
+    void SmoothRotate()
+    {
+        // rotation, same up direction
+        transform.LookAt(pivotpoint, target.up);
+    }
+
+    
+
+
+    void FollowRot()//Alternative camera rotate
+    {
+        Quaternion toRot = Quaternion.LookRotation(target.position - transform.position, target.up);
+        Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
+        transform.rotation = curRot;
+    }
+
+    void FollowRot2() //camera is looking position of the target with the offset! no pivotpoint needed GOOD METHOD
+    {
+        targetPos = target.position + targetPosOffset; //välissä pivotpoint
+        Quaternion targetRotation = Quaternion.LookRotation(targetPos - transform.position, target.up);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lookSmooth * Time.deltaTime);
+    }
+
+    void Stabilize()
+    {
+        float z = transform.eulerAngles.z;
+        transform.Rotate(0, 0, -z);
+    }
+
+    void ResetCamera()
+    {
+        if (!FreeCamera) // || !target.GetComponent<Herbivore>().isMovingForward || target.GetComponent<Herbivore>().mouseInput)
+        {
+
+            Vector3 resetLoc = Vector3.Lerp(offset, startOffset, resetLerpValue * Time.deltaTime);
+            //Vector3 resetLoc = Vector3.SmoothDamp(offset, startOffset, ref velocity, distanceDamp);
+            offset = resetLoc;
+
+            //offset = startOffset; //direct reset
+        }
+    }
+
+    
+    void ControlCamera()// Camera input 
+    {
+
+        if (Input.GetMouseButton(2))
+        {
+            FreeCamera = true;
+        }
+        else
+        {
+            FreeCamera = false;
+        }
+
+        if (FreeCamera)
+        {
+            Quaternion camTurnAngle = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * RotationsSpeed, Vector3.up);
+            Quaternion camTurnAngle2 = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * RotationsSpeed, Vector3.right);
+            Quaternion sum = camTurnAngle2 * camTurnAngle;
+            offset = sum * offset;
+          
+        }
+        else if (!FreeCamera)
+        {
+            ResetCamera();
+        }
+    }
 }

@@ -101,7 +101,7 @@ MonoBehaviour:
   target: {fileID: 0}
   offset: {x: 0, y: 0.2, z: 1}
   distanceDamp: 0.025
-  rotationalDamp: 100
+  rotationalDamp: 50
   distanceDampValue: 0.025
   rotationalDampValue: 20
   fastDistanceDamp: 0
