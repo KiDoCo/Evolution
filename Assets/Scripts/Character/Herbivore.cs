@@ -9,7 +9,7 @@ public class Herbivore : Character
 
     Quaternion originZ;
     Quaternion currentZ;
-
+    private bool Iseating;
     //objects
     public Transform myT;
     
@@ -39,7 +39,7 @@ public class Herbivore : Character
     {
         base.Start();        
         herbiv = this;
-        CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
+        //CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
     }
 
     protected override void Update()
@@ -54,11 +54,21 @@ public class Herbivore : Character
         {
             m_animator.SetBool("isMoving", false);
         }
+        m_animator.SetBool("isEating", Iseating);
+
+        if(Input.GetKey(KeyCode.N))
+        {
+            Iseating = true;
+        }
+        else
+        {
+            Iseating = false;
+        }
     }
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-        CameraClone.GetComponent<CameraController>().FreeCamera();
+        //CameraClone.GetComponent<CameraController>().FreeCamera();
         MouseMove();
        
         Restrict();

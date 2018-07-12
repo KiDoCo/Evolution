@@ -9,9 +9,8 @@ public class ControlsMenu : MonoBehaviour
     [SerializeField]
     public List<AxisBase> Axes = new List<AxisBase>();
 
-    private Dictionary<string, int> defaultaxes = new Dictionary<string, int>();
 
-    public GameObject AxisPrefab;
+    public GameObject AxisRebindButton;
     public Transform AxesGrid;
     public RebindButton RebButton;
 
@@ -27,7 +26,7 @@ public class ControlsMenu : MonoBehaviour
         {
             initOnce = true;
         }
-
+        Axes = InputManager.Instance.InputAxes;
         RebButton.gameObject.SetActive(false);
 
         InputManager.Instance.LoadAllAxes();
@@ -38,16 +37,16 @@ public class ControlsMenu : MonoBehaviour
     {
         foreach (AxisBase a in Axes)
         {
-            GameObject p = Instantiate(AxisPrefab);
+            GameObject p = Instantiate(AxisRebindButton);
             p.transform.SetParent(AxesGrid);
             AxisButton pB = p.GetComponent<AxisButton>();
-
+            pB.transform.position = new Vector2(0, 0);
             pB.Init(a.AxisName, a.PkeyDescription, a.Pkey.ToString());
             a.PUIButton = pB;
 
             if(a.Nkey != KeyCode.None)
             {
-                GameObject n = Instantiate(AxisPrefab);
+                GameObject n = Instantiate(AxisRebindButton);
                 n.transform.SetParent(AxesGrid);
                 AxisButton nB = n.GetComponent<AxisButton>();
 
@@ -57,16 +56,7 @@ public class ControlsMenu : MonoBehaviour
         }
     }
 
-    public void ResetAllAxes()
-    {
-        foreach(AxisBase a in Axes)
-        {
-            int pKeyValue = 0;
-            defaultaxes.TryGetValue(a.AxisName + "pKey", out pKeyValue);
-            a.Pkey = (KeyCode)pKeyValue;
-            InputManager.Instance.AssignKeyboardInput(a);
-        }
-    }
+
 
     public void ChangeInputKey(string name, KeyCode newKey,bool negative = false)
     {

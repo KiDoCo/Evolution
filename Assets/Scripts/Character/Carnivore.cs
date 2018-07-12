@@ -8,9 +8,8 @@ public class Carnivore : Character
 
     //objects
     [SerializeField] new GameObject camera;
-    private Animator m_animator;
 
-
+    
     //script references
     [HideInInspector] public static Carnivore carniv;
 
@@ -28,6 +27,8 @@ public class Carnivore : Character
     [SerializeField] protected float staminaDecrement = 2f;
     [SerializeField] protected float staminaIncrement = 2f;
 
+    private bool isEating;
+    private bool isCharging;
 
 
     protected override void Start()
@@ -37,7 +38,7 @@ public class Carnivore : Character
         carniv = this;
         barrelRoll = false;
         stamina = staminaValue;
-        //camera.GetComponent<CameraController>().ConstructCamera(this);
+        camera.GetComponent<CameraController>().InstantiateCamera(this);
     }
 
     protected override void Update()
@@ -46,13 +47,13 @@ public class Carnivore : Character
         if (stamina < staminaValue && !dashing)
         {
             stamina += staminaIncrement * Time.deltaTime;
-            if (stamina >staminaValue)
+            if (stamina > staminaValue)
             {
                 stamina = staminaValue;
             }
-            
+
         }
-        if (stamina >0 && dashing)
+        if (stamina > 0 && dashing)
         {
             stamina -= staminaDecrement * Time.deltaTime;
             if (stamina < 0)
@@ -66,35 +67,55 @@ public class Carnivore : Character
             dashSpeed = dashSpeedValue;
 
         }
-        else if (stamina <=0)
+        else if (stamina <= 0)
         {
             canDash = false;
             dashSpeed = Speed;
             dashing = false;
         }
-
-
-        if (isMoving)
+        if(Input.GetKeyDown(KeyCode.H))
         {
-            m_animator.SetBool("isMoving", true);
+            isEating = true;
         }
-        if (!isMoving)
+        else
         {
-            m_animator.SetBool("isMoving", false);
+            isEating = false;
         }
+
+        if(Input.GetKey(KeyCode.T))
+        {
+            isCharging = true;
+        }
+        else
+        {
+            isCharging = false;
+        }
+
     }
+
+
+    protected override void AnimationChanger()
+    {
+        m_animator.SetBool("IsMoving", isMoving);
+        m_animator.SetBool("IsEating", isEating);
+        m_animator.SetBool("IsCharging", isCharging);
+    }
+
     protected override void FixedUpdate()
     {
 
         base.FixedUpdate();
         Strafe();
         Dash();
-        
+        MouseMove();
+        AnimationChanger();
+        isMoving = false;
 
-        if (!cameraClone.GetComponent<CameraController>().freeCamera)
-        {
-            MouseMove();
-        }
+
+        //if (!cameraClone.GetComponent<CameraController>().freeCamera)
+        //{
+        //    MouseMove();
+        //}
 
     }
 
@@ -105,8 +126,14 @@ public class Carnivore : Character
     {
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
-        transform.Rotate(v, h, 0);
 
+        if(v != 0 || h != 0)
+        {
+            isMoving = true;
+        }
+            m_animator.SetFloat("FloatX", Mathf.Clamp01(h) + Input.GetAxis("Horizontal"));
+            m_animator.SetFloat("FloatY", Mathf.Clamp01(v) + Input.GetAxis("Vertical"));
+            transform.Rotate(v, h, 0);
     }
 
     public void Strafe()
@@ -122,7 +149,7 @@ public class Carnivore : Character
             transform.Translate(Vector3.right * strafeSpeed * Time.deltaTime);
         }
     }
-   
+
 
     public void Dash()
     {
@@ -144,8 +171,8 @@ public class Carnivore : Character
     }
 }
 
-                    
-        
 
-    
+
+
+
 

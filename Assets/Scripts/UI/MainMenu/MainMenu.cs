@@ -47,9 +47,9 @@ public class MainMenu : MonoBehaviour
             b.go.SetActive(false);
         }
 
-        optionsDefaultButton.SetActive(false);
+        OptionMenu.SetActive(false);
         backButton.SetActive(false);
-        controlsDefaultButton.SetActive(false);
+        ControlMenu.SetActive(false);
     }
 
     private void OpenButtons()
@@ -100,14 +100,13 @@ public class MainMenu : MonoBehaviour
 
         optionsDefaultButton.SetActive(false);
         backButton.SetActive(false);
-        controlsDefaultButton.SetActive(false);
     }
 
     public void OpenControlsMenu()
     {
         ChangeCurrentActiveMenu(ControlMenu);
         backButton.SetActive(true);
-        controlsDefaultButton.SetActive(true);
+        ControlMenu.GetComponent<ControlsMenu>().Init();
     }
 
     public void LoadMainMenu()
@@ -116,7 +115,6 @@ public class MainMenu : MonoBehaviour
         InGameMenu = false;
         ChangeCurrentActiveMenu(MainMenuGrid);
         mmStatus = MMStatus.main;
-
         Loading = true;
         //loadlevel hommeli
     }
@@ -128,7 +126,7 @@ public class MainMenu : MonoBehaviour
 
     private void ChangeCurrentActiveMenu(GameObject menu)
     {
-        curActiveMenu.SetActive(false);
+        if(curActiveMenu != null) curActiveMenu.SetActive(false);
         curActiveMenu = menu;
         curActiveMenu.SetActive(true);
     }
@@ -139,7 +137,6 @@ public class MainMenu : MonoBehaviour
 
         OpenButtons();
         ControlMenu.SetActive(true);
-        ControlsMenu.Instance.Init();
         ControlMenu.SetActive(false);
     }
 
@@ -148,8 +145,8 @@ public class MainMenu : MonoBehaviour
         if(Loading)
         {
             EnableMenu = false;
-
-            LoadUI.SetActive(true);
+            if (LoadUI == null) return;
+            //LoadUI.SetActive(true);
 
             loadT += Time.deltaTime;
 
@@ -172,19 +169,19 @@ public class MainMenu : MonoBehaviour
         else
         {
             EnableMenu = true;
-            LoadUI.SetActive(false);
+            //LoadUI.SetActive(false);
         }
 
-        switch(mmStatus)
-        {
-            case MMStatus.main:
-                curActiveMenu.SetActive(EnableMenu);
-                break;
-            case MMStatus.inGame:
-                curActiveMenu.SetActive((!Loading) ? InGameMenu : false);
-                break;
-            default:
-                break;
-        }
+        //switch(mmStatus)
+        //{
+        //    case MMStatus.main:
+        //        curActiveMenu.SetActive(EnableMenu);
+        //        break;
+        //    case MMStatus.inGame:
+        //        curActiveMenu.SetActive((!Loading) ? InGameMenu : false);
+        //        break;
+        //    default:
+        //        break;
+        //}
     }
 }

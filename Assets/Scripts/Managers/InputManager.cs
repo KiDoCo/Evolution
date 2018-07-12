@@ -5,6 +5,9 @@ using System.Linq;
 using System.IO;
 
 public enum KeyInput { Horizontal, Vertical, Rotation, Jump, Ability, Eat }
+/// <summary>
+/// Handels the input and controls the changes
+/// </summary>
 public class InputManager : MonoBehaviour
 {
 
@@ -19,9 +22,19 @@ public class InputManager : MonoBehaviour
     private string gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
 
     //Lists and dictionaries
-    private List<AxisBase> InputAxes = new List<AxisBase>();
+    private List<AxisBase> inputAxes = new List<AxisBase>();
     [SerializeField]
     private List<AxisBase> DefaultAxes = new List<AxisBase>();
+
+    public List<AxisBase> InputAxes
+    {
+        get
+        {
+            return inputAxes;
+        }
+
+    }
+
     /// <summary>
     /// Assigns a new axis and stores the information
     /// </summary>
@@ -61,28 +74,11 @@ public class InputManager : MonoBehaviour
 
     private void StorageToInput()
     {
-        InputAxes = storage.configurations;
+        inputAxes = storage.configurations;
         SaveInput();
     }
 
-    #region Save/load All axes
-
-   //Methods that handle loading and saving of axes changes
-
-    public void LoadAllAxes()
-    {
-        for (int i = 0; i < InputAxes.Count; i++)
-        {
-            AxisBase a = InputAxes[i];
-
-            int p = (int)InputAxes.Find(x => x.AxisName == a.AxisName).Pkey;
-            int n = (int)InputAxes.Find(x => x.AxisName == a.AxisName).Nkey;
-
-            a.Pkey = (KeyCode)p;
-            a.Nkey = (KeyCode)n;
-        }
-    }
-
+    #region Axis Related Functions
 
     /// <summary>
     /// Loads data from json file 
@@ -96,6 +92,7 @@ public class InputManager : MonoBehaviour
             if (dataAsJson != null)
             {
                 storage = JsonUtility.FromJson<StoredInformation>(dataAsJson);
+                Debug.Log(storage.configurations.Count);
             }
         }
         else
@@ -104,14 +101,14 @@ public class InputManager : MonoBehaviour
 
         }
 
-        if (storage.configurations == null) return;
+        if (storage.configurations.Count > 0) return;
 
         if (storage.configurations.Count <= 0)
         {
             storage.configurations = DefaultAxes;
         }
 
-        InputAxes = storage.configurations;
+
     }
 
     /// <summary>
@@ -124,7 +121,26 @@ public class InputManager : MonoBehaviour
         string filePath = Application.dataPath + gameDataProjectFilePath;
         File.WriteAllText(filePath, dataAsJson);
     }
-    #endregion InputSave/Load Handles saving and loading of input
+
+    public void ResetAllAxes()
+    {
+        foreach (AxisBase a in inputAxes)
+        {
+            int pKeyValue = 0;
+            pKeyValue = (int)DefaultAxes.Find(x => x.AxisName == a.AxisName).Pkey;
+            a.Pkey = (KeyCode)pKeyValue;
+            AssignKeyboardInput(a);
+            inputAxes = storage.configurations;
+        }
+    }
+
+    public void LoadAllAxes()
+    {
+        Debug.Log("Load all axes");
+        inputAxes = storage.configurations;
+    }
+
+    #endregion
 
     #region Getters
     /// <summary>
@@ -136,11 +152,11 @@ public class InputManager : MonoBehaviour
     {
         float v = 0;
 
-        for (int i = 0; i < InputAxes.Count; i++)
+        for (int i = 0; i < inputAxes.Count; i++)
         {
-            if (InputAxes[i].AxisName == name)
+            if (inputAxes[i].AxisName == name)
             {
-                v = InputAxes[i].Axis;
+                v = inputAxes[i].Axis;
             }
         }
         return v;
@@ -154,11 +170,11 @@ public class InputManager : MonoBehaviour
     {
         bool retVal = false;
 
-        for (int i = 0; i < InputAxes.Count; i++)
+        for (int i = 0; i < inputAxes.Count; i++)
         {
-            if (InputAxes[i].AxisName == name)
+            if (inputAxes[i].AxisName == name)
             {
-                retVal = InputAxes[i].positive;
+                retVal = inputAxes[i].positive;
             }
         }
         return retVal;
@@ -188,21 +204,20 @@ public class InputManager : MonoBehaviour
             xboxController = 1;
         }
 
-        if (InputAxes.Count <= 0)
+        if (inputAxes.Count <= 0)
         {
             for (int i = 0; i < storage.configurations.Count; i++)
             {
                 AssignKeyboardInput(storage.configurations[i]);
             }
         }
-        LoadAllAxes();
     }
 
     private void FixedUpdate()
     {
-        for(int i = 0; i < InputAxes.Count; i++)
+        for(int i = 0; i < inputAxes.Count; i++)
         {
-            AxisBase a = InputAxes[i];
+            AxisBase a = inputAxes[i];
 
             a.negative = (Input.GetKey(a.Nkey));
             a.positive = (Input.GetKey(a.Pkey));

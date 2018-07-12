@@ -50,6 +50,7 @@ public abstract class Character : MonoBehaviour
     private CapsuleCollider col;
     private bool collided = false;
 
+    #region Getter&Setter
     public float Maxhealth { get { return healthMax; } }
     public float Health
     {
@@ -91,7 +92,7 @@ public abstract class Character : MonoBehaviour
             speed = value;
         }
     }
-
+    #endregion
 
     /// <summary>
     /// Takes care of the eating for the player
@@ -177,13 +178,13 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Move()
     {
-        isMoving = false;
-        Vector3 inputvectorX = (InputManager.Instance.GetAxis(KeyInput.Horizontal.ToString()) * Vector3.up * turnSpeed);
-        Vector3 inputvectorY = (InputManager.Instance.GetAxis(KeyInput.Vertical.ToString()) * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (InputManager.Instance.GetAxis(KeyInput.Jump.ToString()) * Vector3.up * Speed) * Time.deltaTime;
+        Vector3 inputvectorX = (Input.GetAxis("Horizontal") * Vector3.up * turnSpeed);
+        Vector3 inputvectorY = (Input.GetAxis("Vertical")   * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (Input.GetAxis("Rotation")       * Vector3.up * Speed) * Time.deltaTime;
 
         if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
+
             isMoving = true;
         }
         else
@@ -311,15 +312,15 @@ public abstract class Character : MonoBehaviour
         col = GetComponentInChildren<CapsuleCollider>();
 
         musicSource = GetComponentInChildren<AudioSource>();
-        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
     protected virtual void Start()
     {
         //Component search
         m_animator = gameObject.GetComponent<Animator>();
-        cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
-        cameraClone.name = "FollowCamera";
+        //cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
+        //cameraClone.name = "FollowCamera";
 
         Debug.Log("Loading character start");
         //Cursor lock state and quaterions
@@ -327,8 +328,8 @@ public abstract class Character : MonoBehaviour
         Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
         Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         isMoving = true;
-        UIManager.Instance.InstantiateMatchUI(this);
-        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        //UIManager.Instance.InstantiateMatchUI(this);
+        //EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
@@ -347,5 +348,6 @@ public abstract class Character : MonoBehaviour
         CanMove(MovementInputVector);
         Move();
         BarrelRoll();
+        AnimationChanger();
     }
 }
