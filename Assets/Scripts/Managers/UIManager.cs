@@ -1,7 +1,61 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
+
+[Serializable]
+public class InspectorObject
+{
+    [SerializeField] private string name = null;
+    [SerializeField] private GameObject obj = null;
+
+    public string Name
+    {
+        get
+        {
+            return name;
+        }
+    }
+
+    public GameObject Object
+    {
+        get
+        {
+            return obj;
+        }
+    }
+
+    // --------------------------
+
+    // Enables only one of the objects in InspectorObject list and disables others
+    public static void switchGameObject(List<InspectorObject> list, string name)
+    {
+        bool found = false;
+
+        foreach (InspectorObject o in list)
+        {
+            if (o.Name == name)
+            {
+                found = true;
+                o.Object.SetActive(true);
+            }
+            else
+            {
+                o.Object.SetActive(false);
+            }
+        }
+
+        if (!found)
+        {
+            Debug.Log("UIManager, switchUIWindow: " + name + " gameObject not found!");
+        }
+    }
+
+    public static void enableGameObject(List<InspectorObject> list, string name, bool enabled = true)
+    {
+        list.Find(x => x.Name == name).Object.SetActive(enabled);
+    }
+}
 
 public class UIManager : MonoBehaviour
 {
@@ -20,7 +74,7 @@ public class UIManager : MonoBehaviour
 
     public void InstantiateInGameUI()
     {
-        Instantiate(hud);
+        //Instantiate(hud);
         Instantiate(pauseMenu);
     }
 

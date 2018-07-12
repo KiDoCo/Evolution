@@ -3,7 +3,7 @@ using UnityEngine.Networking;
 
 public class NetworkSmoothTransform : NetworkTransform {
 
-    public override void OnStartServer()
+    /*public override void OnStartServer()
     {
         clientMoveCallback3D = SmoothTransform;
     }
@@ -12,6 +12,6 @@ public class NetworkSmoothTransform : NetworkTransform {
     {
         Debug.Log(position + "/t" + velocity + "/t" + rotation);
         return true;
-    }
+    }*/
 
 }

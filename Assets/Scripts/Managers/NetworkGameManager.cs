@@ -3,19 +3,16 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
+// This class is basically lobby manager but handles also some in-game networking
 public class NetworkGameManager : NetworkLobbyManager {
 
     public static NetworkGameManager Instance;
 
     [SerializeField] private GameObject UI = null;
 
-    // TODO: Make a menu dictionary that is possible to edit in Unity inspector.
-    // And edit switchUIWindow() to work with dictonaries
-    [SerializeField] private GameObject mainUI = null;
-    [SerializeField] private GameObject hostUI = null;
-    [SerializeField] private GameObject clientUI = null;
-    private GameObject[] UIWindows;
+    [SerializeField] private List<InspectorObject> UIWindows; [Space]
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
     [SerializeField] private GameObject insertNameError = null;
@@ -38,13 +35,13 @@ public class NetworkGameManager : NetworkLobbyManager {
         DontDestroyOnLoad(gameObject);
 
         // Resets UI
-        UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
-        switchUIWindow(UIWindows, 0);
+        InspectorObject.switchGameObject(UIWindows, "MainUI");
+
         UI.SetActive(true);
         insertNameError.SetActive(false);
     }
 
-    // --- Button methods
+    // --- Lobby button methods
     // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
 
     public void B_HostGame()
@@ -119,7 +116,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         thisIsHosting = true;
         StartCoroutine(GetPublicIP());
         hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;  // Temp message before public IP is updated
-        switchUIWindow(UIWindows, 1);   // Host window
+        InspectorObject.switchGameObject(UIWindows, "HostUI");
         Debug.Log("Hosting started");
     }
 
@@ -128,7 +125,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         base.OnLobbyStopHost();
 
         thisIsHosting = false;
-        switchUIWindow(UIWindows, 0);   // Main window
+        InspectorObject.switchGameObject(UIWindows, "MainUI");
         insertNameError.SetActive(false);
         Debug.Log("Hosting stopped");
     }
@@ -140,7 +137,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         if (!thisIsHosting)
         {
             clientAddressText.text = networkAddress + ":" + networkPort;
-            switchUIWindow(UIWindows, 2);   // Client window
+            InspectorObject.switchGameObject(UIWindows, "ClientUI");
         }
         Debug.Log("Client joined!");
     }
@@ -151,7 +148,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         if (!thisIsHosting)
         {
-            switchUIWindow(UIWindows, 0);   // Main window
+            InspectorObject.switchGameObject(UIWindows, "MainUI");
             insertNameError.SetActive(false);
         }
         Debug.Log("Client exited");
@@ -161,7 +158,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     {
         base.OnLobbyClientSceneChanged(conn);
 
-        // Disables UI if players are in game
+        // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)
         {
             UI.SetActive(false);
@@ -181,22 +178,6 @@ public class NetworkGameManager : NetworkLobbyManager {
             yield return www;
             externalIP = www.text;
             hostingText.text = hostUIMessage + externalIP + ":" + networkPort;
-        }
-    }
-
-    // Enables only one of the objects in GameObject[] and disables others (NEEDS REPLACEMENT! See the top TODO)
-    private void switchUIWindow(GameObject[] obj, int index)
-    {
-        for (int o = 0; o < obj.Length; o++)
-        {
-            if (o == index)
-            {
-                obj[o].SetActive(true);
-            }
-            else if (obj[o].activeSelf)
-            {
-                obj[o].SetActive(false);
-            }
         }
     }
 }

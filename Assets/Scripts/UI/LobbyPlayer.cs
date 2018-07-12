@@ -7,17 +7,19 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     // Text component in child object
     [SerializeField] private Text playerNameText = null;
 
+    // All these components are child objects in this gameobject (assigned in Unity Editor)
     [SerializeField] private GameObject readyText = null;
     [SerializeField] private GameObject readyButton = null;
     [SerializeField] private GameObject readyButtonText = null;
     [SerializeField] private GameObject notReadyButtonText = null;
+    [SerializeField] private GameObject characterSelection = null;
 
     // Syncs name from server to clients and calls in clients changePlayerName
     [SyncVar(hook = "changePlayerName")]
     private string playerName = "";
 
 
-    // OnClientEnterLobby() is called also when client goes back from in game to lobby
+    // OnClientEnterLobby() is called also when client goes back from in-game to lobby
     public override void OnClientEnterLobby()
     {
         base.OnClientEnterLobby();

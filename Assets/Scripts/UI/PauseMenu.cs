@@ -3,7 +3,8 @@ using UnityEngine.Networking;
 
 public class PauseMenu : NetworkBehaviour {
 
-    [SerializeField] public GameObject UI = null;
+    // All these components are child objects in this gameobject (assigned in Unity Editor)
+    [SerializeField] public GameObject UI = null;   // GameObject that is parent to all UI elements in pause menu
     [SerializeField] private GameObject disconnectButton = null;
     [SerializeField] private GameObject stopGameButton = null;
 
