@@ -26,9 +26,11 @@ public class Carnivore : Character
     [SerializeField] protected float stamina = 100f;
     [SerializeField] protected float staminaDecrement = 2f;
     [SerializeField] protected float staminaIncrement = 2f;
+    [SerializeField] private GameObject cameraClone;
 
     private bool isEating;
     private bool isCharging;
+    public GameObject CameraClone { get { return cameraClone; } }
 
 
     protected override void Start()
@@ -39,6 +41,8 @@ public class Carnivore : Character
         barrelRoll = false;
         stamina = staminaValue;
         camera.GetComponent<CameraController>().InstantiateCamera(this);
+        cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
+        cameraClone.name = "FollowCamera";
     }
 
     protected override void Update()

@@ -11,34 +11,32 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float AscendSpeed = 2f;
     [SerializeField] protected float turnSpeed = 2f;
     [SerializeField] protected float rotateSpeed = 2f;
-    public Quaternion myQuat, targetQuat;
-    public float quatSpeed = 1f;
-    public float stabilize = 0.1f;
-    public float velocity;
-    public float restrictAngle = Mathf.Abs(80);
-    protected float health = 100;
-    protected float experience = 0;
-    private const float healthMax = 2;
-    private const float waitTime = 1.0f;
-    private const float experiencePenalty = 25.0f;
-    private const float deathpenaltytime = 2.0f;
-    private bool ready;
-    public bool rolling;
-    public bool isMoving;
-    private bool eating;
-    protected Animator m_animator;
-    public CameraController camerascript;
-    private Vector3 lastposition = Vector3.zero;
-    private Vector3 MovementInputVector;
-    private Vector3 rotationInputVector;
-    private AudioSource musicSource;
-    private AudioSource SFXsource;
-    protected GameObject cameraClone;
-    private Event e;
-    private string temp;
-    string input;
+    public Quaternion                myQuat, targetQuat;
+    public float                     quatSpeed = 1f;
+    public float                     stabilize = 0.1f;
+    public float                     velocity;
+    public float                     restrictAngle = Mathf.Abs(80);
+    protected float                  health = 100;
+    protected float                  experience = 0;
+    private const float              healthMax = 2;
+    private const float              waitTime = 1.0f;
+    private const float              experiencePenalty = 25.0f;
+    private const float              deathpenaltytime = 2.0f;
+    protected Animator               m_animator;
+    public CameraController          camerascript;
+    private Vector3                  lastposition = Vector3.zero;
+    private Vector3                  MovementInputVector;
+    private Vector3                  rotationInputVector;
+    private AudioSource              musicSource;
+    private AudioSource              SFXsource;
+    private string                   temp;
+    string                           input;
     //bools
-    public bool hasjustRolled;
+    public bool                      hasjustRolled;
+    private bool                     ready;
+    public bool                      rolling;
+    public bool                      isMoving;
+    private bool                     eating;
 
     public float Rotatingspeed;
     private Vector3 moveDirection;
@@ -79,7 +77,6 @@ public abstract class Character : MonoBehaviour
             experience = Mathf.Clamp(value, 0, 100);
         }
     }
-    public GameObject CameraClone { get { return cameraClone; } }
     protected float Speed
     {
         get
@@ -294,33 +291,19 @@ public abstract class Character : MonoBehaviour
         rolling = true;
     }
 
-    private void OnGUI()
-    {
-        e = Event.current;
-        if (e.keyCode.ToString().ToLower() == "none")
-        {
-            return;
-        }
-        else
-        {
-            temp = e.keyCode.ToString().ToLower();
-        }
-    }
-
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
 
         musicSource = GetComponentInChildren<AudioSource>();
-        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
     protected virtual void Start()
     {
         //Component search
         m_animator = gameObject.GetComponent<Animator>();
-        //cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
-        //cameraClone.name = "FollowCamera";
+
 
         Debug.Log("Loading character start");
         //Cursor lock state and quaterions
@@ -328,8 +311,8 @@ public abstract class Character : MonoBehaviour
         Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
         Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
         isMoving = true;
-        //UIManager.Instance.InstantiateMatchUI(this);
-        //EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        UIManager.Instance.InstantiateMatchUI(this);
+        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()

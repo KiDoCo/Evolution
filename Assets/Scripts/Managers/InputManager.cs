@@ -11,20 +11,18 @@ public enum KeyInput { Horizontal, Vertical, Rotation, Jump, Ability, Eat }
 public class InputManager : MonoBehaviour
 {
 
-    public static InputManager Instance;
-    private int xboxController = 0;
-    private int playstationController = 0;
-    private bool waitingForKey;
-    private bool coroutinerunning;
-    private string tempCode;
-    private Event keyevent;
-    private StoredInformation storage;
-    private string gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
+    public static InputManager      Instance;
+    private int                     xboxController = 0;
+    private int                     playstationController = 0;
+    private bool                    waitingForKey;
+    private bool                    coroutinerunning;
+    private StoredInformation       storage;
+    private string                  gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
 
     //Lists and dictionaries
-    private List<AxisBase> inputAxes = new List<AxisBase>();
     [SerializeField]
     private List<AxisBase> DefaultAxes = new List<AxisBase>();
+    private List<AxisBase> inputAxes = new List<AxisBase>();
 
     public List<AxisBase> InputAxes
     {
@@ -102,8 +100,7 @@ public class InputManager : MonoBehaviour
         }
 
         if (storage.configurations.Count > 0) return;
-        Debug.Log("Loading Def");
-            storage.configurations = DefaultAxes;
+        storage.configurations = DefaultAxes;
     }
 
     /// <summary>
@@ -125,15 +122,14 @@ public class InputManager : MonoBehaviour
             pKeyValue = (int)DefaultAxes.Find(x => x.AxisName == a.AxisName).Pkey;
             a.Pkey = (KeyCode)pKeyValue;
             AssignKeyboardInput(a);
-            inputAxes = storage.configurations;
         }
+        StorageToInput();
     }
 
     public void LoadAllAxes()
     {
         storage.configurations.Sort((x,y) => x.AxisName.CompareTo(y.AxisName));
         inputAxes = storage.configurations;
-        Debug.Log("Load all axes");
     }
 
     #endregion

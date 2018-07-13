@@ -151,7 +151,6 @@ public class Gamemanager : NetworkBehaviour
 
         //Remove player from list and place camera to fixed point of the map
         PlayerList.Remove(player);
-        player.CameraClone.GetComponent<CameraController>().CameraPlaceOnDeath(player);
         player.gameObject.SetActive(false);
     }
 

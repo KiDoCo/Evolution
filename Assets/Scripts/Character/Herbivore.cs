@@ -12,6 +12,7 @@ public class Herbivore : Character
     private bool Iseating;
     //objects
     public Transform myT;
+    [SerializeField] private GameObject cameraClone;
     
     //object references
     [HideInInspector] public static Herbivore herbiv;
@@ -19,6 +20,7 @@ public class Herbivore : Character
     //eulermeter values
     [HideInInspector] public float y;
     
+    public GameObject CameraClone { get { return cameraClone; } }
 
     /// <summary>
     /// Inputs for rotating with the mouse
@@ -39,7 +41,9 @@ public class Herbivore : Character
     {
         base.Start();        
         herbiv = this;
-        //CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
+        cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
+        cameraClone.name = "FollowCamera";
+        CameraClone.GetComponent<CameraController>().InstantiateCamera(this);
     }
 
     protected override void Update()

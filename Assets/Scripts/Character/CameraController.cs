@@ -76,7 +76,11 @@ public class CameraController : MonoBehaviour
     /// Sets the camera target to fixed point
     /// </summary>
     /// <param name="source"></param>
-    public void CameraPlaceOnDeath(Character test)
+    public void CameraPlaceOnDeath(Herbivore test)
+    {
+        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
+    }
+    public void CameraPlaceOnDeath(Carnivore test)
     {
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }

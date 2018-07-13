@@ -7,37 +7,27 @@ public enum CurMenu { Main,Options,Controls,Sound,Credit }
 
 public class MainMenu : MonoBehaviour
 {
-    public Text Loadtext;
-    public GameObject LoadUI;
+    CurMenu activemenu;
 
-    private float loadT;
-    private int index;
-    private string dot = ".";
-
-    private bool EnableMenu = true;
-
-    private bool InGameMenu;
-
+    #region GameObjects
     //Menu holders
     public GameObject MainMenuGrid;
     public GameObject OptionMenu;
     public GameObject ControlMenu;
     public GameObject Credit;
 
-    CurMenu activemenu;
     //Buttons
     public GameObject backButton;
     public GameObject optionsDefaultButton;
     public GameObject controlsDefaultButton;
 
-
     private GameObject curActiveMenu;
+    #endregion
 
     public bool FreezeOnMenu;
 
     private void CloseAllButtons()
     {
-
         OptionMenu.SetActive(false);
         backButton.SetActive(false);
         ControlMenu.SetActive(false);
@@ -111,19 +101,18 @@ public class MainMenu : MonoBehaviour
             OpenOptionsMenu();
         }
     }
-    #endregion
-
-    public void LoadMainMenu()
-    {
-        EnableMenu = false;
-        InGameMenu = false;
-        ChangeCurrentActiveMenu(MainMenuGrid);
-    }
 
     public void Quit()
     {
         Application.Quit();
     }
+    #endregion
+
+    public void LoadMainMenu()
+    {
+        ChangeCurrentActiveMenu(MainMenuGrid);
+    }
+
 
     private void ChangeCurrentActiveMenu(GameObject menu)
     {
@@ -135,8 +124,7 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         curActiveMenu = MainMenuGrid;
-        CloseAllButtons();
         ControlMenu.SetActive(true);
-        ControlMenu.SetActive(false);
+        CloseAllButtons();
     }
 }
