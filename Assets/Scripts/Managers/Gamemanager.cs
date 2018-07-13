@@ -27,8 +27,9 @@ public class Gamemanager : NetworkBehaviour
     private GameObject                  deathCameraPlace;
     
     //Gamemanager lists
-    private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
-    private Dictionary<int, GameObject> herbivorePrefabs     = new Dictionary<int, GameObject>();
+    private List<GameObject> carnivorePrefabs     = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs     = new List<GameObject>();
+    public Dictionary<string, GameObject> PlayerPrefabs      = new Dictionary<string, GameObject>();
     public  List<GameObject>            foodsources;
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
@@ -169,24 +170,20 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private void LoadAssetToDictionaries()
     {
-        List<GameObject> Ctemp = new List<GameObject>();
-        List<GameObject> Htemp = new List<GameObject>();
         //Search the file with WWW class and loads them to cache
-        Ctemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + cPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
-        Htemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + hPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
+        carnivorePrefabs.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + cPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
+        herbivorePrefabs.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + hPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
 
-        for (int i = 0; i < Ctemp.Count; i++)
+        foreach (GameObject prefab in carnivorePrefabs)
         {
-            carnivorePrefabs.Add(i, Ctemp[i]);
+            PlayerPrefabs.Add(prefab.name, prefab);
         }
 
-        for (int i = 0; i < Htemp.Count; i++)
+        foreach (GameObject prefab in herbivorePrefabs)
         {
-            herbivorePrefabs.Add(i, Htemp[i]);
+            PlayerPrefabs.Add(prefab.name, prefab);
         }
-        Ctemp.Clear();
-        Htemp.Clear();
-            
+
         Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
         Debug.Log("Herbivores loaded: " + herbivorePrefabs.Count);
     }

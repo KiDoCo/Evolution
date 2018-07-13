@@ -670,6 +670,7 @@ MonoBehaviour:
   readyButton: {fileID: 1660303703074678}
   readyButtonText: {fileID: 1621479487302926}
   notReadyButtonText: {fileID: 1423018362908372}
+  characterSelection: {fileID: 114824897324452900}
 --- !u!114 &114556521531019206
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -914,7 +915,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Carnivore
+  m_Text: 
 --- !u!114 &114824897324452900
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -958,11 +959,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options:
-    - m_Text: Carnivore
-      m_Image: {fileID: 21300000, guid: 89b3345b531885643a5611b3792ff491, type: 3}
-    - m_Text: Herbivore
-      m_Image: {fileID: 21300000, guid: ef656a92b5be2d043b5bf03b4113af23, type: 3}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

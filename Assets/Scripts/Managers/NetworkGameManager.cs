@@ -12,9 +12,12 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     [SerializeField] private GameObject UI = null;
 
-    [SerializeField] private List<InspectorObject> UIWindows; [Space]
-
     // All these components are child objects in this gameobject (assigned in Unity Editor)
+    [SerializeField] private GameObject mainUI = null;
+    [SerializeField] private GameObject hostUI = null;
+    [SerializeField] private GameObject clientUI = null;
+    private GameObject[] UIWindows;
+
     [SerializeField] private GameObject insertNameError = null;
     [SerializeField] private Text hostingText = null;
     [SerializeField] private Text clientAddressText = null;
@@ -32,11 +35,11 @@ public class NetworkGameManager : NetworkLobbyManager {
     private void Awake ()
     {
         Instance = this;
+        UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
         DontDestroyOnLoad(gameObject);
 
         // Resets UI
-        InspectorObject.switchGameObject(UIWindows, "MainUI");
-
+        UIManager.switchGameObject(UIWindows, mainUI);
         UI.SetActive(true);
         insertNameError.SetActive(false);
     }
@@ -116,7 +119,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         thisIsHosting = true;
         StartCoroutine(GetPublicIP());
         hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;  // Temp message before public IP is updated
-        InspectorObject.switchGameObject(UIWindows, "HostUI");
+        UIManager.switchGameObject(UIWindows, hostUI);
         Debug.Log("Hosting started");
     }
 
@@ -125,7 +128,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         base.OnLobbyStopHost();
 
         thisIsHosting = false;
-        InspectorObject.switchGameObject(UIWindows, "MainUI");
+        UIManager.switchGameObject(UIWindows, mainUI);
         insertNameError.SetActive(false);
         Debug.Log("Hosting stopped");
     }
@@ -137,7 +140,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         if (!thisIsHosting)
         {
             clientAddressText.text = networkAddress + ":" + networkPort;
-            InspectorObject.switchGameObject(UIWindows, "ClientUI");
+            UIManager.switchGameObject(UIWindows, clientUI);
         }
         Debug.Log("Client joined!");
     }
@@ -148,7 +151,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         if (!thisIsHosting)
         {
-            InspectorObject.switchGameObject(UIWindows, "MainUI");
+            UIManager.switchGameObject(UIWindows, mainUI);
             insertNameError.SetActive(false);
         }
         Debug.Log("Client exited");
@@ -176,6 +179,8 @@ public class NetworkGameManager : NetworkLobbyManager {
         using (WWW www = new WWW("https://api.ipify.org"))
         {
             yield return www;
+
+            // After the file has downloaded
             externalIP = www.text;
             hostingText.text = hostUIMessage + externalIP + ":" + networkPort;
         }

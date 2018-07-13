@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 
 public class LobbyPlayer : NetworkLobbyPlayer {
 
@@ -12,7 +13,15 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     [SerializeField] private GameObject readyButton = null;
     [SerializeField] private GameObject readyButtonText = null;
     [SerializeField] private GameObject notReadyButtonText = null;
-    [SerializeField] private GameObject characterSelection = null;
+    [SerializeField] private Dropdown characterSelection = null;
+
+    public GameObject CharacterSelection
+    {
+        get
+        {
+            return Gamemanager.Instance.PlayerPrefabs[characterSelection.options[characterSelection.value].text];
+        }
+    }
 
     // Syncs name from server to clients and calls in clients changePlayerName
     [SyncVar(hook = "changePlayerName")]
@@ -25,6 +34,9 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         base.OnClientEnterLobby();
 
         Debug.Log("Client enter lobby");
+
+        // Adds players to dropbox
+        characterSelection.AddOptions(new List<string>(Gamemanager.Instance.PlayerPrefabs.Keys));
 
         // Puts client in the player list
         transform.SetParent(NetworkGameManager.Instance.PlayerListContent.transform, false);

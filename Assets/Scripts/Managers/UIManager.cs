@@ -3,60 +3,6 @@ using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 
-[Serializable]
-public class InspectorObject
-{
-    [SerializeField] private string name = null;
-    [SerializeField] private GameObject obj = null;
-
-    public string Name
-    {
-        get
-        {
-            return name;
-        }
-    }
-
-    public GameObject Object
-    {
-        get
-        {
-            return obj;
-        }
-    }
-
-    // --------------------------
-
-    // Enables only one of the objects in InspectorObject list and disables others
-    public static void switchGameObject(List<InspectorObject> list, string name)
-    {
-        bool found = false;
-
-        foreach (InspectorObject o in list)
-        {
-            if (o.Name == name)
-            {
-                found = true;
-                o.Object.SetActive(true);
-            }
-            else
-            {
-                o.Object.SetActive(false);
-            }
-        }
-
-        if (!found)
-        {
-            Debug.Log("UIManager, switchUIWindow: " + name + " gameObject not found!");
-        }
-    }
-
-    public static void enableGameObject(List<InspectorObject> list, string name, bool enabled = true)
-    {
-        list.Find(x => x.Name == name).Object.SetActive(enabled);
-    }
-}
-
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
@@ -64,8 +10,19 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject hud = null;
     [SerializeField] private GameObject pauseMenu = null;
 
+    public static void switchGameObject(GameObject[] list, GameObject obj)
+    {
+        foreach (GameObject o in list)
+        {
+            if (o == obj)
+                o.SetActive(true);
+            else
+                o.SetActive(false);
+        }
+    }
+
     //Match UI
-	public void UpdateMatchUI(Character source)
+    public void UpdateMatchUI(Character source)
     {
         HUDController.instance.MaxHealth   = (int)source.Maxhealth;
         HUDController.instance.CurProgress = source.Experience;
