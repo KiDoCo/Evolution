@@ -24,8 +24,8 @@ public class Gamemanager : NetworkBehaviour
     private GameObject                  deathCameraPlace;
     
     //Gamemanager lists
-    private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
-    private Dictionary<int, GameObject> herbivorePrefabs     = new Dictionary<int, GameObject>();
+    private List<GameObject> carnivorePrefabs     = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs     = new List<GameObject>();
     public  List<GameObject>            foodsources;
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
@@ -194,12 +194,12 @@ public class Gamemanager : NetworkBehaviour
 
         for (int i = 0; i < Ctemp.Count; i++)
         {
-            carnivorePrefabs.Add(i, Ctemp[i]);
+            carnivorePrefabs.Add(Ctemp[i]);
         }
 
         for (int i = 0; i < Htemp.Count; i++)
         {
-            herbivorePrefabs.Add(i, Htemp[i]);
+            herbivorePrefabs.Add(Htemp[i]);
         }
         Ctemp.Clear();
         Htemp.Clear();
@@ -254,6 +254,6 @@ public class Gamemanager : NetworkBehaviour
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
-        
+        SceneManager.LoadSceneAsync("MainMenu");
     }
 }

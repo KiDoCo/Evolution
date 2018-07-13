@@ -102,13 +102,8 @@ public class InputManager : MonoBehaviour
         }
 
         if (storage.configurations.Count > 0) return;
-
-        if (storage.configurations.Count <= 0)
-        {
+        Debug.Log("Loading Def");
             storage.configurations = DefaultAxes;
-        }
-
-
     }
 
     /// <summary>
@@ -136,8 +131,9 @@ public class InputManager : MonoBehaviour
 
     public void LoadAllAxes()
     {
-        Debug.Log("Load all axes");
+        storage.configurations.Sort((x,y) => x.AxisName.CompareTo(y.AxisName));
         inputAxes = storage.configurations;
+        Debug.Log("Load all axes");
     }
 
     #endregion
@@ -209,6 +205,13 @@ public class InputManager : MonoBehaviour
             for (int i = 0; i < storage.configurations.Count; i++)
             {
                 AssignKeyboardInput(storage.configurations[i]);
+            }
+        }
+        else
+        {
+            for(int i = 0; i < inputAxes.Capacity; i++)
+            {
+                AssignKeyboardInput(inputAxes[i]);
             }
         }
     }
@@ -290,5 +293,6 @@ public class AxisBase
             targetAxis = Mathf.Clamp(value, -1, 1);
         }
     }
+
 }
 #endregion

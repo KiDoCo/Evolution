@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum MMStatus { main,inGame,all}
+public enum CurMenu { Main,Options,Controls,Sound,Credit }
 
 public class MainMenu : MonoBehaviour
 {
-    public bool Loading;
     public Text Loadtext;
     public GameObject LoadUI;
-
-    private string TargetModelId;
 
     private float loadT;
     private int index;
@@ -21,16 +18,14 @@ public class MainMenu : MonoBehaviour
 
     private bool InGameMenu;
 
+    //Menu holders
     public GameObject MainMenuGrid;
-
     public GameObject OptionMenu;
-
     public GameObject ControlMenu;
+    public GameObject Credit;
 
-    private MMStatus mmStatus;
-
-    public List<Menubutton> MButtons = new List<Menubutton>();
-
+    CurMenu activemenu;
+    //Buttons
     public GameObject backButton;
     public GameObject optionsDefaultButton;
     public GameObject controlsDefaultButton;
@@ -42,31 +37,10 @@ public class MainMenu : MonoBehaviour
 
     private void CloseAllButtons()
     {
-        foreach(Menubutton b in MButtons)
-        {
-            b.go.SetActive(false);
-        }
 
         OptionMenu.SetActive(false);
         backButton.SetActive(false);
         ControlMenu.SetActive(false);
-    }
-
-    private void OpenButtons()
-    {
-        CloseAllButtons();
-
-        foreach(Menubutton b in MButtons)
-        {
-            if(b.enabled)
-            {
-                if(b.Formenu == MMStatus.all)
-                {
-                    b.go.SetActive(true);
-                    b.go.transform.SetSiblingIndex(b.preferredPosition);
-                }
-            }
-        }
     }
 
     public void StartNewGame()
@@ -79,44 +53,71 @@ public class MainMenu : MonoBehaviour
     {
         backButton.SetActive(false);
         ChangeCurrentActiveMenu(MainMenuGrid);
-        mmStatus = MMStatus.inGame;
 
-        Loading = true;
     }
 
+    #region Button methods
     public void OpenOptionsMenu()
     {
+        activemenu = CurMenu.Options;
         optionsDefaultButton.SetActive(true);
         backButton.SetActive(true);
         ChangeCurrentActiveMenu(OptionMenu);
-        OptionMenu.GetComponent<OptionsMenu>().LoadSettings();
     }
 
     public void OpenMainMenu()
     {
-        if (curActiveMenu == OptionMenu) OptionsMenu.Instance.SaveOnTextFile();
-
+        activemenu = CurMenu.Main;
         ChangeCurrentActiveMenu(MainMenuGrid);
 
-        optionsDefaultButton.SetActive(false);
         backButton.SetActive(false);
     }
 
     public void OpenControlsMenu()
     {
+        activemenu = CurMenu.Controls;
         ChangeCurrentActiveMenu(ControlMenu);
         backButton.SetActive(true);
         ControlMenu.GetComponent<ControlsMenu>().Init();
     }
+
+    public void OpenSoundMenu()
+    {
+        activemenu = CurMenu.Sound;
+    }
+
+    public void OpenCreditMenu()
+    {
+        activemenu = CurMenu.Credit;
+    }
+
+    public void BackButtonMethod()
+    {
+
+        if(activemenu == CurMenu.Options)
+        {
+            OpenMainMenu();
+        }
+        else if(activemenu == CurMenu.Credit)
+        {
+            OpenMainMenu();
+        }
+        else if(activemenu == CurMenu.Controls)
+        {
+            OpenOptionsMenu();
+        }
+        else if(activemenu == CurMenu.Sound)
+        {
+            OpenOptionsMenu();
+        }
+    }
+    #endregion
 
     public void LoadMainMenu()
     {
         EnableMenu = false;
         InGameMenu = false;
         ChangeCurrentActiveMenu(MainMenuGrid);
-        mmStatus = MMStatus.main;
-        Loading = true;
-        //loadlevel hommeli
     }
 
     public void Quit()
@@ -134,54 +135,8 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         curActiveMenu = MainMenuGrid;
-
-        OpenButtons();
+        CloseAllButtons();
         ControlMenu.SetActive(true);
         ControlMenu.SetActive(false);
-    }
-
-    private void Update()
-    {
-        if(Loading)
-        {
-            EnableMenu = false;
-            if (LoadUI == null) return;
-            //LoadUI.SetActive(true);
-
-            loadT += Time.deltaTime;
-
-            if(loadT > 0.5f)
-            {
-                loadT = 0;
-
-                if(index < 3)
-                {
-                    Loadtext.text += dot;
-                    index++;
-                }
-                else
-                {
-                    Loadtext.text = "Loading";
-                    index = 0;
-                }
-            }
-        }
-        else
-        {
-            EnableMenu = true;
-            //LoadUI.SetActive(false);
-        }
-
-        //switch(mmStatus)
-        //{
-        //    case MMStatus.main:
-        //        curActiveMenu.SetActive(EnableMenu);
-        //        break;
-        //    case MMStatus.inGame:
-        //        curActiveMenu.SetActive((!Loading) ? InGameMenu : false);
-        //        break;
-        //    default:
-        //        break;
-        //}
     }
 }

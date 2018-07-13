@@ -178,9 +178,9 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Move()
     {
-        Vector3 inputvectorX = (Input.GetAxis("Horizontal") * Vector3.up * turnSpeed);
-        Vector3 inputvectorY = (Input.GetAxis("Vertical")   * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (Input.GetAxis("Rotation")       * Vector3.up * Speed) * Time.deltaTime;
+        Vector3 inputvectorX = (InputManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed);
+        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical")   * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Rotation")   * Vector3.up * Speed) * Time.deltaTime;
 
         if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {

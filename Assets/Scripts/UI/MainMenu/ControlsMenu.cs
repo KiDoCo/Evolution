@@ -10,15 +10,15 @@ public class ControlsMenu : MonoBehaviour
     public List<AxisBase> Axes = new List<AxisBase>();
 
 
-    public GameObject AxisRebindButton;
-    public Transform AxesGrid;
-    public RebindButton RebButton;
+    public GameObject       AxisRebindButton;
+    public Transform        AxesGrid;
+    public RebindButton     RebButton;
 
-    public bool rebinding;
-    private bool negativeKey;
-    private AxisBase targetAxis;
+    public bool             rebinding;
+    private bool            negativeKey;
+    private AxisBase        targetAxis;
 
-    bool initOnce;
+    bool                    initOnce;
 
     public void Init()
     {
@@ -27,6 +27,10 @@ public class ControlsMenu : MonoBehaviour
             initOnce = true;
         }
         Axes = InputManager.Instance.InputAxes;
+        for(int i = 0; i < InputManager.Instance.InputAxes.Capacity; i++)
+        {
+            Debug.Log(InputManager.Instance.InputAxes[i].AxisName);
+        }
         RebButton.gameObject.SetActive(false);
 
         InputManager.Instance.LoadAllAxes();
@@ -38,19 +42,18 @@ public class ControlsMenu : MonoBehaviour
         foreach (AxisBase a in Axes)
         {
             GameObject p = Instantiate(AxisRebindButton);
-            p.transform.SetParent(AxesGrid);
+            p.transform.SetParent(AxesGrid,false);
             AxisButton pB = p.GetComponent<AxisButton>();
-            pB.transform.position = new Vector2(0, 0);
             pB.Init(a.AxisName, a.PkeyDescription, a.Pkey.ToString());
             a.PUIButton = pB;
 
             if(a.Nkey != KeyCode.None)
             {
                 GameObject n = Instantiate(AxisRebindButton);
-                n.transform.SetParent(AxesGrid);
+                n.transform.SetParent(AxesGrid,false);
                 AxisButton nB = n.GetComponent<AxisButton>();
 
-                nB.Init(a.AxisName, a.NkeyDescription, a.Nkey.ToString());
+                nB.Init(a.AxisName, a.NkeyDescription, a.Nkey.ToString(), true);
                 a.NUIButton = nB;
             }
         }
@@ -102,8 +105,6 @@ public class ControlsMenu : MonoBehaviour
         RebButton.Init(axisname);
         RebButton.gameObject.SetActive(true);
         negativeKey = negative;
-
-        
     }
 
     private void CloseRebinding()
@@ -122,32 +123,6 @@ public class ControlsMenu : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-    }
-
-    public void FixedUpdate()
-    {
-        for(int i = 0; i < Axes.Count; i++)
-        {
-            AxisBase a = Axes[i];
-
-            a.negative = (Input.GetKey(a.Nkey));
-            a.positive = (Input.GetKey(a.Pkey));
-
-            if(a.negative)
-            {
-                a.TargetAxis = -1;
-            }
-            else if(a.positive)
-            {
-                a.TargetAxis = 1;
-            }
-            else
-            {
-                a.TargetAxis = 0;
-            }
-
-            a.Axis = Mathf.MoveTowards(a.Axis, a.TargetAxis, Time.deltaTime * a.Sensitivity);
-        }
     }
 
 //extreme spaghetti

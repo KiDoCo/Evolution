@@ -113,163 +113,48 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &368256335
-GameObject:
+--- !u!1001 &153143669
+Prefab:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 368256339}
-  - component: {fileID: 368256338}
-  - component: {fileID: 368256337}
-  - component: {fileID: 368256336}
-  - component: {fileID: 368256340}
-  - component: {fileID: 368256341}
-  m_Layer: 0
-  m_Name: ManagerHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &368256336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 368256335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85f436b916a80fe41a722b6031a32692, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &368256337
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 368256335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0393146ffaff046459dd47399000be66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &368256338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 368256335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9618f2aa07f7df4888c7588603df4d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  foodsources:
-  - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
-  PlayerSpawnPointList: []
-  PlayerList: []
-  CameraPrefab: {fileID: 1824946988335758, guid: 0576a07d4cfab8a42acea443ccd318a1,
-    type: 2}
-  BerryPrefab: {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117,
-    type: 2}
---- !u!4 &368256339
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 368256335}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &368256340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 368256335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46fb5140c214c1244843a5e5f1014946, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &368256341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 368256335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf57f9434c544e642b45993e7dd5cbf4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultAxes:
-  - AxisName: Horizontal
-    Pkey: 100
-    Nkey: 97
-    positive: 0
-    negative: 0
-    Axis: 0
-    TargetAxis: 0
-    Sensitivity: 3
-    PkeyDescription: Left
-    NkeyDescription: Right
-    NUIButton: {fileID: 0}
-    PUIButton: {fileID: 0}
-  - AxisName: Vertical
-    Pkey: 119
-    Nkey: 115
-    positive: 0
-    negative: 0
-    Axis: 0
-    TargetAxis: 0
-    Sensitivity: 3
-    PkeyDescription: Forward
-    NkeyDescription: Backwards
-    NUIButton: {fileID: 0}
-    PUIButton: {fileID: 0}
-  - AxisName: Rotation
-    Pkey: 113
-    Nkey: 101
-    positive: 0
-    negative: 0
-    Axis: 0
-    TargetAxis: 0
-    Sensitivity: 3
-    PkeyDescription: Left
-    NkeyDescription: Right
-    NUIButton: {fileID: 0}
-    PUIButton: {fileID: 0}
-  - AxisName: Ability
-    Pkey: 9
-    Nkey: 0
-    positive: 0
-    negative: 0
-    Axis: 0
-    TargetAxis: 0
-    Sensitivity: 1000
-    PkeyDescription: Use
-    NkeyDescription: 
-    NUIButton: {fileID: 0}
-    PUIButton: {fileID: 0}
-  - AxisName: Eat
-    Pkey: 323
-    Nkey: 0
-    positive: 0
-    negative: 0
-    Axis: 0
-    TargetAxis: 0
-    Sensitivity: 1000
-    PkeyDescription: Use
-    NkeyDescription: 
-    NUIButton: {fileID: 0}
-    PUIButton: {fileID: 0}
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4480704697252256, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1005475912
 GameObject:
   m_ObjectHideFlags: 0
