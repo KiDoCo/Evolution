@@ -1004,8 +1004,7 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 32768
-  MaxGroundAngle: 150
-  debug: 1
+  MaxGroundAngle: 160
   myT: {fileID: 0}
   y: 0
 --- !u!114 &114779759895996194
