@@ -163,11 +163,18 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Checks if target is backing up or changing altitude, then changes camera values
     /// </summary>
-    void SetDampening()
     {
-        if (target.GetComponent<Herbivore>().isReversing)
+    public void CameraPlaceOnDeath(Herbivore test)
+    {
+        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
+    }
+
+    public void CameraPlaceOnDeath(Carnivore test)
+    {
+        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
+    }
         {
-            distanceDamp = distanceDampValueB;
+        if (target.GetComponent<Herbivore>().isReversing)            distanceDamp = distanceDampValueB;
         }
         else if (target.GetComponent<Herbivore>().isMovingVertical)
         {
@@ -178,6 +185,5 @@ public class CameraController : MonoBehaviour
             distanceDamp = distanceDampValue;
         
     }
-
 
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour
 {
     //values
-    public float SpeedValue = 2f;   //very important value that can be affected
+public float SpeedValue = 2f;   //very important value that can be affected
     protected float speed = 2f;     // speed in character movement
     [SerializeField] protected float turnSpeed = 2f;     //herbivore A & D turn
     [SerializeField] protected float AscendSpeed = 2f; //altitude shift & ctrl
@@ -68,9 +68,14 @@ public abstract class Character : MonoBehaviour
     private Vector3 rotationInputVector;
     private AudioSource musicSource;
     private AudioSource SFXsource;
-    protected GameObject cameraClone;
-   
-    private Vector3 moveDirection;
+    protected GameObject    //bools
+    public bool                      hasjustRolled;
+    private bool                     ready;
+    public bool                      rolling;
+    public bool                      isMoving;
+    private bool                     eating;
+
+    public float Rotatingspeed;    private Vector3 moveDirection;
     private Vector3 surfaceNormal;
     private Vector3 capsuleNormal;
     private Vector3 colDirection;
@@ -79,6 +84,7 @@ public abstract class Character : MonoBehaviour
     private CapsuleCollider col;
     private bool collided = false;
 
+    #region Getter&Setter
     public float Maxhealth { get { return healthMax; } }
     public float Health
     {
@@ -107,8 +113,6 @@ public abstract class Character : MonoBehaviour
             experience = Mathf.Clamp(value, 0, 100);
         }
     }
-    public GameObject CameraClone { get { return cameraClone; } }
-
     protected float Speed
     {
         get
@@ -121,7 +125,7 @@ public abstract class Character : MonoBehaviour
             speed = value;
         }
     }
-
+    #endregion
 
     /// <summary>
     /// Takes care of the eating for the player
@@ -208,17 +212,16 @@ public abstract class Character : MonoBehaviour
 
     /// <summary>
     ///  Altitude & Forward/Backwards
-    /// </summary>
-    protected virtual void Move()
+    /// </summary>    protected virtual void Move()
     {
-        isMoving = false;
-        
-
+        Vector3 inputvectorX =utManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed);
+        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical")   * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (InputManager.Instan
         //tarkista peruuttaako
         
         if (Input.GetAxisRaw("Vertical") < 0)
         {
-            isReversing = true;
+isReversing = true;
             isMovingForward = false;
            
 
@@ -240,9 +243,8 @@ public abstract class Character : MonoBehaviour
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
         Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
         Turn();
-        if(inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
-        {
-            isMoving = true;
+        if(inputvector)
+{            isMoving = true;
         }
       //tarkista nouseeko laskeeko
         if (inputvectorZ.magnitude != 0)
@@ -254,9 +256,6 @@ public abstract class Character : MonoBehaviour
             isMovingVertical = false; 
         }
 
-
-
-        if (collided)
         {
             moveDirection = Vector3.Cross(colPoint, surfaceNormal);
             moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
@@ -276,6 +275,8 @@ public abstract class Character : MonoBehaviour
 
         }
     }
+
+
 
     /// <summary>
     /// A and D keys turn
@@ -423,9 +424,6 @@ public abstract class Character : MonoBehaviour
         if (!rolling)
         {
 
-            float z = transform.eulerAngles.z;
-            // Debug.Log(z);
-            transform.Rotate(0, 0, -z);
         }
 
     }
@@ -445,10 +443,9 @@ public abstract class Character : MonoBehaviour
         speed = SpeedValue; // can change character speed (by adding value in editor or by a code)
         //Component search
         m_animator = gameObject.GetComponent<Animator>();
-        //cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
-        //cameraClone.name = "FollowCamera";
 
 
+        Debug.Log("Loading character start");
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
         
@@ -475,6 +472,7 @@ public abstract class Character : MonoBehaviour
         Move();
         BarrellRoll();
         Dash();
+        AnimationChanger();
     }
    
 }

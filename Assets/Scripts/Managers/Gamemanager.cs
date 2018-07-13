@@ -12,9 +12,6 @@ public class Gamemanager : NetworkBehaviour
     //Ingnore pragmas for unnecessary warnings
 #pragma warning disable
     public static Gamemanager           Instance;
-    //File location variables hard coded shishnet
-    private string                      hPFileLocation = "/Assets/StreamingAssets/AssetBundles/herbivore.pl"; //herbivore asset location
-    private string                      cPFileLocation = "/Assets/StreamingAssets/AssetBundles/carnivore.pl"; //carnivore asset location
 
     //Match variables
     private const float                 startingMatchTimer = 5.0f; //time value in minutes
@@ -27,8 +24,8 @@ public class Gamemanager : NetworkBehaviour
     private GameObject                  deathCameraPlace;
     
     //Gamemanager lists
-    private Dictionary<int, GameObject> carnivorePrefabs     = new Dictionary<int, GameObject>();
-    private Dictionary<int, GameObject> herbivorePrefabs     = new Dictionary<int, GameObject>();
+    private List<GameObject> carnivorePrefabs     = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs     = new List<GameObject>();
     public  List<GameObject>            foodsources;
     public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
     private List<Transform>             FoodSpawnPointList   = new List<Transform>();
@@ -144,7 +141,6 @@ public class Gamemanager : NetworkBehaviour
         //some client magix röh röh
 
         //Remove player from list and place camera to fixed point of the map
-        player.CameraClone.GetComponent<CameraController>().CameraPlaceOnDeath(player);
         player.gameObject.SetActive(false);
     }
 
@@ -171,18 +167,18 @@ public class Gamemanager : NetworkBehaviour
     {
         List<GameObject> Ctemp = new List<GameObject>();
         List<GameObject> Htemp = new List<GameObject>();
-        //Search the file with WWW class and loads them to cache
-        Ctemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + cPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
-        Htemp.AddRange(WWW.LoadFromCacheOrDownload("file:///" + (Directory.GetCurrentDirectory() + hPFileLocation).Replace("\\", "/"), 0).assetBundle.LoadAllAssets<GameObject>());
+
+        Ctemp.AddRange(Resources.LoadAll<GameObject>("Character/Carnivore"));
+        Htemp.AddRange(Resources.LoadAll<GameObject>("Character/Herbivore"));
 
         for (int i = 0; i < Ctemp.Count; i++)
         {
-            carnivorePrefabs.Add(i, Ctemp[i]);
+            carnivorePrefabs.Add(Ctemp[i]);
         }
 
         for (int i = 0; i < Htemp.Count; i++)
         {
-            herbivorePrefabs.Add(i, Htemp[i]);
+            herbivorePrefabs.Add(Htemp[i]);
         }
         Ctemp.Clear();
         Htemp.Clear();
@@ -238,7 +234,5 @@ public class Gamemanager : NetworkBehaviour
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
-
-        SceneManager.LoadSceneAsync(menuScene);
-    }
+        SceneManager.LoadSceneAsync(menuScene);    }
 }
