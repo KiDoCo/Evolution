@@ -315,9 +315,20 @@ public class CameraController : MonoBehaviour
 
         if (FreeCamera)
         {
-            Quaternion camTurnAngle = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * RotationsSpeed, Vector3.up);
-            Quaternion camTurnAngle2 = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * RotationsSpeed, Vector3.right);
-            Quaternion sum = camTurnAngle2 * camTurnAngle;
+
+            Quaternion camTurnAngleH = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * RotationsSpeed, Vector3.up); //laske horisontaalinen liike
+           
+
+
+            Quaternion camTurnAngleV = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * RotationsSpeed, Vector3.right);// laske vertikaalinen liike
+
+            
+            //laske kulmat yhteen
+            Quaternion sum = camTurnAngleH * camTurnAngleV; 
+            //Quaternion sum = camTurnAngleH * camTurnAngleV; // normal sum
+                                                         
+
+            //lisää summa cameran offset arvoon
             offset = sum * offset;
           
         }

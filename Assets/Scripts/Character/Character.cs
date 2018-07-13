@@ -197,19 +197,32 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void Restrict()
     {
-        if (transform.rotation.x > 15)
+        transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 75, 275), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+
+        if (transform.rotation.eulerAngles.x > 90)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+
+            // float x = transform.eulerAngles.x;
+            // transform.Rotate(-x, 0, 0);
         }
 
-        if (transform.rotation.x < -15)
+        if (transform.rotation.eulerAngles.x < -90)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+
+            // float x = transform.eulerAngles.x;
+            // transform.Rotate(-x, 0, 0);
         }
     }
 
+    // Clamps angle (different from the normal clamp function)
+    private float strangeAxisClamp(float value, float limit1, float limit2)
+    {
+        if (value > limit1 && value < 180f)
+            value = limit1;
+        else if (value > 180f && value < limit2)
+            value = limit2;
+        return value;
+    }
 
     /// <summary>
     ///  Altitude & Forward/Backwards
