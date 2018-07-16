@@ -14,6 +14,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     [SerializeField] private GameObject readyButtonText = null;
     [SerializeField] private GameObject notReadyButtonText = null;
     [SerializeField] private Dropdown characterSelection = null;
+    [SerializeField] private Text characterSelected = null;
 
     public GameObject CharacterSelection
     {
@@ -27,6 +28,10 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     [SyncVar(hook = "changePlayerName")]
     private string playerName = "";
 
+    // Syncs type from server to clients and calls in clients changePlayerType
+    [SyncVar(hook = "changePlayerType")]
+    [SerializeField] private int playerType = 0;
+
 
     // OnClientEnterLobby() is called also when client goes back from in-game to lobby
     public override void OnClientEnterLobby()
@@ -36,17 +41,21 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         Debug.Log("Client enter lobby");
 
         // Adds players to dropbox
-        characterSelection.AddOptions(new List<string>(Gamemanager.Instance.PlayerPrefabs.Keys));
+        if (characterSelection.options.Count == 0)
+        {
+            characterSelection.AddOptions(new List<string>(Gamemanager.Instance.PlayerPrefabs.Keys));
+        }
 
         // Puts client in the player list
         transform.SetParent(NetworkGameManager.Instance.PlayerListContent.transform, false);
 
-        // Resets player ready state
+        // Resets player UI
         readyText.SetActive(false);
+        characterSelected.text = characterSelection.options[0].text;
 
-        if (isClient)
+        if (!isServer)
         {
-            updateNameText();
+            playerNameText.text = playerName;
         }
     }
 
@@ -59,11 +68,20 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         readyButtonText.SetActive(true);
         notReadyButtonText.SetActive(false);
         readyButton.SetActive(true);
+        characterSelection.gameObject.SetActive(true);
+        characterSelected.gameObject.SetActive(false);
 
         if (NetworkGameManager.Instance != null)
-            CmdChangePlayerName(NetworkGameManager.Instance.PlayerName);
+        {
+            if (isServer)
+                playerName = NetworkGameManager.Instance.PlayerName;
+            else
+                CmdChangePlayerName(NetworkGameManager.Instance.PlayerName);
+        }
         else
+        {
             Debug.Log("_LobbyPlayer, OnStartLocalPlayer(): NetworkGameManager instance not found!");
+        }
     }
 
     public override void OnClientReady(bool readyState)
@@ -96,16 +114,26 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         }
     }
 
-    // Changes name in client
+    public void OnTypeChange(int type)
+    {
+        if (isServer)
+            playerType = type;
+        else
+            CmdChangePlayerType(type);
+    }
+
+    // Changes name in client + server
     private void changePlayerName(string name)
     {
         playerName = name;
-        updateNameText();
+        playerNameText.text = playerName;
     }
 
-    private void updateNameText()
+    // Changes type in client + server
+    private void changePlayerType(int type)
     {
-        playerNameText.text = playerName;
+        playerType = type;
+        characterSelected.text = characterSelection.options[playerType].text;
     }
 
     // Sends player name to server
@@ -113,5 +141,12 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     private void CmdChangePlayerName(string name)
     {
         playerName = name;
+    }
+
+    // Sends player type to server
+    [Command]
+    public void CmdChangePlayerType(int type)
+    {
+        playerType = type;
     }
 }

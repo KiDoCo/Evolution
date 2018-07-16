@@ -16,8 +16,6 @@ public class NetworkGameManager : NetworkLobbyManager {
     [SerializeField] private GameObject mainUI = null;
     [SerializeField] private GameObject hostUI = null;
     [SerializeField] private GameObject clientUI = null;
-    private GameObject[] UIWindows;
-
     [SerializeField] private GameObject insertNameError = null;
     [SerializeField] private Text hostingText = null;
     [SerializeField] private Text clientAddressText = null;
@@ -29,6 +27,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     public string PlayerName { get { return playerName.text; } }
     public bool Hosting { get { return thisIsHosting; } }
 
+    private GameObject[] UIWindows;
     private bool thisIsHosting = false;
     private string externalIP = "";
 
@@ -170,6 +169,18 @@ public class NetworkGameManager : NetworkLobbyManager {
         {
             UI.SetActive(true);
         }
+    }
+
+    public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
+    {
+        GameObject player = Instantiate(conn.playerControllers[0].gameObject.GetComponent<LobbyPlayer>().CharacterSelection);
+
+        foreach (PlayerController p in conn.playerControllers)
+        {
+            Debug.Log(p.gameObject.GetComponent<LobbyPlayer>().CharacterSelection);
+        }
+
+        return player;
     }
 
     // --- Other private methods

@@ -24,14 +24,17 @@ public class UIManager : MonoBehaviour
     //Match UI
     public void UpdateMatchUI(Character source)
     {
-        HUDController.instance.MaxHealth   = (int)source.Maxhealth;
-        HUDController.instance.CurProgress = source.Experience;
-        HUDController.instance.CurHealth   = (int)source.Health;
+        if (HUDController.instance != null)
+        {
+            HUDController.instance.MaxHealth   = (int)source.Maxhealth;
+            HUDController.instance.CurProgress = source.Experience;
+            HUDController.instance.CurHealth   = (int)source.Health;
+        }
     }
 
     public void InstantiateInGameUI()
     {
-        //Instantiate(hud);
+        Instantiate(hud);
         Instantiate(pauseMenu);
     }
 
