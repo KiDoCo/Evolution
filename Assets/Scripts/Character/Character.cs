@@ -39,7 +39,7 @@ public abstract class Character : MonoBehaviour
     public float Rotatingspeed;
 
     private Vector3 colPosition;
-    private Vector3 surfaceNormal;
+    private Vector3 surfaceNormal = Vector3.up;
     private Vector3 colPoint;
     private CapsuleCollider col;
     private bool collided = false;
@@ -52,7 +52,8 @@ public abstract class Character : MonoBehaviour
     private Vector3 curRight = Vector3.right;
     private Vector3 curLeft = Vector3.left;
     private bool canMove = true;
-    private Vector3 colSide;
+    private bool colFront = false;
+    private bool bothSidesCol = false;
     private RaycastHit hitDown;
 
     private float Height = 0.3f;
@@ -210,6 +211,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected void CheckCollision()
     {
+        colFront = false;
         collided = false;
         canMove = true;
 
@@ -229,16 +231,44 @@ public abstract class Character : MonoBehaviour
         float radius = col.radius * 1.1f;
         float castDistance = 0.5f;
         Height = col.height * 1.3f;
-        print("radius: " + radius + "height: " + Height);
 
         //shoot capsuleCast
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, dir, castDistance, ground);
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, Height + HeightPadding, dir, castDistance, ground);
 
         // check al collisions for their type and move of not accordingly
         foreach (RaycastHit objectHit in hits)
         {
+            if (Physics.Raycast(rayDown, out hitInfo, (Height + HeightPadding)))
+            {
+                grounded = true;
+                colPoint = hitInfo.point;
+
+                //check if ground angle allows movement
+                if (groundAngle < MaxGroundAngle)
+                {
+                    if (Physics.Raycast(transform.position, -Vector3.up, out hitDown))
+                    {
+                        print(groundAngle);
+                        surfaceNormal = Vector3.Lerp(Vector3.up, hitDown.normal, 4 * Time.deltaTime);
+                    }
+
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), Time.deltaTime * 5.0f);
+
+                    //check distance to 
+                    if (Vector3.Distance(transform.position, colPoint) < (radius + HeightPadding))
+                    {
+                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, Time.deltaTime * 5.0f);
+                        grounded = true;
+                    }
+                }
+            }
+            else
+            {
+                grounded = false;
+            }
+
             //check direction and determinate angle for normal and colPoint
-            if (Physics.Raycast(rayForward, out hitInfo, Height + HeightPadding) || Physics.Raycast(rayBack, out hitInfo, Height + HeightPadding) || Physics.Raycast(rayUp, out hitInfo, radius))
+            if (Physics.Raycast(rayForward, out hitInfo, radius + HeightPadding) || Physics.Raycast(rayBack, out hitInfo, radius + HeightPadding) || Physics.Raycast(rayUp, out hitInfo, radius))
             {
 
                 if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
@@ -255,56 +285,28 @@ public abstract class Character : MonoBehaviour
                 collided = true;
             }
 
-            if (Physics.Raycast(rayDown, out hitInfo, Height *2))
-            {                
-                grounded = true;
-
-                print("grounded");
-
-                //check if ground angle allows movement
-                if(groundAngle < MaxGroundAngle)
-                {
-                    if (Physics.Raycast(transform.position, -curNormal, out hitDown))
-                    {
-                        surfaceNormal = Vector3.Lerp(curNormal, hitDown.normal, 4 * Time.deltaTime);
-                    }
-
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, curNormal), hitInfo.normal), Time.deltaTime * 5.0f);
-
-                    //check distance to 
-                    if (Vector3.Distance(transform.position, colPoint) < (radius + HeightPadding))
-                    {
-                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Height, Time.deltaTime * 5.0f);
-                        grounded = true;
-                    }
-                }  
-            }
-            else
+            if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && canMove || Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding) && canMove)
             {
-                grounded = false;
-            }
-
-
-            if (Physics.Raycast(rayRight, out hitInfo, (Height + HeightPadding)) || Physics.Raycast(rayLeft, out hitInfo, (Height + HeightPadding)))
-            {
-                if (grounded) return;
                 curNormal = hitInfo.normal;
                 colPoint = hitInfo.point;
-                print("side collided");
-                if (Vector3.Distance(transform.position, colPoint) < (radius + HeightPadding))
+
+                if (Physics.Raycast(rayRight, (radius)) && Physics.Raycast(rayLeft, (radius)))
                 {
-
-                    Vector3 targetDir = colPoint - transform.position;
-
-                    Vector3 moveDirection = Vector3.RotateTowards(transform.forward, -targetDir, perc, 0.0f);
-
-                    transform.rotation = Quaternion.LookRotation(moveDirection);
-                    transform.position = Vector3.Lerp(transform.position, transform.position + hitInfo.normal * (radius + HeightPadding), perc);
+                    bothSidesCol = true;
+                }             
+                if (Vector3.Distance(transform.position, colPoint) < (radius) && !bothSidesCol)
+                {
+                    //Vector3 targetDir = colPoint - transform.position;
+                    //Vector3 moveDirection = Vector3.RotateTowards(transform.forward, -targetDir, perc, 0.0f);
+                   
+                    //transform.rotation = Quaternion.LookRotation(moveDirection);
+                    transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius/2), perc);
                 }
             }
 
             if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, radius))
             {
+                colFront = true;
                 canMove = false;
                 curNormal = hitInfo.normal;
                 colPoint = hitInfo.point;
@@ -320,7 +322,7 @@ public abstract class Character : MonoBehaviour
 
             if (Vector3.Distance(transform.position, colPoint) < (radius + HeightPadding))
             {
-                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius + HeightPadding), perc);
+                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, perc);
             }
         }
     }
