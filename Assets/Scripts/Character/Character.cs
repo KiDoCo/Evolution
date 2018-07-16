@@ -178,8 +178,6 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Move()
     {
-
-
         isMoving = false;
         Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * speed) * Time.deltaTime;
@@ -211,7 +209,6 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected void CheckCollision()
     {
-        colFront = false;
         collided = false;
         canMove = true;
 
@@ -222,15 +219,14 @@ public abstract class Character : MonoBehaviour
         Ray rayDown = new Ray(transform.position, -transform.up);
         Ray rayRight = new Ray(transform.position, transform.right);
         Ray rayLeft = new Ray(transform.position, -transform.right);
-        float distanceToPoints = col.height / 2 - col.radius;
 
-        //calculating start and end point  of capsuleCollider for capsuleCast to use
+        //calculating and setting points and distances for capsule cast (and rays)
+        float distanceToPoints = col.height / 2 - col.radius;
         Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
-
-        float radius = col.radius * 1.1f;
+        float radius = col.radius;
         float castDistance = 0.5f;
-        Height = col.height * 1.3f;
+        Height = col.height;
 
         //shoot capsuleCast
         RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, Height + HeightPadding, dir, castDistance, ground);
@@ -252,6 +248,7 @@ public abstract class Character : MonoBehaviour
                         surfaceNormal = Vector3.Lerp(Vector3.up, hitDown.normal, 4 * Time.deltaTime);
                     }
 
+                    //Rotate character according to ground angle
                     transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), Time.deltaTime * 5.0f);
 
                     //check distance to 
@@ -285,28 +282,33 @@ public abstract class Character : MonoBehaviour
                 collided = true;
             }
 
-            if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && canMove || Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding) && canMove)
+            //Check side collisions and if both sides collide turn canMove to false
+            if (Physics.Raycast(rayRight, out hitInfo, Height) || Physics.Raycast(rayLeft, out hitInfo, Height))
             {
+                if (Physics.Raycast(rayRight, (radius * 0.5f)) && Physics.Raycast(rayLeft, (radius * 0.5f)))
+                {
+                    bothSidesCol = true;
+                    canMove = false;
+                    return;
+                }
+
                 curNormal = hitInfo.normal;
                 colPoint = hitInfo.point;
 
-                if (Physics.Raycast(rayRight, (radius)) && Physics.Raycast(rayLeft, (radius)))
+                // turn character at side collision for smoother movement
+                if (Vector3.Distance(transform.position, colPoint) < (radius * 1.5f) && !bothSidesCol)
                 {
-                    bothSidesCol = true;
-                }             
-                if (Vector3.Distance(transform.position, colPoint) < (radius) && !bothSidesCol)
-                {
-                    //Vector3 targetDir = colPoint - transform.position;
-                    //Vector3 moveDirection = Vector3.RotateTowards(transform.forward, -targetDir, perc, 0.0f);
-                   
-                    //transform.rotation = Quaternion.LookRotation(moveDirection);
-                    transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius/2), perc);
+                    Vector3 targetDir = colPoint - transform.position;
+                    Vector3 moveDirection = Vector3.RotateTowards(transform.forward, -targetDir, perc, 0.0f);
+
+                    transform.rotation = Quaternion.LookRotation(moveDirection);                   
                 }
             }
 
+            //check if character can fit through caves etc. and if character collides head first
             if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, radius))
             {
-                colFront = true;
+                print(groundAngle);
                 canMove = false;
                 curNormal = hitInfo.normal;
                 colPoint = hitInfo.point;
@@ -319,8 +321,13 @@ public abstract class Character : MonoBehaviour
                     print("can move");
                 }
             }
+            else
+            {
+                canMove = true;
+            }
 
-            if (Vector3.Distance(transform.position, colPoint) < (radius + HeightPadding))
+            //Keep character at gien distance of colliding objects
+            if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
             {
                 transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, perc);
             }

@@ -51,9 +51,16 @@ public class CollisionChecker : MonoBehaviour
     //transform.Translate(moveDirection* Speed * Time.deltaTime);
     //isMoving = true;
     //    }
-//}
 
-bool CanMove(Vector3 dir)
+    //Vector3 targetDir = colPoint - transform.position;
+    //Vector3 moveDirection = Vector3.RotateTowards(transform.forward, -targetDir, perc, 0.0f);
+
+    //transform.rotation = Quaternion.LookRotation(moveDirection);
+    //}
+
+
+
+    bool CanMove(Vector3 dir)
     {
         float distanceToPoints = col.height / 2 - col.radius;
 
