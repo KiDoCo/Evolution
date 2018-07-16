@@ -16,6 +16,8 @@ public class Carnivore : Character
     
     //objects 
     [SerializeField] GameObject Camera1;
+    
+
 
     public void MouseMove()
     {
@@ -121,8 +123,6 @@ public class Carnivore : Character
                     isMoving = true;
                     StartCoroutine(ChargeTimer());
                     
-
-
                 }
             }
            
@@ -133,6 +133,17 @@ public class Carnivore : Character
             }
         }
     } 
+
+    public void EatHerbivore(float xp, float slow)
+    {
+        speed *= slow;
+        Experience += xp;
+    }
+
+    public void RestoreSpeed()
+    {
+        speed = SpeedValue;
+    }
 
 
     public IEnumerator ChargeTimer() //Charge uses this

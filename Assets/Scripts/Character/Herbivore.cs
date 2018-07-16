@@ -50,6 +50,7 @@ public class Herbivore : Character
             m_animator.SetBool("isMoving", false);
         }
     }
+
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
@@ -69,5 +70,10 @@ public class Herbivore : Character
 
         
     }
-    
+
+    public void GetEaten(float dmg)
+    {
+        TakeDamage(dmg);
+    }
+
 }

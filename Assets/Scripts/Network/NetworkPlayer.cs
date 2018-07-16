@@ -39,7 +39,7 @@ public class NetworkPlayer : NetworkBehaviour {
         if (isLocalPlayer)
         {
             GameObject camera = Instantiate(playerCamera);
-            camera.GetComponent<CameraMovement>().FollowedPlayer = this.gameObject;
+            //camera.GetComponent<CameraMovement>().FollowedPlayer = this.gameObject;
             UIManager.Instance.InstantiateInGameUI();
         }
     }
