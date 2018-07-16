@@ -90,7 +90,6 @@ public class InputManager : MonoBehaviour
             if (dataAsJson != null)
             {
                 storage = JsonUtility.FromJson<StoredInformation>(dataAsJson);
-                Debug.Log(storage.configurations.Count);
             }
         }
         else

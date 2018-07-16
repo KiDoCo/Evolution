@@ -7,7 +7,6 @@ public class AxisButton : MonoBehaviour
 {
     private bool negative;
     private string axisN;
-    private string axisD;
     private string keyV;
     public Text AxisDescText;
     public Text CurrentBindKey;

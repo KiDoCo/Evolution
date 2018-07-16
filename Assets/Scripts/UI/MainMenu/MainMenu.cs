@@ -7,7 +7,7 @@ public enum CurMenu { Main,Options,Controls,Sound,Credit }
 
 public class MainMenu : MonoBehaviour
 {
-    CurMenu activemenu;
+    private CurMenu activemenu;
 
     #region GameObjects
     //Menu holders
@@ -35,7 +35,6 @@ public class MainMenu : MonoBehaviour
 
     public void StartNewGame()
     {
-        //jne.
         backButton.SetActive(true);
     }
 
@@ -43,7 +42,6 @@ public class MainMenu : MonoBehaviour
     {
         backButton.SetActive(false);
         ChangeCurrentActiveMenu(MainMenuGrid);
-
     }
 
     #region Button methods
