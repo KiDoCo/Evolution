@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 95662106521183134}
   - component: {fileID: 136574025905355464}
   - component: {fileID: 82769841182586898}
-  - component: {fileID: 114663192462634156}
+  - component: {fileID: 114401673902600974}
   m_Layer: 0
   m_Name: Carnivore
   m_TagString: Untagged
@@ -1145,7 +1145,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114663192462634156
+--- !u!114 &114401673902600974
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1153,38 +1153,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 1445834569832970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c9258bf9d34c342a4a3a9d2980ccf1, type: 3}
+  m_Script: {fileID: 11500000, guid: 454403b8f5f6317479775b3ec12e4130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SpeedValue: 2
+  turnSpeed: 2
+  AscendSpeed: 2
   verticalSpeed: 2
   horizontalSpeed: 2
-  speed: 2
-  AscendSpeed: 2
-  turnSpeed: 2
   rotateSpeed: 2
-  myQuat: {x: 0, y: 0, z: 0, w: 0}
-  targetQuat: {x: 0, y: 0, z: 0, w: 0}
-  quatSpeed: 1
-  stabilize: 0.1
-  velocity: 0
-  restrictAngle: 80
+  strafeSpeed: 2
+  dashSpeed: 20
+  dashTime: 6
+  coolTime: 6
+  turning: 0
   rolling: 0
-  isMoving: 0
-  camerascript: {fileID: 0}
+  isReversing: 0
+  isDashing: 0
+  isStrafing: 0
+  isMovingVertical: 0
+  isMovingForward: 0
   hasjustRolled: 0
-  Rotatingspeed: 0
-  camera: {fileID: 0}
-  y: 0
-  barrelRoll: 0
-  dashSpeed: 0
-  strafeSpeed: 0
-  dashing: 0
+  timerStart: 0
+  coolTimer: 0
+  canBarrellRoll: 0
+  canStrafe: 0
+  canTurn: 0
   canDash: 0
-  dashSpeedValue: 100
-  staminaValue: 100
-  stamina: 100
-  staminaDecrement: 2
-  staminaIncrement: 2
+  Rotatingspeed: 0
+  IsCharging: 0
+  canCharge: 0
+  chargeSpeed: 50
+  camera: {fileID: 0}
+  canMouseMove: 1
+  chargeTime: 2
+  chargeCoolTime: 6
+  stamina: 0
 --- !u!136 &136574025905355464
 CapsuleCollider:
   m_ObjectHideFlags: 1

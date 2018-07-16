@@ -5,84 +5,83 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Character : MonoBehaviour
 {
-    //values
-public float SpeedValue = 2f;   //very important value that can be affected
-    protected float speed = 2f;     // speed in character movement
-    [SerializeField] protected float turnSpeed = 2f;     //herbivore A & D turn
-    [SerializeField] protected float AscendSpeed = 2f; //altitude shift & ctrl
-    [SerializeField] protected float verticalSpeed = 2f; //mouse movement vertical speed
+    #region Floats
+
+    //Movement 
+    public float                     SpeedValue = 2f;   //Debug value which is assigned to speed
+    protected float                  speed = 2f;     // vertical speed modifier
+    [SerializeField] protected float turnSpeed = 2f;     //Rotation horizontal speed modifier
+    [SerializeField] protected float AscendSpeed = 2f; //Upwards and downwards speed modifier
+    [SerializeField] protected float verticalSpeed = 2f;   //mouse movement vertical speed
     [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
-    [SerializeField] protected float rotateSpeed = 2f; //barrelroll speed
-    [SerializeField] protected float strafeSpeed = 2f; //carnivore strafe
-    [SerializeField] protected float dashSpeed = 20f; //herbivore sprint
+    [SerializeField] protected float rotateSpeed = 2f;     //barrelroll speed
+    [SerializeField] protected float strafeSpeed = 2f;     //carnivore strafe
+    [SerializeField] protected float dashSpeed = 20f;      //herbivore sprint
+    protected float                  velocity;
+    protected float                  restrictAngle = Mathf.Abs(80);
 
-    protected float velocity;
-    protected float restrictAngle = Mathf.Abs(80);
-    
+    //timer values
+    [SerializeField] protected float dashTime = 6f;
+    [SerializeField] protected float coolTime = 6f;
+
+    //character stats
+    protected float health = 100;
+    protected float experience = 0;
+    private const float healthMax = 100.0f;
+    private const float waitTime = 1.0f;
+    private const float deathpenaltytime = 2.0f;
+
+    #endregion
     //script reference
-    [HideInInspector] public CameraController camerascript;
 
-    //bools
-    protected bool isMoving;
+    #region Booleans
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
-    public bool isReversing; //3rd person camera käyttää
-    public bool isDashing;
-    public bool isStrafing; //1st person kamera käyttää näitä
-    public bool isMovingVertical; // --"--
-    public bool isMovingForward;
+    public bool                     isReversing; //3rd person camera käyttää
+    public bool                     isDashing;
+    public bool                     isStrafing; //1st person kamera käyttää näitä
+    protected bool                  isMoving;
+    public bool                     isMovingVertical; 
+    public bool                     isMovingForward;
+    public bool                     hasjustRolled;
+    protected bool                  barrelRoll;
+    private bool ready;
+    private bool eating;
 
+    //timer bools
+    [SerializeField] protected bool timerStart;
+    [SerializeField] protected bool coolTimer;
 
     //ability unlock bools used in editor
     [SerializeField] protected bool canBarrellRoll;
     [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
-    
 
-    //timer bools
-    [SerializeField] protected bool timerStart;
-    [SerializeField] protected bool coolTimer;
-    //timer values
-    [SerializeField] protected float dashTime = 6f;
-    [SerializeField] protected float coolTime = 6f;
+    #endregion 
 
-  
+    protected GameObject             cameraClone;
+    protected CameraController       camerascript;
+    protected Animator               m_animator;
+    private AudioSource              musicSource;
+    protected AudioSource            SFXsource;
+    private Vector3                  inputVector;
+    private Vector3                  MovementInputVector;
+    private Vector3                  rotationInputVector;
 
+    #region Collider variables
+    public float                     Rotatingspeed; private Vector3 moveDirection;
+    private Vector3                  surfaceNormal;
+    private Vector3                  capsuleNormal;
+    private Vector3                  colDirection;
+    private Vector3                  colNormal;
+    private Vector3                  colPoint;
+    private CapsuleCollider          col;
+    private bool                     collided = false;
 
+    #endregion
 
-
-    protected float health = 100;
-    protected float experience = 0;
-    private const float healthMax = 100.0f;
-    private const float waitTime = 1.0f;
-    private const float experiencePenalty = 25.0f;
-    private const float deathpenaltytime = 2.0f;
-    private bool ready;
-    
-    private bool eating;
-    protected Animator m_animator;
-   
-    private Vector3 lastposition = Vector3.zero;
-    private Vector3 MovementInputVector;
-    private Vector3 rotationInputVector;
-    private AudioSource musicSource;
-    private AudioSource SFXsource;
-    protected GameObject    //bools
-    public bool                      hasjustRolled;
-    private bool                     ready;
-    public bool                      rolling;
-    public bool                      isMoving;
-    private bool                     eating;
-
-    public float Rotatingspeed;    private Vector3 moveDirection;
-    private Vector3 surfaceNormal;
-    private Vector3 capsuleNormal;
-    private Vector3 colDirection;
-    private Vector3 colNormal;
-    private Vector3 colPoint;
-    private CapsuleCollider col;
-    private bool collided = false;
+    //End variables
 
     #region Getter&Setter
     public float Maxhealth { get { return healthMax; } }
@@ -125,7 +124,19 @@ public float SpeedValue = 2f;   //very important value that can be affected
             speed = value;
         }
     }
+
+    public GameObject CameraClone
+    {
+        get
+        {
+            return cameraClone;
+        }
+    }
     #endregion
+
+    #region EventMethods
+
+    //Contains methods like eating
 
     /// <summary>
     /// Takes care of the eating for the player
@@ -147,13 +158,13 @@ public float SpeedValue = 2f;   //very important value that can be affected
                 eatObject.DecreaseFood();
                 if (!eatObject.Source().isPlaying)
                 {
-                    //EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+                    EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
                 }
             }
             else
             {
                 eating = false;
-                //EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
+                EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
                 eatObject.Eaten = eating;
             }
         }
@@ -161,7 +172,6 @@ public float SpeedValue = 2f;   //very important value that can be affected
 
     protected virtual void Death()
     {
-        Experience -= experiencePenalty;
         Gamemanager.Instance.RespawnPlayer(this);
     }
 
@@ -170,25 +180,69 @@ public float SpeedValue = 2f;   //very important value that can be affected
         EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         Health -= amount;
     }
+    
+    #endregion
 
+    #region Movement methods
     /// <summary>
-    /// Checks for interaction when player enters the corals bounding box
-    /// </summary>
-    protected virtual void InteractionChecker()
+    ///  Altitude & Forward/Backwards
+    /// </summary>    
+    protected virtual void Move()
     {
-        for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
+        Vector3 inputvectorX =  InputManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed;
+        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Jump") * Vector3.forward * rotateSpeed * Time.deltaTime);
+        inputVector = inputvectorX + inputvectorY + inputvectorZ;
+        //tarkista peruuttaako
+        if (InputManager.Instance.GetAxis("Vertical") < 0)
         {
-            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetCollider().bounds))
-            {
-                CmdEat(Gamemanager.Instance.FoodPlaceList[i]);
-            }
-        }
-    }
+            isReversing = true;
+            isMovingForward = false;
 
-    protected virtual void AnimationChanger()
-    {
-        m_animator.SetBool("isEating", eating);
-        m_animator.SetBool("isMoving", isMoving);
+
+        }
+        if (InputManager.Instance.GetAxis("Vertical") > 0)
+        {
+            isReversing = false;
+            isMovingForward = true;
+
+        }
+        else if (InputManager.Instance.GetAxis("Vertical") == 0)
+        {
+            isReversing = false;
+            isMovingForward = false;
+        }
+
+        Turn();
+
+        if (inputVector.magnitude != 0)
+        {
+            isMoving = true;
+        }
+        //tarkista nouseeko laskeeko
+        if (inputvectorZ.magnitude != 0)
+        {
+            isMovingVertical = true;
+        }
+        else if (inputvectorZ.magnitude == 0)
+        {
+            isMovingVertical = false;
+        }
+        else
+        {
+            MovementInputVector = inputvectorY + inputvectorZ;
+        }
+
+        moveDirection = Vector3.Cross(colPoint, surfaceNormal);
+        moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
+        moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
+        MovementInputVector = moveDirection;
+
+        if (!eating)
+        {
+            transform.Translate(MovementInputVector);
+
+        }
     }
 
     /// <summary>
@@ -209,75 +263,6 @@ public float SpeedValue = 2f;   //very important value that can be affected
         }
     }
 
-
-    /// <summary>
-    ///  Altitude & Forward/Backwards
-    /// </summary>    protected virtual void Move()
-    {
-        Vector3 inputvectorX =utManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed);
-        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical")   * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (InputManager.Instan
-        //tarkista peruuttaako
-        
-        if (Input.GetAxisRaw("Vertical") < 0)
-        {
-isReversing = true;
-            isMovingForward = false;
-           
-
-        }
-        if (Input.GetAxisRaw("Vertical") > 0)
-        {
-            isReversing = false;
-            isMovingForward = true;
-
-        }
-        else if (Input.GetAxisRaw("Vertical") ==0)
-        {
-            isReversing = false;
-            isMovingForward = false;
-        }
-            
-       
-
-        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
-        Turn();
-        if(inputvector)
-{            isMoving = true;
-        }
-      //tarkista nouseeko laskeeko
-        if (inputvectorZ.magnitude != 0)
-        {
-            isMovingVertical = true;
-        }
-        else if (inputvectorZ.magnitude == 0)
-        {
-            isMovingVertical = false; 
-        }
-
-        {
-            moveDirection = Vector3.Cross(colPoint, surfaceNormal);
-            moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
-            moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
-
-
-            MovementInputVector = moveDirection;
-        }
-        else
-        {
-            MovementInputVector = inputvectorY + inputvectorZ;
-        }
-       
-        if (!eating)
-        {
-            transform.Translate(MovementInputVector);
-
-        }
-    }
-
-
-
     /// <summary>
     /// A and D keys turn
     /// </summary>
@@ -285,18 +270,17 @@ isReversing = true;
     {
         if (canTurn)
         {
-            
+
             float rotation = (Input.GetAxisRaw("Horizontal") * turnSpeed * Time.deltaTime);
-            if(rotation != 0)
+            if (rotation != 0)
             {
                 isMoving = true;
             }
             transform.Rotate(0, rotation, 0);
 
         }
-        
     }
-    
+
     protected virtual void BarrellRoll() //if needed 
     {
 
@@ -318,6 +302,7 @@ isReversing = true;
         }
 
     }
+
     protected virtual void Dash() // sprint for herbivores
     {
         if (canDash)
@@ -327,7 +312,7 @@ isReversing = true;
             if (inputVectorX.magnitude != 0)
             {
                 isDashing = true;
-                
+
                 StartCoroutine(DashTimer());
             }
             else
@@ -337,22 +322,41 @@ isReversing = true;
             }
         }
     }
+    #endregion
 
-    
+    /// <summary>
+    /// Checks for interaction when player enters the corals bounding box
+    /// </summary>
+    protected virtual void InteractionChecker()
+    {
+        for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
+        {
+            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetCollider().bounds))
+            {
+                CmdEat(Gamemanager.Instance.FoodPlaceList[i]);
+            }
+        }
+    }
 
-    public IEnumerator DashTimer() //used in Dash();
+    protected virtual void AnimationChanger()
+    {
+        m_animator.SetBool("isEating", eating);
+        m_animator.SetBool("isMoving", isMoving);
+    }
+
+    protected virtual IEnumerator DashTimer() //used in Dash();
     {
         timerStart = true;
         yield return new WaitForSeconds(dashTime);
-        
+
         canDash = false;
         timerStart = false;
         yield return StartCoroutine(CoolTimer());
-        
+
 
     }
-    // -->
-    IEnumerator CoolTimer()
+    
+    protected virtual IEnumerator CoolTimer()
     {
         canDash = false;
         coolTimer = true;
@@ -361,9 +365,7 @@ isReversing = true;
         canDash = true;
 
     }
-    
 
-   
     /// <summary>
     /// Checks if player can move in wanted direction
     /// returns true if there is not another bject's collider in way
@@ -415,7 +417,6 @@ isReversing = true;
         return true;
     }
 
-
     /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
@@ -423,35 +424,28 @@ isReversing = true;
     {
         if (!rolling)
         {
-
+            float z = transform.eulerAngles.z;
+            transform.Rotate(0, 0, -z);
         }
 
     }
 
-
+    #region Unity Methods
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
-       
-
-        musicSource = GetComponentInChildren<AudioSource>();
-        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+        musicSource = GetComponent<AudioSource>();
     }
 
     protected virtual void Start()
     {
-        speed = SpeedValue; // can change character speed (by adding value in editor or by a code)
-        //Component search
-        m_animator = gameObject.GetComponent<Animator>();
+        speed = SpeedValue; 
 
-
-        Debug.Log("Loading character start");
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
-        
 
-        //UIManager.Instance.InstantiateMatchUI(this);
-       // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+         UIManager.Instance.UpdateMatchUI(this);
+         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
@@ -460,6 +454,8 @@ isReversing = true;
         {
             Cursor.lockState = CursorLockMode.None;
         }
+        if (Input.GetKey(KeyCode.P))
+            experience++;
 
         CanMove(MovementInputVector);
     }
@@ -474,5 +470,6 @@ isReversing = true;
         Dash();
         AnimationChanger();
     }
-   
+    #endregion
+
 }

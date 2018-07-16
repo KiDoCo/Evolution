@@ -7,7 +7,6 @@ public class AxisButton : MonoBehaviour
 {
     private bool negative;
     private string axisN;
-    private string keyV;
     public Text AxisDescText;
     public Text CurrentBindKey;
 
@@ -15,7 +14,6 @@ public class AxisButton : MonoBehaviour
     {
         ChangeKeyText(axisname);
         axisN = axisname;
-        keyV = keyvalue;
         ChangeKeyText(keyvalue);
         AxisDescText.text = axisdesc;
     }
@@ -23,7 +21,6 @@ public class AxisButton : MonoBehaviour
     {
         ChangeKeyText(axisname);
         axisN = axisname;
-        keyV = keyvalue;
         ChangeKeyText(keyvalue);
         AxisDescText.text = axisdesc;
         negative = negativeKey;

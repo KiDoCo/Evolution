@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Carnivore : Character
 {
-    //bools
+
     public bool IsCharging;
     [SerializeField] protected bool canCharge;
     [SerializeField] protected float chargeSpeed = 50f;
@@ -14,48 +14,46 @@ public class Carnivore : Character
     [SerializeField] protected bool canMouseMove = true;
     [SerializeField] protected float chargeTime = 2f;
     [SerializeField] protected float chargeCoolTime = 6f;
-    public void MouseMove()
-    {
-        if (canMouseMove)
-        {
-            float v = verticalSpeed * Input.GetAxis("Mouse Y");
-            float h = horizontalSpeed * Input.GetAxis("Mouse X");
-            transform.Rotate(v, h, 0);
-        }
-        
-    }
+    public float stamina;
+    private bool isEating;
+    private bool isCharging;
+    private const float staminaValue = 20.0f;
+
+
     protected override void Awake()
     {
         base.Awake();
 
     }
-    [SerializeField] private GameObject cameraClone;
 
-    private bool isEating;
-    private bool isCharging;
-    public GameObject CameraClone { get { return cameraClone; } }    protected override void Start()
+    protected override void Start()
     {
         base.Start();
         m_animator = gameObject.GetComponent<Animator>();
-        carniv = this;
         barrelRoll = false;
         stamina = staminaValue;
         camera.GetComponent<CameraController>().InstantiateCamera(this);
         cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
-        cameraClone.name = "FollowCamera";    }
-
+        cameraClone.name = "FollowCamera";
+    }
 
     protected override void Update()
     {
         base.Update();
 
-  else if (stamina <= 0)
+        if (stamina > 0)
+        {
+            canDash = true;
+        }
+
+        else if (stamina <= 0)
         {
             canDash = false;
             dashSpeed = Speed;
-            dashing = false;
         }
-        if(Input.GetKeyDown(KeyCode.H))
+
+
+        if (Input.GetKeyDown(KeyCode.H))
         {
             isEating = true;
         }
@@ -64,7 +62,8 @@ public class Carnivore : Character
             isEating = false;
         }
 
-        if(Input.GetKey(KeyCode.T))        {
+        if (Input.GetKey(KeyCode.T))
+        {
             isCharging = true;
         }
         else
@@ -73,7 +72,6 @@ public class Carnivore : Character
         }
 
     }
-
 
     protected override void AnimationChanger()
     {
@@ -93,8 +91,10 @@ public class Carnivore : Character
         MouseMove();
         AnimationChanger();
         isMoving = false;
-		Charge();
- protected virtual void Strafe()//For carnivores?
+        Charge();
+    }
+
+    protected virtual void Strafe()//For carnivores?
     {
         if (canStrafe) //bools are checked/unchecked in editor
         {
@@ -112,7 +112,8 @@ public class Carnivore : Character
             }
 
 
-        }        //if (!cameraClone.GetComponent<CameraController>().freeCamera)
+        }
+        //if (!cameraClone.GetComponent<CameraController>().freeCamera)
         //{
         //    MouseMove();
         //}
@@ -120,27 +121,47 @@ public class Carnivore : Character
     }
 
     /// <summary>
-    /// IN TESTING
+    /// Inputs for rotating with the mouse
     /// </summary>
-    public void Charge() 
+    public void MouseMove()
     {
+        if (canMouseMove) return;
+
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
-if (canCharge) //ability check
+
+        if (v != 0 || h != 0)
+        {
+            isMoving = true;
+        }
+        m_animator.SetFloat("FloatX", Mathf.Clamp01(h) + InputManager.Instance.GetAxis("Horizontal"));
+        m_animator.SetFloat("FloatY", Mathf.Clamp01(v) + InputManager.Instance.GetAxis("Vertical"));
+        transform.Rotate(v, h, 0);
+    }
+
+    /// <summary>
+    /// IN TESTING
+    /// </summary>
+    private void Charge()
+    {
+
+        if (canCharge) //ability check
         {
             if (!IsCharging)
             {
                 canMouseMove = true;
-               // CameraController_1stPerson.cam1.m_FieldOfView = CameraController_1stPerson.cam1.FOVValue; //reset CAM FOV in camerascipt
+                // CameraController_1stPerson.cam1.m_FieldOfView = CameraController_1stPerson.cam1.FOVValue; //reset CAM FOV in camerascipt
             }
+
             if (IsCharging) // put down mousecontrols when charging
             {
                 canMouseMove = false;
-               // CameraController_1stPerson.cam1.m_FieldOfView += 60f;
+                // CameraController_1stPerson.cam1.m_FieldOfView += 60f;
             }
+
             if (Input.GetKeyDown(KeyCode.LeftShift)) //charge function
             {
-               
+
                 Vector3 inputVectorX = new Vector3(0, 0, chargeSpeed) * Time.deltaTime;
                 transform.Translate(inputVectorX);
                 if (inputVectorX.magnitude != 0)
@@ -148,18 +169,34 @@ if (canCharge) //ability check
                     IsCharging = true;
                     isMoving = true;
                     StartCoroutine(ChargeTimer());
-                    
-
 
                 }
             }
-           
             else
             {
                 IsCharging = false;
                 StopAllCoroutines();
             }
         }
+        else
+        {
+            isCharging = false;
+            StopAllCoroutines();
+        }
+    }
+
+    protected override IEnumerator CoolTimer()
+    {
+        canCharge = false;
+        coolTimer = true;
+        yield return new WaitForSeconds(coolTime);
+        canCharge = true;
+        coolTimer = false;
+        canMouseMove = true;
+
+    }
+
+    public IEnumerator ChargeTimer() //Charge uses this
     {
         timerStart = true;
         yield return new WaitForSeconds(chargeTime);
@@ -171,16 +208,6 @@ if (canCharge) //ability check
 
 
     }
-   
-    IEnumerator CoolTimer() 
-    {
-        canCharge = false;
-        coolTimer = true;
-        yield return new WaitForSeconds(coolTime);
-        canCharge = true;
-        coolTimer = false;
-        canMouseMove = true;
-
-    }
 
 }
+

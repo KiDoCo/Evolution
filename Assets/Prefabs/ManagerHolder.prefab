@@ -122,6 +122,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46fb5140c214c1244843a5e5f1014946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hud: {fileID: 1152126947195256, guid: bbcfb565e55c1114da53254c2bd8dc55, type: 2}
+  helix: {fileID: 1465424170178942, guid: 6c34c27211bc14246908efaa337b7166, type: 2}
+  pauseMenu: {fileID: 1831237039453952, guid: 033e2c1afd017de48bfa2e5684f32d9a, type: 2}
+  matchResultScreen: {fileID: 0}
 --- !u!114 &114410111391734876
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -157,8 +161,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodsources:
   - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
-  PlayerSpawnPointList: []
-  PlayerList: []
   CameraPrefab: {fileID: 1824946988335758, guid: 0576a07d4cfab8a42acea443ccd318a1,
     type: 2}
   BerryPrefab: {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117,

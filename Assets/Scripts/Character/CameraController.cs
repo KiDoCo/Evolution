@@ -74,22 +74,13 @@ public class CameraController : MonoBehaviour
         }
         FollowRot();
         Stabilize();
-       
+
 
 
     }
     public void InstantiateCamera(Character test)
     {
         Target = test.transform;
-    }
-
-    /// <summary>
-    /// Sets the camera target to fixed point
-    /// </summary>
-    /// <param name="source"></param>
-    public void CameraPlaceOnDeath(Character test)
-    {
-        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }
 
     void SmoothFollow()// follow every frame
@@ -130,10 +121,10 @@ public class CameraController : MonoBehaviour
 
     void ResetCamera()
     {
-        
-            offset = startOffset;
-        
-        
+
+        offset = startOffset;
+
+
     }
 
     void ControlCamera()// Camera input
@@ -160,22 +151,23 @@ public class CameraController : MonoBehaviour
         }
     }
 
+
     /// <summary>
-    /// Checks if target is backing up or changing altitude, then changes camera values
+    /// Sets the camera target to fixed point
     /// </summary>
-    {
+    /// <param name="source"></param>
+
     public void CameraPlaceOnDeath(Herbivore test)
     {
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }
-
-    public void CameraPlaceOnDeath(Carnivore test)
+    /// <summary>
+    /// Checks if target is backing up or changing altitude, then changes camera values
+    /// </summary>
+    private void SetDampening()
     {
-        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
-    }
-        {
-        if (target.GetComponent<Herbivore>().isReversing)            distanceDamp = distanceDampValueB;
-        }
+        if (target.GetComponent<Herbivore>().isReversing) distanceDamp = distanceDampValueB;
+
         else if (target.GetComponent<Herbivore>().isMovingVertical)
         {
             distanceDamp = distanceDampValueV;
@@ -183,7 +175,7 @@ public class CameraController : MonoBehaviour
 
         else
             distanceDamp = distanceDampValue;
-        
-    }
 
+    }
 }
+

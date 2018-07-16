@@ -10,14 +10,12 @@ public class Herbivore : Character
     Quaternion currentZ;
     private bool Iseating;
     //objects
-    public Transform myT;    [SerializeField] private GameObject cameraClone;
-    
+    public Transform myT;
+
     //object references
     [HideInInspector] public static Herbivore herbiv;
-    [SerializeField] new GameObject  CameraClone;
     [SerializeField] GameObject Camera3rd;
-    
-    public GameObject CameraClone { get { return cameraClone; } }
+
 
 
     public void MouseMove()
@@ -25,9 +23,9 @@ public class Herbivore : Character
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
-                
+
     }
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -35,16 +33,20 @@ public class Herbivore : Character
 
     protected override void Start()
     {
-        cameraClGameObject cam = Instantiate(Camera3rd);
-        cam.GetComponent<CameraController>().target = this.transform;
+        cameraClone = Instantiate(Camera3rd);
+        cameraClone.GetComponent<CameraController>().target = this.transform;
+        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+        m_animator = gameObject.GetComponent<Animator>();
+        UIManager.Instance.InstantiateInGameUI(this);
         canBarrellRoll = true;
-        canTurn = true;    }
+        canTurn = true;
+    }
 
     protected override void Update()
     {
         base.Update();
-        
-        if(isMoving)
+
+        if (isMoving)
         {
             m_animator.SetBool("isMoving", true);
         }
@@ -54,7 +56,7 @@ public class Herbivore : Character
         }
         m_animator.SetBool("isEating", Iseating);
 
-        if(Input.GetKey(KeyCode.N))
+        if (Input.GetKey(KeyCode.N))
         {
             Iseating = true;
         }
@@ -63,21 +65,22 @@ public class Herbivore : Character
             Iseating = false;
         }
     }
+
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-      if (!CameraClone.GetComponent<CameraController>().FreeCamera) 
+        if (!CameraClone.GetComponent<CameraController>().FreeCamera)
         {
             MouseMove();
-        }       
+        }
         Restrict();
 
         if (!rolling)
         {
-           Stabilize();
+            Stabilize();
         }
 
-        
+
     }
-    
+
 }

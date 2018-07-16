@@ -8,59 +8,56 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
 
     [SerializeField] private GameObject hud = null;
+    [SerializeField] private GameObject helix;
     [SerializeField] private GameObject pauseMenu = null;
-
-    //Match UI
-	public void UpdateMatchUI(Character source)
-    {
-        HUDController.instance.MaxHealth   = (int)source.Maxhealth;
-        HUDController.instance.CurProgress = source.Experience;
-        HUDController.instance.CurHealth   = (int)source.Health;
-    }
-
-    public void InstantiateInGameUI()
-    {
-        Instantiate(hud);
-        Instantiate(pauseMenu);
-    }
-
-    public void UpdateCharacterExperience()
-    {
-
-    }
+    [SerializeField] private GameObject matchResultScreen;
 
     private void DisplayTime()
     {
         // Gamemanager.Instance.MatchTimer / 60;
     }
 
-//-------------------------------------------------------------------------------------
-    //Main Menu UI
-
     private void InstantiateMainMenuUI()
     {
 
     }
 
+    #region MatchUI
+
+
     private void MatchResultScreen(Character source)
     {
 
     }
+    public void InstantiateInGameUI(Character source)
+    {
+        Instantiate(hud);
+        Instantiate(pauseMenu);
+
+        if (source.GetType() == typeof(Herbivore))
+        {
+            GameObject clone = Instantiate(helix, GameObject.Find("HelixLocation").transform.position, Quaternion.identity);
+            hud.GetComponent<HUDController>().Inst(clone);
+        }
+    }
+    //Match UI
+    public void UpdateMatchUI(Character source)
+    {
+        hud.GetComponent<HUDController>().MaxHealth = (int)source.Maxhealth;
+        hud.GetComponent<HUDController>().CurProgress = source.Experience;
+        hud.GetComponent<HUDController>().CurHealth = (int)source.Health;
+    }
+    #endregion
+
+    //unity methods
 
     private void Awake()
     {
         Instance = this;
     }
 
-    //unity methods
-    private void Start()
-    {
-
-    }
-
     private void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
 

@@ -153,7 +153,7 @@ public class CameraController_1stPerson : MonoBehaviour
     /// <summary>
     /// Camera follows more stricktly when doing these things
     /// </summary>
-    public void SetDampening() 
+    public void SetDampening()
     {
         if (target.GetComponent<Carnivore>().isStrafing) 
         {
