@@ -15549,6 +15549,21 @@ Prefab:
       propertyPath: maxSpeed
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 114527712454298606, guid: 977f36937b090114a812408526a54822,
+        type: 2}
+      propertyPath: normalmove
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114527712454298606, guid: 977f36937b090114a812408526a54822,
+        type: 2}
+      propertyPath: accelerate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114527712454298606, guid: 977f36937b090114a812408526a54822,
+        type: 2}
+      propertyPath: logarithmicmove
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 977f36937b090114a812408526a54822, type: 2}
   m_IsPrefabParent: 0
