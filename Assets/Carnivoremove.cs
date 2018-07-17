@@ -12,7 +12,7 @@ public class Carnivoremove : MonoBehaviour
     public bool logarithmicmove;
     public bool start;
     public bool isMovingForward;
-    public bool isAscending;
+    public bool isMovingVertical;
     public bool isMoving;
     public bool ascend;
     
@@ -41,11 +41,13 @@ public class Carnivoremove : MonoBehaviour
 
    
     private Vector3 inputVectorZ;
-    private Vector3 inputVectorY;
+    public Vector3 inputVectorY;
     public Rigidbody rb;
     public float thrust = 20f;
     public float gravity = 3f;
     public float jumpforce = 5f;
+    public bool decel;
+    public bool isStrafing;
 
    
 
@@ -84,14 +86,14 @@ public class Carnivoremove : MonoBehaviour
     void FixedUpdate()
     {
         
-        ForwardMovement();
-        Acceleration();
-        NormalMovement();
-        //Force();
-        Altitude();
+        ForwardMovement(); //tapa 1
+        Acceleration(); // tapa2
+        NormalMovement(); // tapa 3
+        //Force(); // rigibbodytest
+        Altitude(); 
         Strafe();
-        MouseMove();
-        Gravity();
+        MouseMove(); //mouse look
+        Gravity(); 
         Stabilize();
     }
 
@@ -101,6 +103,10 @@ public class Carnivoremove : MonoBehaviour
         {
             forwardVelocity += breakRatePerSecond * Time.deltaTime;
             forwardVelocity = Mathf.Max(forwardVelocity, 0);
+
+            inputVectorY = (Input.GetAxisRaw("Vertical") * Vector3.back * forwardVelocity) * Time.deltaTime;
+            Vector3 input = inputVectorY;
+            transform.Translate(inputVectorY);
         }
     }
 
@@ -127,11 +133,25 @@ public class Carnivoremove : MonoBehaviour
                 forwardVelocity += accelRatePerSecond * Time.deltaTime;
                 forwardVelocity = Mathf.Min(forwardVelocity, maxSpeed);
                 isMovingForward = true;
+                //decel = true;
             }
-            else if (Input.GetAxisRaw("Vertical") == 0)
+          //deceleration when stopping movement
+            else if (Input.GetAxisRaw("Vertical") == 0)// && decel)
             {
-                forwardVelocity = 0;
-                forwardVelocity2 = 0;
+                forwardVelocity +=decelRatePerSecond * Time.deltaTime;
+                forwardVelocity2 += decelRatePerSecond * Time.deltaTime;
+                forwardVelocity = Mathf.Max(forwardVelocity, 0);
+                if (forwardVelocity<=0)
+                {
+                    //decel = false;
+                }
+                if (forwardVelocity>0)
+                {
+                    Vector3 move = Vector3.forward * forwardVelocity * Time.deltaTime;
+                    transform.Translate(move);
+                }
+                
+
 
             }
             else
@@ -140,14 +160,14 @@ public class Carnivoremove : MonoBehaviour
             if (isMovingForward)
             {
                 inputVectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * forwardVelocity) * Time.deltaTime;
-                Vector3 input = inputVectorY;
-                transform.Translate(input);
+               // Vector3 input = inputVectorY;
+                transform.Translate(inputVectorY);
             }
-            if (!isMovingForward)
-            {
-                inputVectorY2 = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-                transform.Translate(inputVectorY2);
-            }
+           // if (!isMovingForward)
+            //{
+            //    inputVectorY2 = (Input.GetAxisRaw("Vertical") * Vector3.forward * forwardVelocity) * Time.deltaTime;
+            //    transform.Translate(inputVectorY2);
+            //}
 
         }
         
@@ -204,11 +224,11 @@ public class Carnivoremove : MonoBehaviour
         transform.Translate(inputVectorZ);
         if (inputVectorZ.magnitude != 0)
         {
-            isAscending = true;
+            isMovingVertical = true;
 
         }
         else
-            isAscending = false;
+            isMovingVertical = false;
     }
 
     protected void Stabilize()
@@ -271,10 +291,12 @@ public class Carnivoremove : MonoBehaviour
         {
 
             isMoving = true;
+            isStrafing = true;
         }
         else
         {
             isMoving = false;
+            isStrafing = false;
         }
 
 
