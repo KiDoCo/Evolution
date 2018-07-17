@@ -130,6 +130,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         UIManager.switchGameObject(UIWindows, mainUI);
         insertNameError.SetActive(false);
         Debug.Log("Hosting stopped");
+
     }
 
     public override void OnLobbyClientEnter()
@@ -173,14 +174,26 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
     {
-        GameObject player = Instantiate(conn.playerControllers[0].gameObject.GetComponent<LobbyPlayer>().CharacterSelection);
+        LobbyPlayer player = null;
 
-        foreach (PlayerController p in conn.playerControllers)
+        foreach (LobbyPlayer p in lobbySlots)
         {
-            Debug.Log(p.gameObject.GetComponent<LobbyPlayer>().CharacterSelection);
+            if (p.playerControllerId == playerControllerId)
+            {
+                player = p;
+                break;
+            }
         }
 
-        return player;
+        if (player == null)
+        {
+            Debug.Log("NetworkGameManager, OnLobbyServerCreateGamePlayer: Player not found!");
+            return null;
+        }
+
+        GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelection.name));
+
+        return spawnedPlayer;
     }
 
     // --- Other private methods

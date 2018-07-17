@@ -114,6 +114,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         }
     }
 
+    // Character selection dropdown update
     public void OnTypeChange(int type)
     {
         if (isServer)
