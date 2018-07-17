@@ -2,20 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class Character : MonoBehaviour
 {
+
     //values
-    [SerializeField] protected float verticalSpeed = 2f;
-    [SerializeField] protected float horizontalSpeed = 2f;
-    [SerializeField] protected float speed = 2f;
-    [SerializeField] protected float AscendSpeed = 2f;
-    [SerializeField] protected float turnSpeed = 2f;
-    [SerializeField] protected float rotateSpeed = 2f;
-    public Quaternion myQuat, targetQuat;
-    public float quatSpeed = 1f;
-    public float stabilize = 0.1f;
-    public float velocity;
-    public float restrictAngle = Mathf.Abs(80);
+    public float SpeedValue = 2f;   //very important value that can be affected
+    protected float speed = 2f;     // speed in character movement
+    [SerializeField] protected float turnSpeed = 2f;     //herbivore A & D turn
+    [SerializeField] protected float AscendSpeed = 2f; //altitude shift & ctrl
+    [SerializeField] protected float verticalSpeed = 2f; //mouse movement vertical speed
+    [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
+    [SerializeField] protected float rotateSpeed = 2f; //barrelroll speed
+    [SerializeField] protected float strafeSpeed = 2f; //carnivore strafe
+    [SerializeField] protected float dashSpeed = 20f; //herbivore sprint
+
+    protected float velocity;
+    protected float restrictAngle = Mathf.Abs(80);
+
+
+
+
+    //script reference
+    [HideInInspector] public CameraController camerascript;
+
+
+    //bools
+    protected bool isMoving;
+    [SerializeField] protected bool turning;
+    [SerializeField] protected bool rolling = false;
+    public bool isReversing; //3rd person camera käyttää
+    public bool isDashing;
+    public bool isStrafing; //1st person kamera käyttää näitä
+    public bool isMovingVertical; // --"--
+    public bool isMovingForward;
+
+
+    //ability unlock bools used in editor
+    [SerializeField] protected bool canBarrellRoll;
+    [SerializeField] protected bool canStrafe;
+    [SerializeField] protected bool canTurn;
+    [SerializeField] protected bool canDash;
+
+
+    //timer bools
+    [SerializeField] protected bool timerStart;
+    [SerializeField] protected bool coolTimer;
+    //timer values
+    [SerializeField] protected float dashTime = 6f;
+    [SerializeField] protected float coolTime = 6f;
+
+
     protected float health = 100;
     protected float experience = 0;
     private const float healthMax = 100.0f;
@@ -23,43 +60,40 @@ public abstract class Character : MonoBehaviour
     private const float experiencePenalty = 25.0f;
     private const float deathpenaltytime = 2.0f;
     private bool ready;
-    public bool rolling;
-    public bool isMoving;
+
     private bool eating;
     protected Animator m_animator;
-    public CameraController camerascript;
+
     private Vector3 lastposition = Vector3.zero;
     private Vector3 MovementInputVector;
     private Vector3 rotationInputVector;
     private AudioSource musicSource;
     private AudioSource SFXsource;
-    private GameObject cameraClone;
-    //bools
-    public bool hasjustRolled;
-    public float Rotatingspeed;
+    protected GameObject cameraClone;
 
-    private Vector3 colPosition;
-    private Vector3 surfaceNormal = Vector3.up;
-    private Vector3 colPoint;
     private CapsuleCollider col;
     private bool collided = false;
-    private float groundAngle;
-    private RaycastHit hitInfo;
-    int i = 0;
-    private Vector3 dir;
-    private bool grounded = false;
-    private Vector3 curNormal = Vector3.up;
-    private Vector3 curRight = Vector3.right;
-    private Vector3 curLeft = Vector3.left;
     private bool canMove = true;
     private bool colFront = false;
     private bool bothSidesCol = false;
+    private bool grounded = false;
+    private Vector3 dir;
+    private Vector3 curNormal = Vector3.up;
+    private Vector3 curRight = Vector3.right;
+    private Vector3 curLeft = Vector3.left;
+    private Vector3 colPosition;
+    private Vector3 surfaceNormal = Vector3.up;
+    private Vector3 colPoint;
     private RaycastHit hitDown;
-
+    private RaycastHit hitInfo;
+    public LayerMask ground;
     private float Height = 0.3f;
     public float HeightPadding = 0.05f;
-    public LayerMask ground;
     public float MaxGroundAngle = 120f;
+    private float perc;
+    private float groundAngle;
+    private float smooth;
+    private int i = 0;
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -91,6 +125,19 @@ public abstract class Character : MonoBehaviour
     }
     public GameObject CameraClone { get { return cameraClone; } }
 
+    protected float Speed
+    {
+        get
+        {
+            return speed;
+        }
+
+        set
+        {
+            speed = value;
+        }
+    }
+
 
     /// <summary>
     /// Takes care of the eating for the player
@@ -112,13 +159,13 @@ public abstract class Character : MonoBehaviour
                 eatObject.DecreaseFood();
                 if (!eatObject.Source().isPlaying)
                 {
-                    EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+                    //EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
                 }
             }
             else
             {
                 eating = false;
-                EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
+                //EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
                 eatObject.Eaten = eating;
             }
         }
@@ -161,44 +208,147 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void Restrict()
     {
-        if (transform.rotation.x > 15)
+        transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 75, 275), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+
+        if (transform.rotation.eulerAngles.x > 90)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+
+            // float x = transform.eulerAngles.x;
+            // transform.Rotate(-x, 0, 0);
         }
 
-        if (transform.rotation.x < -15)
+        if (transform.rotation.eulerAngles.x < -90)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+
+            // float x = transform.eulerAngles.x;
+            // transform.Rotate(-x, 0, 0);
         }
     }
 
+    // Clamps angle (different from the normal clamp function)
+    private float strangeAxisClamp(float value, float limit1, float limit2)
+    {
+        if (value > limit1 && value < 180f)
+            value = limit1;
+        else if (value > 180f && value < limit2)
+            value = limit2;
+        return value;
+    }
 
-
+    /// <summary>
+    ///  Altitude & Forward/Backwards
+    /// </summary>
     protected virtual void Move()
     {
         isMoving = false;
-        Vector3 inputvectorX = (Vector3.up * Input.GetAxisRaw("Horizontal") * turnSpeed);
-        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * speed) * Time.deltaTime;
 
-        if (inputvectorX.magnitude != 0 || inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
+
+        //tarkista peruuttaako
+
+        if (Input.GetAxisRaw("Vertical") < 0)
+        {
+            isReversing = true;
+            isMovingForward = false;
+
+
+        }
+        if (Input.GetAxisRaw("Vertical") > 0)
+        {
+            isReversing = false;
+            isMovingForward = true;
+
+        }
+        else if (Input.GetAxisRaw("Vertical") == 0)
+        {
+            isReversing = false;
+            isMovingForward = false;
+        }
+
+
+
+        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
+        Turn();
+        if (inputvectorY.magnitude != 0 || inputvectorZ.magnitude != 0)
         {
             isMoving = true;
         }
-        else
+        //tarkista nouseeko laskeeko
+        if (inputvectorZ.magnitude != 0)
         {
-            isMoving = false;
+            isMovingVertical = true;
+        }
+        else if (inputvectorZ.magnitude == 0)
+        {
+            isMovingVertical = false;
         }
 
-
         MovementInputVector = inputvectorY + inputvectorZ;
-        rotationInputVector = inputvectorX;
+
         if (!eating)
         {
             transform.Translate(MovementInputVector);
-            transform.Rotate(rotationInputVector);
+
+        }
+    }
+
+    /// <summary>
+    /// A and D keys turn
+    /// </summary>
+    protected virtual void Turn()// is separately from "Move" -method, because it has bool check
+    {
+        if (canTurn)
+        {
+
+            float rotation = (Input.GetAxisRaw("Horizontal") * turnSpeed * Time.deltaTime);
+            if (rotation != 0)
+            {
+                isMoving = true;
+            }
+            transform.Rotate(0, rotation, 0);
+
+        }
+
+    }
+
+    protected virtual void BarrellRoll() //if needed 
+    {
+
+        if (canBarrellRoll)
+        {
+            Vector3 inputRotationZ = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Rotation") * rotateSpeed);
+            transform.Rotate(inputRotationZ);
+            if (inputRotationZ.magnitude != 0)
+            {
+                rolling = true;
+                isMoving = true;
+
+            }
+            else
+            {
+                rolling = false;
+            }
+
+        }
+
+    }
+    protected virtual void Dash() // sprint for herbivores
+    {
+        if (canDash)
+        {
+            Vector3 inputVectorX = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Dash") * dashSpeed * Time.deltaTime);
+            transform.Translate(inputVectorX);
+            if (inputVectorX.magnitude != 0)
+            {
+                isDashing = true;
+
+                StartCoroutine(DashTimer());
+            }
+            else
+            {
+                isDashing = false;
+                //StopCoroutine(DashTimer());
+            }
         }
     }
 
@@ -211,6 +361,15 @@ public abstract class Character : MonoBehaviour
     {
         collided = false;
         canMove = true;
+
+        if(isDashing)
+        {
+            smooth = dashSpeed;
+        }
+        else
+        {
+            smooth = speed;
+        }
 
         //initialize rays
         Ray rayForward = new Ray(transform.position, transform.forward);
@@ -228,34 +387,37 @@ public abstract class Character : MonoBehaviour
         float castDistance = 0.5f;
         Height = col.height;
 
+        print("height: " + Height);
+        print("cd: " + castDistance);
+
         //shoot capsuleCast
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, Height + HeightPadding, dir, castDistance, ground);
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, Height + HeightPadding, dir, castDistance * smooth, ground);
 
         // check al collisions for their type and move of not accordingly
         foreach (RaycastHit objectHit in hits)
         {
 
-            if (Physics.Raycast(rayDown, out hitInfo, (Height + HeightPadding)))
+            if (Physics.Raycast(rayDown, out hitInfo, Height + HeightPadding ))
             {
                 grounded = true;
                 colPoint = hitInfo.point;
-
+                print("ground");
                 //check if ground angle allows movement
                 if (groundAngle < MaxGroundAngle)
                 {
-                    if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
+                    if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown, Height + HeightPadding))
                     {
                         print(groundAngle);
                         surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
                     }
 
                     //Rotate character according to ground angle
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), Time.deltaTime * 5.0f);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), perc);
 
                     //check distance to 
                     if (Vector3.Distance(transform.position, colPoint) < (radius + HeightPadding))
                     {
-                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, Time.deltaTime * 5.0f);
+                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, Time.deltaTime * 4);
                         grounded = true;
                     }
                 }
@@ -266,9 +428,9 @@ public abstract class Character : MonoBehaviour
             }
 
             //check direction and determinate angle for normal and colPoint
-            if (Physics.Raycast(rayForward, out hitInfo, radius + HeightPadding) || Physics.Raycast(rayBack, out hitInfo, radius + HeightPadding) || Physics.Raycast(rayUp, out hitInfo, radius))
+            if (Physics.Raycast(rayForward, out hitInfo, (radius + HeightPadding)) || Physics.Raycast(rayBack, out hitInfo, (radius + HeightPadding)) || Physics.Raycast(rayUp, out hitInfo, radius))
             {
-
+                print("front or up collision");
                 if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
                 {
                     curNormal = objectHit.normal;
@@ -284,30 +446,33 @@ public abstract class Character : MonoBehaviour
             }
 
             //Check side collisions and if both sides collide turn canMove to false
-            if (Physics.Raycast(rayRight, out hitInfo, Height) || Physics.Raycast(rayLeft, out hitInfo, Height))
+            if (Physics.Raycast(rayRight, out hitInfo, (radius + HeightPadding)) || Physics.Raycast(rayLeft, out hitInfo, (radius + HeightPadding)))
             {
-                if (Physics.Raycast(rayRight, (radius * 0.5f)) && Physics.Raycast(rayLeft, (radius * 0.5f)))
-                {
-                    bothSidesCol = true;
-                    canMove = false;
-                    //return;
-                }
-
                 curNormal = hitInfo.normal;
                 colPoint = hitInfo.point;
 
-                // turn character at side collision for smoother movement
-                if (Vector3.Distance(transform.position, colPoint) < (radius * 1.5f) && !bothSidesCol)
+                if (Physics.Raycast(rayRight, (radius * 0.5f)) && Physics.Raycast(rayLeft, (radius * 0.5f)))
                 {
-                    Vector3 targetDir = colPoint - transform.position;
+                    print("both sides collision");
+                    bothSidesCol = true;
+                    canMove = false;
+                    return;
+                }
+
+                // turn character at side collision for smoother movement
+                if (Vector3.Distance(transform.position, colPoint) < (radius) && !bothSidesCol)
+                {
+                    Vector3 targetDir = colPoint + transform.position;
                     Vector3 moveDirection = Vector3.RotateTowards(transform.forward, -targetDir, perc, 0.0f);
 
-                    transform.rotation = Quaternion.LookRotation(moveDirection);                   
+                    transform.rotation = Quaternion.LookRotation(moveDirection);
+                   
                 }
             }
 
+           
             //check if character can fit through caves etc. and if character collides head first
-            if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, radius) || Physics.CapsuleCast(point1, point2, radius, transform.up, out hitInfo, radius))
+            if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, (radius + HeightPadding)) || Physics.CapsuleCast(point1, point2, radius, transform.up, out hitInfo, radius*0.15f) || Physics.CapsuleCast(point1, point2, radius, -transform.up, out hitInfo, radius * 0.15f))
             {
                 print(groundAngle);
                 canMove = false;
@@ -322,7 +487,7 @@ public abstract class Character : MonoBehaviour
                     if (groundAngle < MaxGroundAngle)
                         canMove = true;
                     print("can move");
-                }
+                }              
                 return;
             }
             else
@@ -333,7 +498,7 @@ public abstract class Character : MonoBehaviour
             //Keep character at given distance of colliding objects
             if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
             {
-                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, perc);
+                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius*0.5f), perc);
             }
 
         }
@@ -352,43 +517,56 @@ public abstract class Character : MonoBehaviour
         groundAngle = Vector3.Angle(dir, hitDown.normal);
     }
 
+    public IEnumerator DashTimer() //used in Dash();
+    {
+        timerStart = true;
+        yield return new WaitForSeconds(dashTime);
+
+        canDash = false;
+        timerStart = false;
+        yield return StartCoroutine(CoolTimer());
+
+
+    }
+    // -->
+    IEnumerator CoolTimer()
+    {
+        canDash = false;
+        coolTimer = true;
+        yield return new WaitForSeconds(coolTime);
+        coolTimer = false;
+        canDash = true;
+
+    }
+
     /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
     protected virtual void Stabilize()
     {
-        float z = transform.eulerAngles.z;
-        // Debug.Log(z);
-        transform.Rotate(0, 0, -z);
-    }
-
-    protected virtual void BarrelRoll()
-    {
-        rolling = false;
-        //BARREL ROLL
-        float inputValue = Input.GetAxisRaw("Rotation") * rotateSpeed;
-
-        if (inputValue == 0) return;
-
-        if (transform.rotation.z >= 180)
+        if (!rolling)
         {
-            return;
-        }
-        transform.Rotate(0, 0, inputValue);
 
-        rolling = true;
+            float z = transform.eulerAngles.z;
+            // Debug.Log(z);
+            transform.Rotate(0, 0, -z);
+        }
+
     }
+
 
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
 
+
         musicSource = GetComponentInChildren<AudioSource>();
-        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
     protected virtual void Start()
     {
+        speed = SpeedValue; // can change character speed (by adding value in editor or by a code)
         //Component search
         m_animator = gameObject.GetComponent<Animator>();
         cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
@@ -397,11 +575,10 @@ public abstract class Character : MonoBehaviour
 
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
-        Quaternion myQuat = Quaternion.Euler(transform.localEulerAngles);
-        Quaternion targetQuat = Quaternion.Euler(0, 0, 0);
-        isMoving = true;
-        UIManager.Instance.InstantiateMatchUI(this);
-        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+
+
+        //UIManager.Instance.InstantiateMatchUI(this);
+        // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
@@ -410,21 +587,31 @@ public abstract class Character : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
         }
-    }
 
-    float perc;
+    }
 
     protected virtual void FixedUpdate()
     {
         perc = speed * Time.deltaTime;
         Stabilize();
+
         dir = transform.TransformDirection(MovementInputVector);
         CalculateGroundAngle();
         CheckCollision();
 
-        if (collided || !canMove) return;
+        if (collided || !canMove)
+        {
+            canDash = false;
+            return;
+        }
+        else
+        {
+            canDash = true;
+            Move();
+            BarrellRoll();
+            Dash();
+        }
 
-        Move();
-        BarrelRoll();
     }
+
 }

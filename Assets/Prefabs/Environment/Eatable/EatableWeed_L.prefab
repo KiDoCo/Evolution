@@ -40,7 +40,6 @@ GameObject:
   - component: {fileID: 4923484923648736}
   - component: {fileID: 33478664006197340}
   - component: {fileID: 23299539763659124}
-  - component: {fileID: 114948651428737378}
   m_Layer: 0
   m_Name: SeaWeed_Large
   m_TagString: Untagged
@@ -55,7 +54,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1588076483728332}
   m_LocalRotation: {x: 0.000000015454312, y: 0.7071067, z: -0.000000015454308, w: 0.7071068}
-  m_LocalPosition: {x: 239.80228, y: 0.48418236, z: 224.3787}
+  m_LocalPosition: {x: 17.075165, y: -20.425573, z: 21.532547}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4923484923648736}
@@ -126,7 +125,7 @@ BoxCollider:
   m_GameObject: {fileID: 1588076483728332}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 30, z: 3.6386573}
   m_Center: {x: 0, y: 15, z: 0}
@@ -236,18 +235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a8d7ef1e1f707f4ca25422607e4fad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114948651428737378
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1917863282757876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23fa698560b688845bf08bafe6dc1b28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AdditionalVertexStreamMesh: {fileID: 0}
 --- !u!205 &205084885975835938
 LODGroup:
   m_ObjectHideFlags: 1
