@@ -234,7 +234,7 @@ public abstract class Character : MonoBehaviour
         // check al collisions for their type and move of not accordingly
         foreach (RaycastHit objectHit in hits)
         {
-            if (Physics.Raycast(rayDown, out hitInfo, (Height + HeightPadding)))
+            if (Physics.Raycast(rayDown, out hitInfo, (radius + HeightPadding)))
             {
                 grounded = true;
                 colPoint = hitInfo.point;
@@ -242,10 +242,10 @@ public abstract class Character : MonoBehaviour
                 //check if ground angle allows movement
                 if (groundAngle < MaxGroundAngle)
                 {
-                    if (Physics.Raycast(transform.position, -Vector3.up, out hitDown))
+                    if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
                     {
                         print(groundAngle);
-                        surfaceNormal = Vector3.Lerp(Vector3.up, hitDown.normal, 4 * Time.deltaTime);
+                        surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
                     }
 
                     //Rotate character according to ground angle
@@ -289,7 +289,7 @@ public abstract class Character : MonoBehaviour
                 {
                     bothSidesCol = true;
                     canMove = false;
-                    return;
+                    //return;
                 }
 
                 curNormal = hitInfo.normal;
@@ -305,8 +305,14 @@ public abstract class Character : MonoBehaviour
                 }
             }
 
+            //Keep character at given distance of colliding objects
+            if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
+            {
+                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, perc);
+            }
+
             //check if character can fit through caves etc. and if character collides head first
-            if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, radius))
+            if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, radius) || Physics.CapsuleCast(point1, point2, radius, transform.up, out hitInfo, radius))
             {
                 print(groundAngle);
                 canMove = false;
@@ -320,16 +326,11 @@ public abstract class Character : MonoBehaviour
                         canMove = true;
                     print("can move");
                 }
+                return;
             }
             else
             {
                 canMove = true;
-            }
-
-            //Keep character at gien distance of colliding objects
-            if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
-            {
-                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, perc);
             }
         }
     }
