@@ -24,6 +24,7 @@ public class CameraController_1stPerson : MonoBehaviour
     
     [SerializeField] protected float strafeDamp = 0.2f;
     [SerializeField] protected float verticalDamp = 0.2f;
+    [SerializeField] protected float rotationYDamp = 12f;
     [SerializeField] protected float fastRotationDamp = 1000;
     
     
@@ -176,6 +177,10 @@ public class CameraController_1stPerson : MonoBehaviour
         {
             distanceDamp = distanceDampValue;
         }
+       // else if (target.GetComponent<Carnivoremove>().rotationY)
+       // {
+       //     rotationalDamp = rotationYDamp;
+      //  }
         else 
             distanceDamp = distanceDampValue;
 

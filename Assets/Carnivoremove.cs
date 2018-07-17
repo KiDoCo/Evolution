@@ -26,7 +26,8 @@ public class Carnivoremove : MonoBehaviour
     public float strafeSpeed = 5f;
     public float mouseV = 1;
     public float mouseH = 1;
-   
+    public bool rotationY;
+
     //acceleration
     public float maxSpeed = 20f;
     public float timeZeroToMax = 2.5f;
@@ -139,7 +140,7 @@ public class Carnivoremove : MonoBehaviour
             else if (Input.GetAxisRaw("Vertical") == 0)// && decel)
             {
                 forwardVelocity +=decelRatePerSecond * Time.deltaTime;
-                forwardVelocity2 += decelRatePerSecond * Time.deltaTime;
+                forwardVelocity += decelRatePerSecond * Time.deltaTime;
                 forwardVelocity = Mathf.Max(forwardVelocity, 0);
                 if (forwardVelocity<=0)
                 {
@@ -163,11 +164,12 @@ public class Carnivoremove : MonoBehaviour
                // Vector3 input = inputVectorY;
                 transform.Translate(inputVectorY);
             }
-           // if (!isMovingForward)
-            //{
-            //    inputVectorY2 = (Input.GetAxisRaw("Vertical") * Vector3.forward * forwardVelocity) * Time.deltaTime;
-            //    transform.Translate(inputVectorY2);
-            //}
+            if (!isMovingForward)
+           {
+                forwardVelocity = 0;
+               inputVectorY2 = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+               transform.Translate(inputVectorY2);
+           }
 
         }
         
@@ -304,9 +306,20 @@ public class Carnivoremove : MonoBehaviour
 
     void MouseMove()
     {
+
         float v = mouseV * Input.GetAxis("Mouse Y");
         float h = mouseH * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
+        if (v > 0)
+        {
+            rotationY = true;
+        }
+       else
+        {
+            rotationY = false;
+        }
+
+       
     }
 
     void Accelerate()
