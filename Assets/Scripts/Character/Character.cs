@@ -234,7 +234,8 @@ public abstract class Character : MonoBehaviour
         // check al collisions for their type and move of not accordingly
         foreach (RaycastHit objectHit in hits)
         {
-            if (Physics.Raycast(rayDown, out hitInfo, (radius + HeightPadding)))
+
+            if (Physics.Raycast(rayDown, out hitInfo, (Height + HeightPadding)))
             {
                 grounded = true;
                 colPoint = hitInfo.point;
@@ -305,12 +306,6 @@ public abstract class Character : MonoBehaviour
                 }
             }
 
-            //Keep character at given distance of colliding objects
-            if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
-            {
-                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, perc);
-            }
-
             //check if character can fit through caves etc. and if character collides head first
             if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, radius) || Physics.CapsuleCast(point1, point2, radius, transform.up, out hitInfo, radius))
             {
@@ -318,6 +313,8 @@ public abstract class Character : MonoBehaviour
                 canMove = false;
                 curNormal = hitInfo.normal;
                 colPoint = hitInfo.point;
+
+                collided = true;
 
                 print("can't move");
                 if (grounded)
@@ -332,6 +329,13 @@ public abstract class Character : MonoBehaviour
             {
                 canMove = true;
             }
+
+            //Keep character at given distance of colliding objects
+            if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
+            {
+                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * radius, perc);
+            }
+
         }
     }
 
