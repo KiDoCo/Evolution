@@ -165,6 +165,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         if (SceneManager.GetActiveScene().name == playScene)
         {
             UI.SetActive(false);
+            Gamemanager.Instance.LoadGame();
         }
         else
         {

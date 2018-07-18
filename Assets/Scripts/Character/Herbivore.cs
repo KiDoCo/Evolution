@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+using System.Linq;
 
 
 public class Herbivore : Character
@@ -8,13 +10,11 @@ public class Herbivore : Character
 
     Quaternion originZ;
     Quaternion currentZ;
-    private bool Iseating;
     //objects
     public Transform myT;
 
     //object references
     [HideInInspector] public static Herbivore herbiv;
-    [SerializeField] GameObject Camera3rd;
 
 
 
@@ -26,61 +26,112 @@ public class Herbivore : Character
 
     }
 
+
+    /// <summary>
+    /// Checks for interaction when player enters the corals bounding box
+    /// </summary>
+    protected virtual void CmdInteractionChecker()
+    {
+        for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
+        {
+            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+            {
+                Eat(Gamemanager.Instance.FoodPlaceList[i]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Takes care of the eating for the player
+    /// </summary>
+    /// <param name="eatObject"></param>
+    private void Eat(GameObject go)
+    {
+        FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
+        if (eatObject == null || eatObject.AmountFood <= 0)
+        {
+            eating = false;
+        }
+        else
+        {
+            if (Input.GetButton("Fire1"))
+            {
+                eating = true;
+                Experience += eatObject.GetAmount();
+                CmdEat(go);
+
+            }
+            else
+            {
+                eating = false;
+                EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
+                eatObject.Eaten = eating;
+            }
+        }
+    }
+    
+    [Command]
+    private void CmdEat(GameObject go)
+    {
+        Debug.Log(go);
+        if (go != null)
+        {
+            FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
+            eatObject.Eaten = eating;
+            eatObject.DecreaseFood(eatObject.FoodPerSecond * Time.deltaTime);
+            StartCoroutine(eatObject.EatChecker());
+            eatObject.CoolDownTime = 5.0f;
+
+            if (!eatObject.Source().isPlaying)
+            {
+                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+            }
+        }
+    }
+
     protected override void Awake()
     {
         base.Awake();
     }
-
     protected override void Start()
     {
-        cameraClone = Instantiate(Camera3rd);
-        cameraClone.GetComponent<CameraController>().target = this.transform;
-        SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
-        m_animator = gameObject.GetComponent<Animator>();
-        UIManager.Instance.InstantiateInGameUI(this);
-        canBarrellRoll = true;
-        canTurn = true;
+        if (isLocalPlayer)
+        {
+            cameraClone = Instantiate(cameraClone);
+            cameraClone.GetComponent<CameraController>().target = this.transform;
+            SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+            m_animator = gameObject.GetComponent<Animator>();
+            UIManager.Instance.InstantiateInGameUI(this);
+            canBarrellRoll = true;
+            canTurn = true;
+        }
     }
-
     protected override void Update()
     {
-        base.Update();
+        if (isLocalPlayer)
+        {
+            base.Update();
+            CmdInteractionChecker();
 
-        if (isMoving)
-        {
-            m_animator.SetBool("isMoving", true);
-        }
-        if (!isMoving)
-        {
-            m_animator.SetBool("isMoving", false);
-        }
-        m_animator.SetBool("isEating", Iseating);
-
-        if (Input.GetKey(KeyCode.N))
-        {
-            Iseating = true;
-        }
-        else
-        {
-            Iseating = false;
+            UIManager.Instance.UpdateMatchUI(this);
         }
     }
 
     protected override void FixedUpdate()
     {
-        base.FixedUpdate();
-        if (!CameraClone.GetComponent<CameraController>().FreeCamera)
+        if (isLocalPlayer)
         {
-            MouseMove();
+            base.FixedUpdate();
+            if (!CameraClone.GetComponent<CameraController>().FreeCamera)
+            {
+                MouseMove();
+            }
+            Restrict();
+
+            if (!rolling)
+            {
+                Stabilize();
+            }
         }
-        Restrict();
-
-        if (!rolling)
-        {
-            Stabilize();
-        }
-
-
     }
-
 }

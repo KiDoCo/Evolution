@@ -155,20 +155,20 @@ public class CameraController_1stPerson : MonoBehaviour
     /// </summary>
     public void SetDampening()
     {
-        if (target.GetComponent<Carnivore>().isStrafing) 
+        if (target.GetComponent<Carnivore>().InputStrafeZ.normalized.magnitude != 0) 
         {
             distanceDamp = 0;
             
         }
-        else if (target.GetComponent<Carnivore>().isMovingVertical)
+        else if (target.GetComponent<Carnivore>().InputVector.z != 0)
         {
             distanceDamp = 0;
         }
-        else if (target.GetComponent<Carnivore>().isReversing)
+        else if (target.GetComponent<Carnivore>().InputVector.y < 0)
         {
             distanceDamp = 0;
         }
-        else if (target.GetComponent<Carnivore>().isMovingForward)
+        else if (target.GetComponent<Carnivore>().InputVector.y > 0)
         {
             distanceDamp = 0;
         }

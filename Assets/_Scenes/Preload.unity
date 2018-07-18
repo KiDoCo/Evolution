@@ -120,6 +120,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114353092562216092, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_SpawnPrefabs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 224560002005651488, guid: 83c16fa1a9daede469d5f5a36209aed2,
         type: 2}
       propertyPath: m_LocalPosition.x
@@ -214,6 +219,52 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 224167986771936390, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224167986771936390, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1678181856082178, guid: 83c16fa1a9daede469d5f5a36209aed2, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224626151175820202, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224626151175820202, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224626151175820202, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224077158901854572, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.000000024534637
+      objectReference: {fileID: 0}
+    - target: {fileID: 114353092562216092, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_GamePlayerPrefab
+      value: 
+      objectReference: {fileID: 1063323722126642, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+    - target: {fileID: 114353092562216092, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_SpawnPrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 83c16fa1a9daede469d5f5a36209aed2, type: 2}
   m_IsPrefabParent: 0
@@ -319,6 +370,12 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 114314828878141864, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d,
+        type: 2}
+      propertyPath: helixCamera
+      value: 
+      objectReference: {fileID: 1009143415174350, guid: 08c85d6115cdd8b48bd765bc3d098c84,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
   m_IsPrefabParent: 0

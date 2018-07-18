@@ -5,15 +5,16 @@ using UnityEngine.UI;
 
 public class HUDController : MonoBehaviour
 {
+    public static HUDController Instance;
 #pragma warning disable
-    private float curProgress; //testing
-    public float testanim;
+    private float curProgress; 
     [SerializeField] private Text curHealthText;
     [SerializeField] private Text maxHealthText;
     [SerializeField] private int maxHealth;
     private int curHealth;
     private Animator anim;
     private AnimationClip clip;
+
     //Cooldowns
     [SerializeField] private int abilityCount;
     [SerializeField] private List<GameObject> coolDownObjects;
@@ -103,8 +104,7 @@ public class HUDController : MonoBehaviour
 
     public void Inst(GameObject obj)
     {
-        Debug.Log(obj.GetComponent<Animator>());
-        anim = obj.GetComponent<Animator>();
+        Anim = obj.GetComponent<Animator>();
     }
 
     public void UpdateHUD()
@@ -115,7 +115,8 @@ public class HUDController : MonoBehaviour
 
     public void AnimationChanger()
     {
-        Anim.Play("Take", 0 , (1.0f / 99) * testanim );
+        if (Anim != null)
+        Anim.Play("Take", 0 , (1.0f / 99) * curProgress );
     }
 
     private void UpdateCooldowns() //for testing
@@ -139,6 +140,10 @@ public class HUDController : MonoBehaviour
         cdObj.GetComponentInChildren<Text>().text = "";
     }
 
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Update() 
     {

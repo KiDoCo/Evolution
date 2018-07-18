@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject helix;
     [SerializeField] private GameObject pauseMenu = null;
     [SerializeField] private GameObject matchResultScreen;
+    [SerializeField] private GameObject helixCamera;
 
     private void DisplayTime()
     {
@@ -37,15 +38,17 @@ public class UIManager : MonoBehaviour
         if (source.GetType() == typeof(Herbivore))
         {
             GameObject clone = Instantiate(helix, GameObject.Find("HelixLocation").transform.position, Quaternion.identity);
-            hud.GetComponent<HUDController>().Inst(clone);
+            HUDController.Instance.Inst(clone);
+            GameObject cameraClone = Instantiate(helixCamera, GameObject.Find("CameraLocation").transform.position, Quaternion.identity);
+            cameraClone.transform.rotation = Quaternion.Euler(90, 180, 0);
         }
     }
     //Match UI
     public void UpdateMatchUI(Character source)
     {
-        hud.GetComponent<HUDController>().MaxHealth = (int)source.Maxhealth;
-        hud.GetComponent<HUDController>().CurProgress = source.Experience;
-        hud.GetComponent<HUDController>().CurHealth = (int)source.Health;
+        HUDController.Instance.MaxHealth = (int)source.Maxhealth;
+        HUDController.Instance.CurProgress = source.Experience;
+        HUDController.Instance.CurHealth = (int)source.Health;
     }
     #endregion
 

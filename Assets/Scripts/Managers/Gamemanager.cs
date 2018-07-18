@@ -19,17 +19,17 @@ public class Gamemanager : NetworkBehaviour
     private const float interval = 0.1f; //The time in seconds that spawning will happen
     private const float deathPenaltyTime = 2.0f;
     private const float experiencePenalty = 25.0f;
-    private float       matchTimer;
-    private int         lifeCount;
-    private const int   maxLifeCount = 2;
-    private GameObject  deathCameraPlace;
+    private float matchTimer;
+    private int lifeCount;
+    private const int maxLifeCount = 2;
+    private GameObject deathCameraPlace;
 
     //Gamemanager lists
     private List<GameObject> carnivorePrefabs = new List<GameObject>();
     private List<GameObject> herbivorePrefabs = new List<GameObject>();
-    public List<GameObject>  foodsources;
-    public List<IEatable>    FoodPlaceList = new List<IEatable>();
-    private List<Transform>  FoodSpawnPointList = new List<Transform>();
+    public List<GameObject> foodsources;
+    public List<GameObject> FoodPlaceList = new List<GameObject>();
+    private List<Transform> FoodSpawnPointList = new List<Transform>();
 
     //Strings
     private string gameScene = "DemoScene";
@@ -80,6 +80,13 @@ public class Gamemanager : NetworkBehaviour
         EventManager.Broadcast(EVENT.Increase);
     }
 
+    public override void OnStartServer()
+    {
+        SpawnFoodSources();
+        base.OnStartServer();
+
+    }
+
     /// <summary>
     /// Starts the match between players. Must be called after loading the game scene
     /// </summary>
@@ -90,23 +97,12 @@ public class Gamemanager : NetworkBehaviour
         //Stop for a moment to scene to load
         yield return new WaitForSeconds(2.0f);
 
-        //search every spawnpoint for players and foodsources
-        for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
-        {
-            FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
-        }
-
-
-        yield return new WaitForSeconds(1.0f);
-        //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
 
         SpawnFoodSources();
         EventManager.Broadcast(EVENT.DoAction);
         FoodSpawnPointList.Clear();
         deathCameraPlace = new GameObject();
-        GameObject clone = Instantiate(herbivorePrefabs[0], GameObject.Find("TempLocation").transform.position, Quaternion.identity);
-        //repeaters for spawning food/populating sources
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
         yield return matchTimer;
     }
@@ -159,9 +155,18 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private void SpawnFoodSources()
     {
+        //search every spawnpoint for foodsources
+        for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
+        {
+            FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
+        }
         for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
         {
             GameObject clone = Instantiate(foodsources[0], FoodSpawnPointList[i].position, Quaternion.identity);
+            for (int a = 0; a < clone.transform.GetChild(0).transform.childCount; i++)
+            {
+                NetworkServer.Spawn(clone.transform.GetChild(0).transform.GetChild(a).gameObject);
+            }
             clone.name = foodSourceName + i;
         }
         for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
@@ -216,13 +221,10 @@ public class Gamemanager : NetworkBehaviour
         Debug.Log("Herbivores loaded: " + herbivorePrefabs.Count);
     }
 
-    private void LoadGame()
+    public void LoadGame()
     {
-        //Load the match scene
-        SceneManager.LoadSceneAsync(gameScene);
         StartCoroutine(StartMatch());
     }
-
 
     #region Unity Methods
 
@@ -246,8 +248,13 @@ public class Gamemanager : NetworkBehaviour
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
-        //SceneManager.LoadSceneAsync(menuScene);
-        LoadGame();
+        SceneManager.LoadSceneAsync("Menu");
     }
+
+    public void Blood()
+    {
+        GameObject.Find("bloodParticle").GetComponent<ParticleSystem>().Play();
+    }
+
     #endregion
 }

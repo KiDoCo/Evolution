@@ -18,7 +18,15 @@ public class Carnivore : Character
     private bool isEating;
     private bool isCharging;
     private const float staminaValue = 20.0f;
+    private Vector3 inputStrafeZ;
 
+    public Vector3 InputStrafeZ
+    {
+        get
+        {
+            return inputStrafeZ;
+        }
+    }
 
     protected override void Awake()
     {
@@ -98,20 +106,8 @@ public class Carnivore : Character
     {
         if (canStrafe) //bools are checked/unchecked in editor
         {
-
             Vector3 inputStrafeZ = new Vector3(1, 0, 0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
             transform.Translate(inputStrafeZ);
-            if (inputStrafeZ.magnitude != 0)
-            {
-                isStrafing = true;
-                isMoving = true;
-            }
-            else
-            {
-                isStrafing = false;
-            }
-
-
         }
         //if (!cameraClone.GetComponent<CameraController>().freeCamera)
         //{
