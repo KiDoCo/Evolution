@@ -36,17 +36,21 @@ public class Carnivore : Character
 
     protected override void Start()
     {
+        if (!isLocalPlayer) return;
         base.Start();
         m_animator = gameObject.GetComponent<Animator>();
         barrelRoll = false;
+
         stamina = staminaValue;
-        camera.GetComponent<CameraController>().InstantiateCamera(this);
-        cameraClone = Instantiate(Gamemanager.Instance.CameraPrefab, transform.position, Quaternion.identity);
+        cameraClone = Instantiate(cameraClone);
+        cameraClone.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
         cameraClone.name = "FollowCamera";
+        UIManager.Instance.InstantiateInGameUI(this);
     }
 
     protected override void Update()
     {
+        if (!isLocalPlayer) return;
         base.Update();
 
         if (stamina > 0)
@@ -90,6 +94,7 @@ public class Carnivore : Character
 
     protected override void FixedUpdate()
     {
+        if (!isLocalPlayer) return;
         base.FixedUpdate();
         MouseMove();
         Restrict();
@@ -98,7 +103,6 @@ public class Carnivore : Character
         Dash();
         MouseMove();
         AnimationChanger();
-        isMoving = false;
         Charge();
     }
 
@@ -121,7 +125,7 @@ public class Carnivore : Character
     /// </summary>
     public void MouseMove()
     {
-        if (canMouseMove) return;
+        if (!canMouseMove) return;
 
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");

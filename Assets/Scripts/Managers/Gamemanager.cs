@@ -38,7 +38,6 @@ public class Gamemanager : NetworkBehaviour
     private string menuScene = "Menu";
 
     //Prefabs
-    public GameObject CameraPrefab;
     public GameObject BerryPrefab;
 
 

@@ -5,11 +5,6 @@ using UnityEngine;
 
 public class CameraController_1stPerson : MonoBehaviour
 {
-
-
-
-    //[SerializeField] Transform target;
-
     public Transform target;
 
     //values
@@ -39,7 +34,6 @@ public class CameraController_1stPerson : MonoBehaviour
     Vector3 startOffset = Vector3.zero;
 
 
-#pragma warning restore
     Transform Target
     {
         get
@@ -49,6 +43,7 @@ public class CameraController_1stPerson : MonoBehaviour
     
         set
         {
+            Debug.Log(value);
             target = value;
         }
     }
@@ -61,7 +56,6 @@ public class CameraController_1stPerson : MonoBehaviour
 
         m_FieldOfView = FOVValue; // set camera Field of view to fixed value
         startOffset = offset; //set camera default location
-        if (target == null) Debug.LogError("Missing target to look at");
         Camera1st.fieldOfView = 60f;
         //Camera1st.cullingMask = 1 << 0; //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
 
@@ -69,8 +63,6 @@ public class CameraController_1stPerson : MonoBehaviour
 
     public void FixedUpdate()
     {
-
-        if (target == null) return;
 
         SetDampening(); //this has to be first
         FollowRot();
@@ -81,7 +73,11 @@ public class CameraController_1stPerson : MonoBehaviour
     }
     public void InstantiateCamera(Character test)
     {
+        if(test.isLocalPlayer)
+        {
+        Debug.Log(test.transform);
         Target = test.transform;
+        }
     }
 
     /// <summary>
@@ -117,11 +113,9 @@ public class CameraController_1stPerson : MonoBehaviour
     /// </summary>
     public void Stabilize()
     {
-
         float z = transform.eulerAngles.z;
         //Debug.Log(z);
         transform.Rotate(0, 0, -z);
-
     }
 
    

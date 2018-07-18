@@ -97,6 +97,7 @@ public class Herbivore : Character
     {
         if (isLocalPlayer)
         {
+            base.Start();
             cameraClone = Instantiate(cameraClone);
             cameraClone.GetComponent<CameraController>().target = this.transform;
             SFXsource = transform.GetChild(3).GetComponent<AudioSource>();

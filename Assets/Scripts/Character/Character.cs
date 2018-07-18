@@ -385,13 +385,9 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void FixedUpdate()
     {
-
-        //Stabilize();
         CanMove(MovementInputVector);
         Move();
         BarrelRoll();
-        Dash();
-        AnimationChanger();
     }
     #endregion
 

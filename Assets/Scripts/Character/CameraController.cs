@@ -166,9 +166,9 @@ public class CameraController : MonoBehaviour
     /// </summary>
     private void SetDampening()
     {
-        if (target.GetComponent<Herbivore>().InputVector.y < 0) distanceDamp = distanceDampValueB;
+        if (target.GetComponent<Character>().InputVector.y < 0) distanceDamp = distanceDampValueB;
 
-        else if (target.GetComponent<Herbivore>().InputVector.z != 0)
+        else if (target.GetComponent<Character>().InputVector.z != 0)
         {
             distanceDamp = distanceDampValueV;
         }
