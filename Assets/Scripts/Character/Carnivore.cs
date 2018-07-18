@@ -19,8 +19,8 @@ public class Carnivore : Character
     private bool isCharging;
     private const float staminaValue = 20.0f;
     private Vector3 inputStrafeZ;
-    public Vector3  InputStrafeZ;
 
+    public Vector3  InputStrafeZ
     {
         get
         {
