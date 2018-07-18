@@ -7,13 +7,17 @@ using UnityEngine.Networking;
 public abstract class Character : NetworkBehaviour
 {
 
- #region Floats    [SerializeField] protected float verticalSpeed = 2f;   //mouse movement vertical speed    [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
+    #region Floats    
+    [SerializeField] protected float verticalSpeed = 2f;   //mouse movement vertical speed    
+    [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
     [SerializeField] protected float rotateSpeed = 2f;     //barrelroll speed
     [SerializeField] protected float strafeSpeed = 2f;     //carnivore strafe
     [SerializeField] protected float dashSpeed = 20f;      //herbivore sprint
-    protected float                  velocity;
-    protected float                  restrictAngle = Mathf.Abs(80);
-
+    protected float velocity;
+    protected float restrictAngle = Mathf.Abs(80);
+    public float turnSpeed = 2.0f;
+    protected float speed;
+    protected float SpeedValue = 2.0f;
     //timer values
     [SerializeField] protected float dashTime = 6f;
     [SerializeField] protected float coolTime = 6f;
@@ -26,19 +30,19 @@ public abstract class Character : NetworkBehaviour
     private const float deathpenaltytime = 2.0f;
 
     #endregion
-    
-    
-    
+
+
+
     //script reference
 
     #region Booleans
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
-    public bool                     isDashing;
-    public bool                     isStrafing; //1st person kamera käyttää näitä
-    protected bool                  isMoving;
-    public bool                     hasjustRolled;
-    protected bool                  barrelRoll;
+    public bool isDashing;
+    public bool isStrafing; //1st person kamera käyttää näitä
+    protected bool isMoving;
+    public bool hasjustRolled;
+    protected bool barrelRoll;
     private bool ready;
     protected bool eating;
 
@@ -52,26 +56,26 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
 
-    #endregion 
+    #endregion
 
-   [SerializeField] protected GameObject             cameraClone;
-    protected CameraController                       camerascript;
-    protected Animator                               m_animator;
-    private AudioSource                              musicSource;
-    protected AudioSource                            SFXsource;
-    private Vector3                                  inputVector;
-    private Vector3                                  MovementInputVector;
-    private Vector3                                  rotationInputVector;
+    [SerializeField] protected GameObject cameraClone;
+    protected CameraController camerascript;
+    protected Animator m_animator;
+    private AudioSource musicSource;
+    protected AudioSource SFXsource;
+    private Vector3 inputVector;
+    private Vector3 MovementInputVector;
+    private Vector3 rotationInputVector;
 
     #region Collider variables
-    public float                     Rotatingspeed; private Vector3 moveDirection;
-    private Vector3                  surfaceNormal;
-    private Vector3                  capsuleNormal;
-    private Vector3                  colDirection;
-    private Vector3                  colNormal;
-    private Vector3                  colPoint;
-    private CapsuleCollider          col;
-    private bool                     collided = false;
+    public float Rotatingspeed; private Vector3 moveDirection;
+    private Vector3 surfaceNormal;
+    private Vector3 capsuleNormal;
+    private Vector3 colDirection;
+    private Vector3 colNormal;
+    private Vector3 colPoint;
+    private CapsuleCollider col;
+    private bool collided = false;
 
     #endregion
 
@@ -148,7 +152,7 @@ public abstract class Character : NetworkBehaviour
         EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         Health -= amount;
     }
-    
+
     #endregion
 
     #region Movement methods
@@ -158,7 +162,7 @@ public abstract class Character : NetworkBehaviour
     /// </summary>    
     protected virtual void Move()
     {
-        Vector3 inputvectorX =  InputManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed;
+        Vector3 inputvectorX = InputManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed;
         Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical") * Vector3.forward * Speed);
         Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Jump") * Vector3.forward * rotateSpeed * Time.deltaTime);
         inputVector = inputvectorX + inputvectorY + inputvectorZ;
@@ -172,7 +176,7 @@ public abstract class Character : NetworkBehaviour
         moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
         moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
 
-        if (!eating)
+        if (!eating && CollisionCheck())
         {
             transform.Translate(MovementInputVector);
         }
@@ -209,8 +213,8 @@ public abstract class Character : NetworkBehaviour
             value = limit2;
         return value;
     }    /// <summary>
-    /// A and D keys turn
-    /// </summary>
+         /// A and D keys turn
+         /// </summary>
     protected virtual void Turn()// is separately from "Move" -method, because it has bool check
     {
         if (canTurn)
@@ -286,7 +290,7 @@ public abstract class Character : NetworkBehaviour
 
 
     }
-    
+
     protected virtual IEnumerator CoolTimer()
     {
         canDash = false;
@@ -297,14 +301,15 @@ public abstract class Character : NetworkBehaviour
 
     }
 
-   
 
- float distanceToPoints = col.height / 2 - col.radius;
+    private bool CollisionCheck()
+    {
+        float distanceToPoints = col.height / 2 - col.radius;
 
         //calculating start and en point  of capuleCollider for capsuleCast to use
         Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
-
+        Vector3 dir = InputVector;
         float radius = col.radius * 1.1f;
         float castDistance = 0.5f;
 
@@ -340,7 +345,8 @@ public abstract class Character : NetworkBehaviour
         }
 
         return true;
-    }    /// <summary>
+    }
+    /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
     protected virtual void Stabilize()
@@ -363,12 +369,12 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void Start()
     {
-        speed = SpeedValue; 
+        speed = SpeedValue;
 
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
 
-         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
@@ -380,12 +386,12 @@ public abstract class Character : NetworkBehaviour
         if (Input.GetKey(KeyCode.P))
             experience++;
 
-       
+
     }
 
     protected virtual void FixedUpdate()
     {
-       
+
         Move();
         BarrelRoll();
     }

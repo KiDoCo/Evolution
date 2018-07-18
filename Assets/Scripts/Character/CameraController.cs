@@ -61,9 +61,9 @@ public class CameraController : MonoBehaviour
 
         public void Initialize(Camera cam)
         {
-           camera = cam;
-           adjustedCameraClipPoints = new Vector3[5];
-           desiredCameraClipPoints = new Vector3[5];
+            camera = cam;
+            adjustedCameraClipPoints = new Vector3[5];
+            desiredCameraClipPoints = new Vector3[5];
         }
         //get clip points and pass the values into array (Quaternion = cameras rotation)
         public void UpdateCameraClipPoints(Vector3 cameraPosition, Quaternion atRotation, ref Vector3[] intoArray)
@@ -75,7 +75,7 @@ public class CameraController : MonoBehaviour
 
             //find clippoint coordinates with relation to our camera position
             float z = camera.nearClipPlane;
-           // "cushion" between cameras position and collision
+            // "cushion" between cameras position and collision
             float x = Mathf.Tan(camera.fieldOfView / 3.41f) * z;
             float y = x / camera.aspect;
 
@@ -108,7 +108,7 @@ public class CameraController : MonoBehaviour
                     return true;
 
                 }
-                
+
             }
             return false;
         }
@@ -159,13 +159,13 @@ public class CameraController : MonoBehaviour
         if (target == null) Debug.LogError("Camera needs a target");
 
         if (pivotpoint == null) Debug.LogError("Camera needs a pivotpoint to look at");
-        
+
         //testiä varten
         if (Input.GetKey(KeyCode.R))
         {
             ResetCamera();
         }
-        
+
         SetDampening();
         ControlCamera();
         SmoothFollow();
@@ -174,15 +174,15 @@ public class CameraController : MonoBehaviour
         Stabilize();
         //OrbitTarget();
         Restrict();
-}
+    }
 
-    
+
     public void InstantiateCamera(Character test)
     {
         Target = test.transform;
     }
 
-void GetInput()
+    void GetInput()
     {
         vOrbitInput = Input.GetAxisRaw("Mouse X");
         hOrbitInput = Input.GetAxisRaw("Mouse Y");
@@ -230,15 +230,15 @@ void GetInput()
     {
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }    /// <summary>
-    /// Checks if target is backing up or changing altitude, then changes camera values
-    /// </summary>
+         /// Checks if target is backing up or changing altitude, then changes camera values
+         /// </summary>
     void SetDampening()
     {
-        if (target.GetComponent<Herbivore>().isReversing)
+        if (target.GetComponent<Herbivore>().InputVector.y < 0)
         {
             distanceDamp = distanceDampValueB;
         }
-        else if (target.GetComponent<Herbivore>().isMovingVertical)
+        else if (target.GetComponent<Herbivore>().InputVector.z != 0)
         {
             distanceDamp = distanceDampValueV;
         }
@@ -261,7 +261,7 @@ void GetInput()
         transform.LookAt(pivotpoint, target.up);
     }
 
-    
+
 
 
     void FollowRot()//Alternative camera rotate
@@ -294,9 +294,10 @@ void GetInput()
             offset = resetLoc;
 
             //offset = startOffset; //direct reset
-        }    }
+        }
+    }
 
-    
+
     void ControlCamera()// Camera input 
     {
 
@@ -313,23 +314,24 @@ void GetInput()
         {
 
             Quaternion camTurnAngleH = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * RotationsSpeed, Vector3.up); //laske horisontaalinen liike
-           
+
 
 
             Quaternion camTurnAngleV = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * RotationsSpeed, Vector3.right);// laske vertikaalinen liike
 
-            
+
             //laske kulmat yhteen
-            Quaternion sum = camTurnAngleH * camTurnAngleV; 
+            Quaternion sum = camTurnAngleH * camTurnAngleV;
             //Quaternion sum = camTurnAngleH * camTurnAngleV; // normal sum
-                                                         
+
 
             //lisää summa cameran offset arvoon
             offset = sum * offset;
-          
+
         }
         else if (!FreeCamera)
         {
             ResetCamera();
         }
     }
+}
