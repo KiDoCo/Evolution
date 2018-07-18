@@ -101,7 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   lookSmooth: 100
-  offsetFromTarget: {x: 0, y: 0.2, z: -1}
+  offsetFromTarget: {x: 0, y: 0.2, z: -5}
   targetPosOffset: {x: 0, y: 0.2, z: 0}
   distanceFromTarget: -1
   xTilt: 10
@@ -136,13 +136,13 @@ MonoBehaviour:
   Camera3rd: {fileID: 20080875289540046}
   FreeCamera: 0
   reset: 0
-  offset: {x: 0, y: 0.2, z: -1}
+  offset: {x: 0, y: 0.2, z: -2}
   distanceDamp: 0.04
-  distanceDampValue: 0.04
-  distanceDampValueB: 0.01
+  distanceDampValue: 0.08
+  distanceDampValueB: 0.03
   distanceDampValueV: 0.02
   rotationalDamp: 5
-  rotationalDampValue: 5
+  rotationalDampValue: 75
   RotationsSpeed: 2
   resetLerpValue: 5
   xRotation: -20

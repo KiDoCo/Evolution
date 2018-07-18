@@ -102,10 +102,11 @@ MonoBehaviour:
   cameraPos: {x: 0, y: -0.2, z: -1}
   distanceDamp: 0.025
   rotationalDamp: 50
-  distanceDampValue: 0.025
-  rotationalDampValue: 20
+  distanceDampValue: 0.005
+  rotationalDampValue: 25
   strafeDamp: 0.005
   verticalDamp: 0.003
+  rotationYDamp: 12
   fastRotationDamp: 20
   m_FieldOfView: 30
   FOVValue: 90
