@@ -14,18 +14,17 @@ public class CameraController : MonoBehaviour
     //bools
     public bool FreeCamera;
    
-
     //values
     Vector3 velocity = Vector3.one;
-    [SerializeField] Vector3 cameraPos = new Vector3(0f, 2f, -10f);
+    [SerializeField] Vector3 cameraPos = new Vector3(0f, 0.2f, -2f);
     private float distanceDamp = 10f;
-    [SerializeField] float distanceDampValue = 0.4f;
-    [SerializeField] float distanceDampValueB = 0.02f; //used in reverse movement
-    [SerializeField] float distanceDampValueV = 0.02f; //used in vertical movement
+    [SerializeField] protected float distanceDampValue = 0.4f;
+    [SerializeField] protected float reverseDistanceDamp = 0.02f; //used in reverse movement
+    [SerializeField] protected float verticalDistanceDamp = 0.02f; //used in vertical movement
     private float rotationalDamp = 10f;
-    [SerializeField] float rotationalDampValue = 5f;
-    [SerializeField] float RotationsSpeed = 2f; //camera rotation speed
-    public float resetLerpValue = 5; // camera reset speed
+    [SerializeField] protected float rotationalDampValue = 5f;
+    [SerializeField] protected float rotationSpeed = 2f; //camera rotation speed
+    [SerializeField] protected float resetLerpValue = 5; // camera reset speed
 
   
     //FOV
@@ -36,14 +35,10 @@ public class CameraController : MonoBehaviour
     //reset point
     Vector3 resetPos = Vector3.zero;
 
-
     //Followrot(); values
     Vector3 targetPos = Vector3.zero;
-    public float lookSmooth = 100f;
-    public Vector3 pivotPoint = new Vector3(0, 1, 0);
-
-    
-
+    [SerializeField] protected float lookSmooth = 100f;
+    [SerializeField] protected Vector3 pivotPos = new Vector3(0, 0, 0);
 
 #pragma warning restore
     public Transform Target
@@ -75,8 +70,6 @@ public class CameraController : MonoBehaviour
 
         if (pivotpoint == null) Debug.LogError("Camera needs a pivotpoint to look at");
         
-      
-        
         SetDampening();
         ControlCamera();
         SmoothFollow();
@@ -85,7 +78,6 @@ public class CameraController : MonoBehaviour
         Stabilize();
         Restrict();
     }
-
 
     public void InstantiateCamera(Character test)
     {
@@ -106,7 +98,6 @@ public class CameraController : MonoBehaviour
             transform.Rotate(-x, 0, 0);
         }
     }
-   
 
     /// <summary>
     /// Sets the camera target to fixed point
@@ -124,11 +115,11 @@ public class CameraController : MonoBehaviour
     {
         if (target.GetComponent<Herbivore>().isReversing)
         {
-            distanceDamp = distanceDampValueB;
+            distanceDamp = reverseDistanceDamp;
         }
         else if (target.GetComponent<Herbivore>().isMovingVertical)
         {
-            distanceDamp = distanceDampValueV;
+            distanceDamp = verticalDistanceDamp;
         }
         else
             distanceDamp = distanceDampValue;
@@ -152,7 +143,7 @@ public class CameraController : MonoBehaviour
 
     void FollowRot() //camera is looking position of the target with the offset! no pivotpoint needed GOOD METHOD
     {
-        targetPos = target.position + pivotPoint; //välissä pivotpoint
+        targetPos = target.position + pivotPos; //välissä pivotpoint
         Quaternion targetRotation = Quaternion.LookRotation(targetPos - transform.position, target.up);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lookSmooth * Time.deltaTime);
     }
@@ -161,15 +152,6 @@ public class CameraController : MonoBehaviour
     {
         float z = transform.eulerAngles.z;
         transform.Rotate(0, 0, -z);
-    }
-
-    void ResetCamera()
-    {
-        if (!FreeCamera) 
-        {
-            Vector3 resetLoc = Vector3.Lerp(cameraPos, resetPos, resetLerpValue * Time.deltaTime);
-            cameraPos = resetLoc;
-        }
     }
 
     
@@ -188,8 +170,8 @@ public class CameraController : MonoBehaviour
         if (FreeCamera)
         {
 
-            Quaternion camTurnAngleH = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * RotationsSpeed, Vector3.up); //laske horisontaalinen liike
-            Quaternion camTurnAngleV = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * RotationsSpeed, Vector3.right);// laske vertikaalinen liike
+            Quaternion camTurnAngleH = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * rotationSpeed, Vector3.up); //laske horisontaalinen liike
+            Quaternion camTurnAngleV = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * rotationSpeed, Vector3.right);// laske vertikaalinen liike
             
             //laske kulmat yhteen
             Quaternion sum = camTurnAngleH * camTurnAngleV; 
@@ -201,6 +183,14 @@ public class CameraController : MonoBehaviour
         else if (!FreeCamera)
         {
             ResetCamera();
+        }
+    }
+    void ResetCamera()
+    {
+        if (!FreeCamera)
+        {
+            Vector3 resetLoc = Vector3.Lerp(cameraPos, resetPos, resetLerpValue * Time.deltaTime);
+            cameraPos = resetLoc;
         }
     }
 }
