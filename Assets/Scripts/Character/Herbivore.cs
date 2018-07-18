@@ -15,15 +15,28 @@ public class Herbivore : Character
 
     //object references
     [HideInInspector] public static Herbivore herbiv;
+    [SerializeField] new GameObject  CameraClone;
+    [SerializeField] GameObject Camera3rd;
+    public bool mouseInput;
 
-
-
-    public void MouseMove()
+    Quaternion targetRotation;
+    public Quaternion TargetRotation
+    {
+        get { return targetRotation; }
+    }
+    
+     public void MouseMove()
     {
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
 
+        if (Input.GetAxisRaw("Mouse Y") != 0 || Input.GetAxisRaw("Mouse X") != 0)
+        {
+            mouseInput = true;
+        }
+        else
+            mouseInput = false;
     }
 
 
@@ -95,7 +108,7 @@ public class Herbivore : Character
     }
     protected override void Start()
     {
-        if (isLocalPlayer)
+if (isLocalPlayer)
         {
             base.Start();
             cameraClone = Instantiate(cameraClone);
@@ -105,8 +118,7 @@ public class Herbivore : Character
             UIManager.Instance.InstantiateInGameUI(this);
             canBarrellRoll = true;
             canTurn = true;
-        }
-    }
+        }    }
     protected override void Update()
     {
         if (isLocalPlayer)
@@ -120,7 +132,7 @@ public class Herbivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer)
+if(!isLocalPlayer)return;
         {
             base.FixedUpdate();
             if (!CameraClone.GetComponent<CameraController>().FreeCamera)

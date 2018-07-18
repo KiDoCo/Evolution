@@ -6,15 +6,8 @@ using UnityEngine.Networking;
 [System.Serializable]
 public abstract class Character : NetworkBehaviour
 {
-    #region Floats
 
-    //Movement 
-    public float                     SpeedValue = 2f;   //Debug value which is assigned to speed
-    protected float                  speed = 2f;     // vertical speed modifier
-    [SerializeField] protected float turnSpeed = 2f;     //Rotation horizontal speed modifier
-    [SerializeField] protected float AscendSpeed = 2f; //Upwards and downwards speed modifier
-    [SerializeField] protected float verticalSpeed = 2f;   //mouse movement vertical speed
-    [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
+ #region Floats    [SerializeField] protected float verticalSpeed = 2f;   //mouse movement vertical speed    [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
     [SerializeField] protected float rotateSpeed = 2f;     //barrelroll speed
     [SerializeField] protected float strafeSpeed = 2f;     //carnivore strafe
     [SerializeField] protected float dashSpeed = 20f;      //herbivore sprint
@@ -33,6 +26,9 @@ public abstract class Character : NetworkBehaviour
     private const float deathpenaltytime = 2.0f;
 
     #endregion
+    
+    
+    
     //script reference
 
     #region Booleans
@@ -187,20 +183,32 @@ public abstract class Character : NetworkBehaviour
     /// </summary>
     protected virtual void Restrict()
     {
-        if (transform.rotation.x > 15)
+        transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 75, 275), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+
+        if (transform.rotation.eulerAngles.x > 90)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+
+            // float x = transform.eulerAngles.x;
+            // transform.Rotate(-x, 0, 0);
         }
 
-        if (transform.rotation.x < -15)
+        if (transform.rotation.eulerAngles.x < -90)
         {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
+
+            // float x = transform.eulerAngles.x;
+            // transform.Rotate(-x, 0, 0);
         }
     }
 
-    /// <summary>
+    // Clamps angle (different from the normal clamp function)
+    private float strangeAxisClamp(float value, float limit1, float limit2)
+    {
+        if (value > limit1 && value < 180f)
+            value = limit1;
+        else if (value > 180f && value < limit2)
+            value = limit2;
+        return value;
+    }    /// <summary>
     /// A and D keys turn
     /// </summary>
     protected virtual void Turn()// is separately from "Move" -method, because it has bool check
@@ -289,15 +297,9 @@ public abstract class Character : NetworkBehaviour
 
     }
 
-    /// <summary>
-    /// Checks if player can move in wanted direction
-    /// returns true if there is not another bject's collider in way
-    /// and false if player would collide with another collider
-    /// </summary>
-    protected bool CanMove(Vector3 dir)
-    {
+   
 
-        float distanceToPoints = col.height / 2 - col.radius;
+ float distanceToPoints = col.height / 2 - col.radius;
 
         //calculating start and en point  of capuleCollider for capsuleCast to use
         Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
@@ -338,9 +340,7 @@ public abstract class Character : NetworkBehaviour
         }
 
         return true;
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
     protected virtual void Stabilize()
@@ -380,12 +380,12 @@ public abstract class Character : NetworkBehaviour
         if (Input.GetKey(KeyCode.P))
             experience++;
 
-        CanMove(MovementInputVector);
+       
     }
 
     protected virtual void FixedUpdate()
     {
-        CanMove(MovementInputVector);
+       
         Move();
         BarrelRoll();
     }

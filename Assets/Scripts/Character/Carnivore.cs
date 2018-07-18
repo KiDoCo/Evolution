@@ -9,7 +9,6 @@ public class Carnivore : Character
     public bool IsCharging;
     [SerializeField] protected bool canCharge;
     [SerializeField] protected float chargeSpeed = 50f;
-
     [SerializeField] new GameObject camera;
     [SerializeField] protected bool canMouseMove = true;
     [SerializeField] protected float chargeTime = 2f;
@@ -169,7 +168,7 @@ public class Carnivore : Character
                     IsCharging = true;
                     isMoving = true;
                     StartCoroutine(ChargeTimer());
-                }
+                                   }
             }
             else
             {
