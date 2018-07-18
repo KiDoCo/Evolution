@@ -134,4 +134,8 @@ public class Herbivore : Character
             }
         }
     }
-}
+
+    public void GetEaten(float dmg)
+    {
+        TakeDamage(dmg);
+    }}

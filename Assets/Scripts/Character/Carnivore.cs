@@ -19,8 +19,8 @@ public class Carnivore : Character
     private bool isCharging;
     private const float staminaValue = 20.0f;
     private Vector3 inputStrafeZ;
+    public Vector3  InputStrafeZ;
 
-    public Vector3 InputStrafeZ
     {
         get
         {
@@ -165,7 +165,6 @@ public class Carnivore : Character
                     IsCharging = true;
                     isMoving = true;
                     StartCoroutine(ChargeTimer());
-
                 }
             }
             else
@@ -181,18 +180,19 @@ public class Carnivore : Character
         }
     }
 
-    protected override IEnumerator CoolTimer()
+public void EatHerbivore(float xp, float slow)
     {
-        canCharge = false;
-        coolTimer = true;
-        yield return new WaitForSeconds(coolTime);
-        canCharge = true;
-        coolTimer = false;
-        canMouseMove = true;
-
+        speed *= slow;
+        Experience += xp;
     }
 
-    public IEnumerator ChargeTimer() //Charge uses this
+
+
+
+    public void RestoreSpeed()
+    {
+        speed = SpeedValue;
+    }    public IEnumerator ChargeTimer() //Charge uses this
     {
         timerStart = true;
         yield return new WaitForSeconds(chargeTime);
