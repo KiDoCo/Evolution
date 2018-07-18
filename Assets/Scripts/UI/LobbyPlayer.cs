@@ -13,14 +13,14 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     [SerializeField] private GameObject readyButton = null;
     [SerializeField] private GameObject readyButtonText = null;
     [SerializeField] private GameObject notReadyButtonText = null;
-    [SerializeField] private Dropdown characterSelection = null;
-    [SerializeField] private Text characterSelected = null;
+    [SerializeField] private Dropdown characterDropdown = null;
+    [SerializeField] private Text characterSelectedText = null;
 
-    public GameObject CharacterSelection
+    public GameObject CharacterSelected
     {
         get
         {
-            return Gamemanager.Instance.PlayerPrefabs[characterSelection.options[characterSelection.value].text];
+            return Gamemanager.Instance.PlayerPrefabs[characterDropdown.options[playerType].text];
         }
     }
 
@@ -41,9 +41,10 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         Debug.Log("Client enter lobby");
 
         // Adds players to dropbox
-        if (characterSelection.options.Count == 0)
+        if (characterDropdown.options.Count == 0)
         {
-            characterSelection.AddOptions(new List<string>(Gamemanager.Instance.PlayerPrefabs.Keys));
+            characterDropdown.AddOptions(new List<string>(Gamemanager.Instance.PlayerPrefabs.Keys));
+            characterDropdown.RefreshShownValue();
         }
 
         // Puts client in the player list
@@ -51,7 +52,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
 
         // Resets player UI
         readyText.SetActive(false);
-        characterSelected.text = characterSelection.options[0].text;
+        characterSelectedText.text = characterDropdown.options[0].text;
 
         if (!isServer)
         {
@@ -68,8 +69,8 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         readyButtonText.SetActive(true);
         notReadyButtonText.SetActive(false);
         readyButton.SetActive(true);
-        characterSelection.gameObject.SetActive(true);
-        characterSelected.gameObject.SetActive(false);
+        characterDropdown.gameObject.SetActive(true);
+        characterSelectedText.gameObject.SetActive(false);
 
         if (NetworkGameManager.Instance != null)
         {
@@ -118,9 +119,13 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     public void OnTypeChange(int type)
     {
         if (isServer)
+        {
             playerType = type;
+        }
         else
+        {
             CmdChangePlayerType(type);
+        }
     }
 
     // Changes name in client + server
@@ -134,7 +139,8 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     private void changePlayerType(int type)
     {
         playerType = type;
-        characterSelected.text = characterSelection.options[playerType].text;
+        characterSelectedText.text = characterDropdown.options[playerType].text;
+        Debug.Log("Value changed in client to " + type);
     }
 
     // Sends player name to server
@@ -149,5 +155,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     public void CmdChangePlayerType(int type)
     {
         playerType = type;
+        Debug.Log("Value changed in Cmd to " + type);
     }
 }

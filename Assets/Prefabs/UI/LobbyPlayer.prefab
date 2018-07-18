@@ -687,8 +687,9 @@ MonoBehaviour:
   readyButton: {fileID: 1660303703074678}
   readyButtonText: {fileID: 1621479487302926}
   notReadyButtonText: {fileID: 1423018362908372}
-  characterSelection: {fileID: 114824897324452900}
-  characterSelected: {fileID: 114784884192339384}
+  characterDropdown: {fileID: 114824897324452900}
+  characterSelectedText: {fileID: 114784884192339384}
+  playerType: 0
 --- !u!114 &114556521531019206
 MonoBehaviour:
   m_ObjectHideFlags: 1

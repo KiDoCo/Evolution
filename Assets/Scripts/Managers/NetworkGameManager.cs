@@ -191,7 +191,9 @@ public class NetworkGameManager : NetworkLobbyManager {
             return null;
         }
 
-        GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelection.name));
+        Debug.Log("Selected: " + player.CharacterSelected.name);
+
+        GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelected.name));
 
         return spawnedPlayer;
     }
