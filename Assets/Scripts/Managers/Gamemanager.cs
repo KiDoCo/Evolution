@@ -31,6 +31,7 @@ public class Gamemanager : NetworkBehaviour
     public List<GameObject> FoodPlaceList = new List<GameObject>();
     private List<Transform> FoodSpawnPointList = new List<Transform>();
 
+
     //Strings
     private string gameScene = "DemoScene";
     private string foodSourceName = "FoodSource";

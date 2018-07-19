@@ -16,21 +16,21 @@ public class CameraController_1stPerson : MonoBehaviour
     //fixed damp values (Set Dampening käyttää näitä)
     [SerializeField] protected float distanceDampValue = 0.025f;
     [SerializeField] protected float rotationalDampValue = 10f;
-    
+
     [SerializeField] protected float strafeDamp = 0.2f;
     [SerializeField] protected float verticalDamp = 0.2f;
     [SerializeField] protected float rotationYDamp = 12f;
     [SerializeField] protected float fastRotationDamp = 1000;
-    
-    
-    [HideInInspector] public float m_FieldOfView = 60f;
-    public float FOVValue = 30f;
 
-    
-    public Camera Camera1st;
 
-   
-   
+    private float m_FieldOfView;
+    public const float FOVValue = 75.0f;
+
+
+    private Camera Camera1st;
+
+
+
 
     //camera reset point
     Vector3 startcameraPos = Vector3.zero;
@@ -42,25 +42,25 @@ public class CameraController_1stPerson : MonoBehaviour
         {
             return target;
         }
-    
+
         set
         {
-            Debug.Log(value);
             target = value;
         }
     }
 
     protected void Start()
     {
-
+        Camera1st = GetComponent<Camera>();
         distanceDamp = distanceDampValue; // reset damping values to fixed values
         rotationalDamp = rotationalDampValue; // --"--
-       
+
 
         m_FieldOfView = FOVValue; // set camera Field of view to fixed value
         startcameraPos = cameraPos; //set camera default location
         Camera1st.fieldOfView = 60f;
-        //Camera1st.cullingMask = 1 << 0; //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
+        //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
+        Camera1st.cullingMask = 1 << 0; 
 
     }
 
@@ -71,15 +71,15 @@ public class CameraController_1stPerson : MonoBehaviour
         FollowRot();
         Stabilize();
         CameraFOV();
-        
+
 
     }
+
     public void InstantiateCamera(Character test)
     {
-        if(test.isLocalPlayer)
+        if (test.isLocalPlayer)
         {
-        Debug.Log(test.transform);
-        Target = test.transform;
+            Target = test.transform;
         }
     }
 
@@ -92,7 +92,7 @@ public class CameraController_1stPerson : MonoBehaviour
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }
 
-    
+
 
     /// <summary>
     /// Follows target movement and rotation smoothly (using distanceDamp and rotationalDamp values, cameraPos is camera distance from target)
@@ -105,13 +105,14 @@ public class CameraController_1stPerson : MonoBehaviour
         transform.position = curPos;
 
         //Rotation
-        Quaternion toRot = Quaternion.LookRotation( transform.position - target.position, target.up); //HUOM!!!! vaihda  tämän rivin koodissa transform.positionin ja target positionin +-merkit, jos cameraPos:in z asetetaan uudestaan editorissa positiiviseen arvoon :O
-       
+        //HUOM!!!! vaihda  tämän rivin koodissa transform.positionin ja target positionin +-merkit, jos cameraPos:in z asetetaan uudestaan editorissa positiiviseen arvoon :O
+        Quaternion toRot = Quaternion.LookRotation(transform.position - target.position, target.up); 
+
         Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
         transform.rotation = curRot;
-        
+
     }
-   
+
 
     /// <summary>
     /// Needed to stabilize camera
@@ -123,7 +124,7 @@ public class CameraController_1stPerson : MonoBehaviour
         transform.Rotate(0, 0, -z);
     }
 
-   
+
     public void ResetCamera() //back to original fixed cameraPos point
     {
         cameraPos = startcameraPos;
@@ -134,13 +135,13 @@ public class CameraController_1stPerson : MonoBehaviour
     /// </summary>
     public void CameraFOV()
     {
-        if (Input.GetKeyDown(KeyCode.F)) //|| target.GetComponent<Carnivore2>().isDashing) // if carnie is charging, FOV increases to make "cool" effect
+        if (Input.GetKey(KeyCode.F)) //|| target.GetComponent<Carnivore2>().isDashing) // if carnie is charging, FOV increases to make "cool" effect
         {
             Debug.Log("FOV");
             m_FieldOfView = 90f;
             Camera1st.fieldOfView = m_FieldOfView;
         }
-        if (Input.GetKeyUp(KeyCode.F))
+        else 
         {
             m_FieldOfView = FOVValue; //reset camera FOV default
             Camera1st.fieldOfView = m_FieldOfView;
@@ -154,27 +155,26 @@ public class CameraController_1stPerson : MonoBehaviour
     /// </summary>
     public void SetDampening()
     {
-        if (target.GetComponent<Carnivore>().InputStrafeZ.normalized.magnitude != 0) 
+        if (target.GetComponent<Carnivore>().InputVector.x != 0)
         {
             distanceDamp = strafeDamp;
-            
+
         }
- else if (target.GetComponent<Carnivore>().InputVector.z != 0)        {
+
+        else if (target.GetComponent<Carnivore>().InputVector.y != 0)
+        {
             distanceDamp = verticalDamp;
         }
-        else if (target.GetComponent<Carnivore>().InputVector.y < 0)
+
+        else if (target.GetComponent<Carnivore>().InputVector.y < 0 || target.GetComponent<Carnivore>().InputVector.y > 0)
         {
             distanceDamp = distanceDampValue;
         }
-        else if (target.GetComponent<Carnivore>().InputVector.y > 0)
-        {
-            distanceDamp = distanceDampValue;
-        }
-       // else if (target.GetComponent<Carnivoremove>().rotationY)
-       // {
-       //     rotationalDamp = rotationYDamp;
-      //  }
-        else 
+        // else if (target.GetComponent<Carnivoremove>().rotationY)
+        // {
+        //     rotationalDamp = rotationYDamp;
+        //  }
+        else
             distanceDamp = distanceDampValue;
 
     }

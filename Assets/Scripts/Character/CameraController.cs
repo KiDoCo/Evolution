@@ -180,6 +180,7 @@ public class CameraController : MonoBehaviour
     public void InstantiateCamera(Character test)
     {
         Target = test.transform;
+        pivotpoint = Target.GetChild(3);
     }
 
     void GetInput()

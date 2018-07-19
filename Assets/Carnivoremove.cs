@@ -11,18 +11,18 @@ public class Carnivoremove : MonoBehaviour
     public bool accelerate;
     public bool logarithmicmove;
     public bool start;
-    public bool isMovingForward;
     public bool isMovingVertical;
     public bool isMoving;
+    public bool isMovingForward;
     public bool ascend;
-    
+
     //values
     public float Speed = 20f;
     public float AscendSpeed = 20f;
     private Vector3 InputVector;
     private Vector3 inputVectorY2;
 
-   
+
     public float strafeSpeed = 5f;
     public float mouseV = 1;
     public float mouseH = 1;
@@ -40,19 +40,18 @@ public class Carnivoremove : MonoBehaviour
     [SerializeField] private float forwardVelocity2;
     private float forwardVelocity3;
 
-   
+
     private Vector3 inputVectorZ;
     public Vector3 inputVectorY;
-    public Rigidbody rb;
     public float thrust = 20f;
     public float gravity = 3f;
     public float jumpforce = 5f;
     public bool decel;
     public bool isStrafing;
 
-   
 
-    
+
+
 
     private void Awake()
     {
@@ -60,7 +59,6 @@ public class Carnivoremove : MonoBehaviour
         decelRatePerSecond = -maxSpeed / timeMaxToZero;
         breakRatePerSecond = -maxSpeed / timeBrakeToZero;
         forwardVelocity = 0f;
-        Rigidbody rb = GetComponent<Rigidbody>();
     }
 
 
@@ -70,7 +68,7 @@ public class Carnivoremove : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         ascend = true;
         start = true;
-        
+
     }
 
     private void Update()
@@ -86,15 +84,15 @@ public class Carnivoremove : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        
+
         ForwardMovement(); //tapa 1
         Acceleration(); // tapa2
         NormalMovement(); // tapa 3
         //Force(); // rigibbodytest
-        Altitude(); 
+        Altitude();
         Strafe();
         MouseMove(); //mouse look
-        Gravity(); 
+        Gravity();
         Stabilize();
     }
 
@@ -119,8 +117,8 @@ public class Carnivoremove : MonoBehaviour
             Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
             transform.Translate(inputvectorY);
         }
-    
-       
+
+
     }
 
     void Acceleration()
@@ -128,53 +126,51 @@ public class Carnivoremove : MonoBehaviour
 
         if (accelerate) // && !normalmove && !logarithmicmove)
         {
-            if (Input.GetAxisRaw("Vertical") > 0)
+            if (InputManager.Instance.GetAxis("Vertical") > 0)
             {
 
-                forwardVelocity += accelRatePerSecond * Time.deltaTime;
+                forwardVelocity += accelRatePerSecond;
                 forwardVelocity = Mathf.Min(forwardVelocity, maxSpeed);
                 isMovingForward = true;
                 //decel = true;
             }
-          //deceleration when stopping movement
-            else if (Input.GetAxisRaw("Vertical") == 0)// && decel)
+
+            //deceleration when stopping movement
+            else if (InputManager.Instance.GetAxis("Vertical") == 0)// && decel)
             {
-                forwardVelocity +=decelRatePerSecond * Time.deltaTime;
-                forwardVelocity += decelRatePerSecond * Time.deltaTime;
+                forwardVelocity += decelRatePerSecond;
                 forwardVelocity = Mathf.Max(forwardVelocity, 0);
-                if (forwardVelocity<=0)
+                if (forwardVelocity <= 0)
                 {
                     //decel = false;
                 }
-                if (forwardVelocity>0)
+                if (forwardVelocity > 0)
                 {
                     Vector3 move = Vector3.forward * forwardVelocity * Time.deltaTime;
                     transform.Translate(move);
                 }
-                
+
 
 
             }
             else
+            {
                 isMovingForward = false;
+            }
 
             if (isMovingForward)
             {
                 inputVectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * forwardVelocity) * Time.deltaTime;
-               // Vector3 input = inputVectorY;
                 transform.Translate(inputVectorY);
             }
             if (!isMovingForward)
-           {
+            {
                 forwardVelocity = 0;
-               inputVectorY2 = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-               transform.Translate(inputVectorY2);
-           }
+                inputVectorY2 = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+                transform.Translate(inputVectorY2);
+            }
 
         }
-        
-           
-
     }
     void ForwardMovement()
     {
@@ -184,9 +180,9 @@ public class Carnivoremove : MonoBehaviour
             {
                 forwardVelocity2 = Mathf.Clamp(forwardVelocity, 0.0001f, 1);
                 //forwardVelocity2 = Mathf.Log(forwardVelocity) * 3;
-
                 forwardVelocity2 = Mathf.Exp(forwardVelocity);
-                //forwardVelocity = Mathf.Exp(forwardVelocity);
+
+                forwardVelocity = Mathf.Exp(forwardVelocity);
 
 
 
@@ -208,8 +204,7 @@ public class Carnivoremove : MonoBehaviour
             if (isMovingForward)
             {
                 inputVectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * forwardVelocity) * Time.deltaTime;
-                Vector3 input = inputVectorY;
-                transform.Translate(input);
+                transform.Translate(inputVectorY);
             }
             if (!isMovingForward)
             {
@@ -217,8 +212,8 @@ public class Carnivoremove : MonoBehaviour
                 transform.Translate(inputVectorY2);
             }
         }
-        
-        
+
+
     }
     void Altitude()
     {
@@ -236,10 +231,10 @@ public class Carnivoremove : MonoBehaviour
     protected void Stabilize()
     {
 
-            float z = transform.eulerAngles.z;
-            // Debug.Log(z);
-            transform.Rotate(0, 0, -z);
-       
+        float z = transform.eulerAngles.z;
+        // Debug.Log(z);
+        transform.Rotate(0, 0, -z);
+
 
     }
     void Gravity()
@@ -249,7 +244,7 @@ public class Carnivoremove : MonoBehaviour
             AscendSpeed = -gravity * Time.deltaTime;
             if (Input.GetKeyDown(KeyCode.Space))
             {
-               // AscendSpeed = jumpforce;
+                // AscendSpeed = jumpforce;
             }
             else
             {
@@ -263,26 +258,6 @@ public class Carnivoremove : MonoBehaviour
 
     }
 
-    
-    void Force()
-    {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            rb.velocity = Vector3.zero;
-            rb.AddRelativeForce(new Vector3 (0, thrust));
-        }
-        else
-        {
-            rb.AddRelativeForce(new Vector3 (0, 0, 0));
-        }
-            
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            rb.AddRelativeForce(-Vector3.up * thrust);
-        }
-
-       
-    }
     void Strafe()
     {
 
@@ -314,12 +289,12 @@ public class Carnivoremove : MonoBehaviour
         {
             rotationY = true;
         }
-       else
+        else
         {
             rotationY = false;
         }
 
-       
+
     }
 
     void Accelerate()
@@ -331,19 +306,19 @@ public class Carnivoremove : MonoBehaviour
 
 
             Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * forwardVelocity) * Time.deltaTime;
-            
+
             InputVector = inputvectorY;
 
-          
-                transform.Translate(inputvectorY);
-          
-            
+
+            transform.Translate(inputvectorY);
+
+
         }
 
     }
-   
 
-   
+
+
 }
 
 

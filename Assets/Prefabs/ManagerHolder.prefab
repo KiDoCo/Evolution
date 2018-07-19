@@ -20,10 +20,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4480704697252256}
   - component: {fileID: 114933691204611686}
-  - component: {fileID: 114861859203676364}
   - component: {fileID: 114410111391734876}
   - component: {fileID: 114314828878141864}
   - component: {fileID: 114266387562950848}
+  - component: {fileID: 114861859203676364}
   m_Layer: 0
   m_Name: ManagerHolder
   m_TagString: Untagged
@@ -111,6 +111,17 @@ MonoBehaviour:
     NkeyDescription: 
     NUIButton: {fileID: 0}
     PUIButton: {fileID: 0}
+  - AxisName: Altitude
+    Pkey: 32
+    Nkey: 306
+    positive: 0
+    negative: 0
+    Axis: 0
+    Sensitivity: 1000
+    PkeyDescription: Up
+    NkeyDescription: Down
+    NUIButton: {fileID: 0}
+    PUIButton: {fileID: 0}
 --- !u!114 &114314828878141864
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -126,6 +137,8 @@ MonoBehaviour:
   helix: {fileID: 1465424170178942, guid: 6c34c27211bc14246908efaa337b7166, type: 2}
   pauseMenu: {fileID: 1831237039453952, guid: 033e2c1afd017de48bfa2e5684f32d9a, type: 2}
   matchResultScreen: {fileID: 0}
+  helixCamera: {fileID: 1009143415174350, guid: 08c85d6115cdd8b48bd765bc3d098c84,
+    type: 2}
 --- !u!114 &114410111391734876
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -161,7 +174,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodsources:
   - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
-  CameraPrefab: {fileID: 1824946988335758, guid: 0576a07d4cfab8a42acea443ccd318a1,
-    type: 2}
+  FoodPlaceList: []
   BerryPrefab: {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117,
     type: 2}

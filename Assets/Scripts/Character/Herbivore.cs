@@ -10,13 +10,9 @@ public class Herbivore : Character
 
     Quaternion originZ;
     Quaternion currentZ;
-    //objects
-    public Transform myT;
 
     //object references
     [HideInInspector] public static Herbivore herbiv;
-    [SerializeField] new GameObject  CameraClone;
-    [SerializeField] GameObject Camera3rd;
     public bool mouseInput;
 
     Quaternion targetRotation;
@@ -24,8 +20,8 @@ public class Herbivore : Character
     {
         get { return targetRotation; }
     }
-    
-     public void MouseMove()
+
+    public void MouseMove()
     {
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
@@ -52,6 +48,11 @@ public class Herbivore : Character
                 Eat(Gamemanager.Instance.FoodPlaceList[i]);
             }
         }
+    }
+    protected override void AnimationChanger()
+    {
+        m_animator.SetBool("IsEating", eating);
+        m_animator.SetBool("IsMoving", isMoving);
     }
 
     /// <summary>
@@ -82,7 +83,7 @@ public class Herbivore : Character
             }
         }
     }
-    
+
     [Command]
     private void CmdEat(GameObject go)
     {
@@ -102,13 +103,65 @@ public class Herbivore : Character
         }
     }
 
+    protected override void ForwardMovement()
+    {
+
+        if (InputManager.Instance.GetAxis("Vertical") != 0)
+        {
+            if (currentInput != InputManager.Instance.GetAxis("Vertical")) ForwardVelocity = 0;
+
+            currentInput = InputManager.Instance.GetAxis("Vertical");
+
+            ForwardVelocity += InputManager.Instance.GetAxis("Vertical") * accPerSec * 2;
+        }
+
+        //deceleration when stopping movement
+        else
+        {
+            ForwardVelocity = Mathf.SmoothStep(ForwardVelocity, 0, -decPerSec);
+        }
+
+
+        Debug.Log(ForwardVelocity);
+        Z = (Vector3.forward * ForwardVelocity) * Time.deltaTime;
+    }
+
+    protected override void SidewayMovement()
+    {
+        Y = InputManager.Instance.GetAxis("Horizontal") * Vector3.down * turnSpeed * Time.deltaTime;
+    }
+
+    protected override void UpwardsMovement()
+    {
+        X = (InputManager.Instance.GetAxis("Altitude") * Vector3.up * rotateSpeed * Time.deltaTime);
+    }
+
+    protected override void ApplyMovement()
+    {
+        inputVector = X + Y + Z;
+        isMoving = inputVector.normalized.magnitude != 0 ? true : false;
+        AnimationChanger();
+
+        if (CollisionCheck())
+        {
+            transform.Translate((X + Z)* defaultSpeed);
+            transform.Rotate(Y * defaultSpeed);
+        }
+        else
+        {
+            moveDirection = Vector3.Cross(colPoint, surfaceNormal);
+            moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
+            moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
+        }
+    }
+
     protected override void Awake()
     {
         base.Awake();
     }
     protected override void Start()
     {
-if (isLocalPlayer)
+        if (isLocalPlayer)
         {
             base.Start();
             cameraClone = Instantiate(cameraClone);
@@ -118,37 +171,35 @@ if (isLocalPlayer)
             UIManager.Instance.InstantiateInGameUI(this);
             canBarrellRoll = true;
             canTurn = true;
-        }    }
+        }
+    }
     protected override void Update()
     {
         if (isLocalPlayer)
         {
             base.Update();
             CmdInteractionChecker();
-
             UIManager.Instance.UpdateMatchUI(this);
         }
     }
 
+
     protected override void FixedUpdate()
     {
-if(!isLocalPlayer)return;
+        if (isLocalPlayer)
         {
             base.FixedUpdate();
             if (!CameraClone.GetComponent<CameraController>().FreeCamera)
             {
                 MouseMove();
             }
-            Restrict();
-
-            if (!rolling)
-            {
-                Stabilize();
-            }
+            ApplyMovement();
         }
     }
 
     public void GetEaten(float dmg)
     {
         TakeDamage(dmg);
-    }}
+    }
+
+}

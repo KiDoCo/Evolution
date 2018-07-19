@@ -13,27 +13,33 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected float rotateSpeed = 2f;     //barrelroll speed
     [SerializeField] protected float strafeSpeed = 2f;     //carnivore strafe
     [SerializeField] protected float dashSpeed = 20f;      //herbivore sprint
-    protected float velocity;
+
+    //Movement variables
+    [SerializeField] protected float maxSpeed = 10.0f;
+    [SerializeField] protected float accTimeToMax = 1.5f;
+    [SerializeField] protected float decTimeToMin = 1.0f;
+    protected float accPerSec;
+    protected float decPerSec;
+    protected float forwardVelocity;
+    protected float backwardVelocity;
+    protected float currentInput;
     protected float restrictAngle = Mathf.Abs(80);
     public float turnSpeed = 2.0f;
-    protected float speed;
-    protected float SpeedValue = 2.0f;
+    protected float defaultSpeed = 1.0f;
+
     //timer values
     [SerializeField] protected float dashTime = 6f;
     [SerializeField] protected float coolTime = 6f;
 
     //character stats
-    protected float health = 100;
+    protected float health = 2;
     protected float experience = 0;
-    private const float healthMax = 100.0f;
+    private const float healthMax = 2;
     private const float waitTime = 1.0f;
     private const float deathpenaltytime = 2.0f;
 
     #endregion
 
-
-
-    //script reference
 
     #region Booleans
     [SerializeField] protected bool turning;
@@ -63,19 +69,24 @@ public abstract class Character : NetworkBehaviour
     protected Animator m_animator;
     private AudioSource musicSource;
     protected AudioSource SFXsource;
-    private Vector3 inputVector;
-    private Vector3 MovementInputVector;
+    //Movement vectors
+    protected Vector3 Y;
+    protected Vector3 X;
+    protected Vector3 Z;
+    protected Vector3 inputVector;
+    protected Vector3 MovementInputVector;
     private Vector3 rotationInputVector;
 
     #region Collider variables
-    public float Rotatingspeed; private Vector3 moveDirection;
-    private Vector3 surfaceNormal;
-    private Vector3 capsuleNormal;
-    private Vector3 colDirection;
-    private Vector3 colNormal;
-    private Vector3 colPoint;
-    private CapsuleCollider col;
-    private bool collided = false;
+    public float Rotatingspeed;
+    protected Vector3 moveDirection;
+    protected Vector3 surfaceNormal;
+    protected Vector3 capsuleNormal;
+    protected Vector3 colDirection;
+    protected Vector3 colNormal;
+    protected Vector3 colPoint;
+    protected CapsuleCollider col;
+    protected bool collided = false;
 
     #endregion
 
@@ -83,6 +94,18 @@ public abstract class Character : NetworkBehaviour
 
     #region Getter&Setter
     public float Maxhealth { get { return healthMax; } }
+    public float ForwardVelocity
+    {
+        get
+        {
+            return forwardVelocity;
+        }
+
+        set
+        {
+            forwardVelocity = Mathf.Clamp(value, -maxSpeed, maxSpeed);
+        }
+    }
     public float Health
     {
         get
@@ -114,12 +137,12 @@ public abstract class Character : NetworkBehaviour
     {
         get
         {
-            return speed;
+            return defaultSpeed;
         }
 
         set
         {
-            speed = value;
+            defaultSpeed = value;
         }
     }
 
@@ -157,30 +180,15 @@ public abstract class Character : NetworkBehaviour
 
     #region Movement methods
 
-    /// <summary>
-    ///  Altitude & Forward/Backwards
-    /// </summary>    
-    protected virtual void Move()
-    {
-        Vector3 inputvectorX = InputManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed;
-        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical") * Vector3.forward * Speed);
-        Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Jump") * Vector3.forward * rotateSpeed * Time.deltaTime);
-        inputVector = inputvectorX + inputvectorY + inputvectorZ;
-        //Movement direction checkers
-        isMoving = inputVector.normalized.magnitude != 0 ? true : false;
-        Turn();
+    protected abstract void ForwardMovement();
 
-        MovementInputVector = inputvectorY + inputvectorZ;
+    protected abstract void SidewayMovement();
 
-        moveDirection = Vector3.Cross(colPoint, surfaceNormal);
-        moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
-        moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
+    protected abstract void UpwardsMovement();
 
-        if (!eating && CollisionCheck())
-        {
-            transform.Translate(MovementInputVector);
-        }
-    }
+    protected abstract void ApplyMovement();
+
+    protected abstract void AnimationChanger();
 
     /// <summary>
     /// Avoid control jerkiness with ristricting x rotation
@@ -188,20 +196,6 @@ public abstract class Character : NetworkBehaviour
     protected virtual void Restrict()
     {
         transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 75, 275), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
-
-        if (transform.rotation.eulerAngles.x > 90)
-        {
-
-            // float x = transform.eulerAngles.x;
-            // transform.Rotate(-x, 0, 0);
-        }
-
-        if (transform.rotation.eulerAngles.x < -90)
-        {
-
-            // float x = transform.eulerAngles.x;
-            // transform.Rotate(-x, 0, 0);
-        }
     }
 
     // Clamps angle (different from the normal clamp function)
@@ -212,23 +206,8 @@ public abstract class Character : NetworkBehaviour
         else if (value > 180f && value < limit2)
             value = limit2;
         return value;
-    }    /// <summary>
-         /// A and D keys turn
-         /// </summary>
-    protected virtual void Turn()// is separately from "Move" -method, because it has bool check
-    {
-        if (canTurn)
-        {
-
-            float rotation = (Input.GetAxisRaw("Horizontal") * turnSpeed * Time.deltaTime);
-            if (rotation != 0)
-            {
-                isMoving = true;
-            }
-            transform.Rotate(0, rotation, 0);
-
-        }
     }
+
 
     protected virtual void BarrelRoll() //if needed 
     {
@@ -271,13 +250,9 @@ public abstract class Character : NetworkBehaviour
             }
         }
     }
+
     #endregion
 
-    protected virtual void AnimationChanger()
-    {
-        m_animator.SetBool("isEating", eating);
-        m_animator.SetBool("isMoving", isMoving);
-    }
 
     protected virtual IEnumerator DashTimer() //used in Dash();
     {
@@ -302,7 +277,7 @@ public abstract class Character : NetworkBehaviour
     }
 
 
-    private bool CollisionCheck()
+    protected bool CollisionCheck()
     {
         float distanceToPoints = col.height / 2 - col.radius;
 
@@ -346,17 +321,14 @@ public abstract class Character : NetworkBehaviour
 
         return true;
     }
+
     /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
     protected virtual void Stabilize()
     {
-        if (!rolling)
-        {
             float z = transform.eulerAngles.z;
             transform.Rotate(0, 0, -z);
-        }
-
     }
 
     #region Unity Methods
@@ -369,8 +341,8 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void Start()
     {
-        speed = SpeedValue;
-
+        accPerSec = maxSpeed / accTimeToMax;
+        decPerSec = -maxSpeed / decTimeToMin;
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -383,18 +355,19 @@ public abstract class Character : NetworkBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
         }
-        if (Input.GetKey(KeyCode.P))
-            experience++;
-
-
+        ForwardMovement();
+        UpwardsMovement();
+        SidewayMovement();
     }
 
     protected virtual void FixedUpdate()
     {
+        Restrict();
+        Stabilize();
 
-        Move();
-        BarrelRoll();
+        // BarrelRoll();
     }
+
     #endregion
 
 }
