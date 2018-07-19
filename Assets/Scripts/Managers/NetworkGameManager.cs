@@ -10,7 +10,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public static NetworkGameManager Instance;
 
-    [SerializeField] private GameObject UI = null;
+    [SerializeField] private GameObject lobbyUI = null;
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
     [SerializeField] private GameObject mainUI = null;
@@ -39,7 +39,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         // Resets UI
         UIManager.switchGameObject(UIWindows, mainUI);
-        UI.SetActive(true);
+        lobbyUI.SetActive(true);    // Temp fix because main UI doesn't exist
         insertNameError.SetActive(false);
     }
 
@@ -157,6 +157,13 @@ public class NetworkGameManager : NetworkLobbyManager {
         Debug.Log("Client exited");
     }
 
+    public override void OnLobbyServerSceneChanged(string sceneName)
+    {
+        base.OnLobbyServerSceneChanged(sceneName);
+
+        Debug.Log("Scene changed to " + sceneName);
+    }
+
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
     {
         base.OnLobbyClientSceneChanged(conn);
@@ -164,11 +171,11 @@ public class NetworkGameManager : NetworkLobbyManager {
         // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)
         {
-            UI.SetActive(false);
+            lobbyUI.SetActive(false);
         }
         else
         {
-            UI.SetActive(true);
+            lobbyUI.SetActive(true);
         }
     }
 
@@ -194,8 +201,8 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         Debug.Log("Client " + conn.playerControllers[0].unetView.netId + " selected " + player.CharacterSelected.name);
 
-        // Spawns corresponding player prefab from spawnPrefabs
-        GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelected.name));
+        // Spawns corresponding player prefab from spawnPrefabs (spawns to random position)
+        GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelected.name), startPositions[Random.Range(0, startPositions.Count)]);
 
         return spawnedPlayer;
     }

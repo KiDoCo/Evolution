@@ -55,7 +55,6 @@ public class CameraController_1stPerson : MonoBehaviour
 
     protected void Start()
     {
-
         distanceDamp = distanceDampValue; // reset damping values to fixed values
         rotationalDamp = rotationalDampValue; // --"--
 
@@ -65,6 +64,7 @@ public class CameraController_1stPerson : MonoBehaviour
         Camera1st.fieldOfView = 60f;
         Camera1st.cullingMask = 1 << 0; //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
 
+        transform.position = target.position + (target.rotation * offset);
     }
 
     public void FixedUpdate()
@@ -106,7 +106,7 @@ public class CameraController_1stPerson : MonoBehaviour
         transform.position = curPos;
 
         //Rotation
-        Quaternion toRot = Quaternion.LookRotation(- transform.position +  target.position, target.up);
+        Quaternion toRot = Quaternion.LookRotation(-transform.position + target.position, target.up);
         Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
         transform.rotation = curRot;
         

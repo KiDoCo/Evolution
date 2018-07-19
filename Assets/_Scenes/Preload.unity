@@ -213,7 +213,6 @@ GameObject:
   - component: {fileID: 1612107943}
   - component: {fileID: 1612107942}
   - component: {fileID: 1612107941}
-  - component: {fileID: 1612107940}
   m_Layer: 5
   m_Name: Camera
   m_TagString: Untagged
@@ -221,13 +220,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1612107940
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1612107939}
-  m_Enabled: 1
 --- !u!124 &1612107941
 Behaviour:
   m_ObjectHideFlags: 0
@@ -384,16 +376,6 @@ Prefab:
     - target: {fileID: 224560002005651488, guid: 83c16fa1a9daede469d5f5a36209aed2,
         type: 2}
       propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224167986771936390, guid: 83c16fa1a9daede469d5f5a36209aed2,
-        type: 2}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224167986771936390, guid: 83c16fa1a9daede469d5f5a36209aed2,
-        type: 2}
-      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

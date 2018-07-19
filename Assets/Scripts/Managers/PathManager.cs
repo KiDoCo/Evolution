@@ -101,6 +101,6 @@ public class PathManager : MonoBehaviour
     {
         Instance = this;
         EventManager.ActionAddHandler(EVENT.Increase, SpawnFish);
-        EventManager.ActionAddHandler(EVENT.DoAction, NodeAssign);
+        EventManager.ActionAddHandler(EVENT.AINodeSpawn, NodeAssign);
     }
 }

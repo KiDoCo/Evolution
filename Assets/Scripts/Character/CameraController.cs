@@ -52,14 +52,14 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-
         cam = this;
         startOffset = offset;
         m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
         distanceDamp = distanceDampValue;
         rotationalDamp = rotationalDampValue;
 
-
+        transform.position = target.position + (target.rotation * offset);
+        transform.rotation = Quaternion.LookRotation(target.position - transform.position, target.up);
     }
 
     void FixedUpdate()

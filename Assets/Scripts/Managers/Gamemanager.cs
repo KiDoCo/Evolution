@@ -17,9 +17,9 @@ public class Gamemanager : NetworkBehaviour
     private string                      cPFileLocation = "/Assets/StreamingAssets/AssetBundles/carnivore.pl"; //carnivore asset location
 
     //Match variables
-    private const float                 startingMatchTimer = 5.0f; //time value in minutes
-    private const float                 minutesToSeconds   = 60.0f;//converting value
-    private const float                 interval           = 0.1f; //The time in seconds that spawning will happen
+    private const float                 startingMatchTimer = 5.0f;  //time value in minutes
+    private const float                 minutesToSeconds   = 60.0f; //converting value
+    private const float                 interval           = 0.1f;  //The time in seconds that spawning will happen
     private const float                 deathPenaltyTime   = 2.0f;
     private float                       matchTimer;
     private int                         lifeCount;
@@ -27,12 +27,12 @@ public class Gamemanager : NetworkBehaviour
     private GameObject                  deathCameraPlace;
     
     //Gamemanager lists
-    private List<GameObject> carnivorePrefabs     = new List<GameObject>();
-    private List<GameObject> herbivorePrefabs     = new List<GameObject>();
-    public Dictionary<string, GameObject> PlayerPrefabs      = new Dictionary<string, GameObject>();
-    public  List<GameObject>            foodsources;
-    public  List<IEatable>              FoodPlaceList        = new List<IEatable>();
-    private List<Transform>             FoodSpawnPointList   = new List<Transform>();
+    private List<GameObject> carnivorePrefabs               = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs               = new List<GameObject>();
+    public Dictionary<string, GameObject> PlayerPrefabs     = new Dictionary<string, GameObject>();
+    public  List<GameObject> foodsources;
+    public  List<IEatable> FoodPlaceList            = new List<IEatable>();
+    private List<Transform> FoodSpawnPointList      = new List<Transform>();
 
     //Strings
     private string gameScene       = "DemoScene";
@@ -80,10 +80,7 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private IEnumerator StartMatch()
     {
-        yield return new WaitForSeconds(2.0f);
         lifeCount = maxLifeCount; 
-        //Stop for a moment to scene to load
-        yield return new WaitForSeconds(2.0f);
 
         //search every spawnpoint for players and foodsources
         for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
@@ -91,13 +88,10 @@ public class Gamemanager : NetworkBehaviour
             FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
         }
 
-
-        yield return new WaitForSeconds(1.0f);
         //set the match timer and spawn the objects
         MatchTimer = startingMatchTimer * minutesToSeconds;
-
-        SpawnFoodSources();
-        EventManager.Broadcast(EVENT.DoAction);
+        EventManager.Broadcast(EVENT.FoodSpawn);
+        EventManager.Broadcast(EVENT.AINodeSpawn);
         FoodSpawnPointList.Clear();
         deathCameraPlace = new GameObject();
         //repeaters for spawning food/populating sources
@@ -110,7 +104,6 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
-
     private IEnumerator Respawn(Character player)
     {
         player.gameObject.SetActive(false);
@@ -131,7 +124,6 @@ public class Gamemanager : NetworkBehaviour
         insert function to kill server after x seconds 
         and return remaining players to lobby/menu screen
         */
-        EventManager.Broadcast(EVENT.RoundEnd);
         CancelInvoke();
         //killserver
     }
@@ -190,8 +182,6 @@ public class Gamemanager : NetworkBehaviour
 
     private void LoadGame() 
     {
-        //Load the match scene
-        SceneManager.LoadSceneAsync(gameScene);
         StartCoroutine(StartMatch());
     }
 
@@ -199,7 +189,6 @@ public class Gamemanager : NetworkBehaviour
     /// Checks if the player can be spawned
     /// </summary>
     /// <param name="player"></param>
-
     public void RespawnPlayer(Character player)
     {
         if (lifeCount > 0)
@@ -234,7 +223,7 @@ public class Gamemanager : NetworkBehaviour
         LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
-        EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
+        EventManager.ActionAddHandler(EVENT.FoodSpawn, SpawnFoodSources);
 
         SceneManager.LoadSceneAsync(menuScene);
     }

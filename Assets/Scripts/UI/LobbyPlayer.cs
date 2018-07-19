@@ -30,7 +30,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
 
     // Syncs type from server to clients and calls in clients changePlayerType
     [SyncVar(hook = "changePlayerType")]
-    [SerializeField] private int playerType = 0;
+    private int playerType = 0;
 
 
     // OnClientEnterLobby() is called also when client goes back from in-game to lobby
