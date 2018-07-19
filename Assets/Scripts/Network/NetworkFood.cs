@@ -7,6 +7,8 @@ public class NetworkFood : NetworkBehaviour {
     [SerializeField] private float decreaseSpeed = 0.01f;
     [SerializeField] private float minSize = 0.01f;
 
+    private bool eating = false;
+
     private float foodSize
     {
         get
@@ -19,6 +21,18 @@ public class NetworkFood : NetworkBehaviour {
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            CmdEatState(true);
+        }
+        else if (Input.GetKeyUp(KeyCode.Mouse0))
+        {
+            CmdEatState(false);
+        }
+    }
+
     private IEnumerator DecreaseSize()
     {
         for (float s = foodSize; s >= minSize; s -= decreaseSpeed)
@@ -28,20 +42,19 @@ public class NetworkFood : NetworkBehaviour {
         }
     }
 
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (isServer)       // All size changes are done from the host side
-        {
+        if (eating)
             StartCoroutine("DecreaseSize");
-        }
+        else
+            StopCoroutine("DecreaseSize");
     }
 
+    [ServerCallback]
     private void OnTriggerExit(Collider other)
     {
-        if (isServer)
-        {
-            StopCoroutine("DecreaseSize");
-        }
+        StopCoroutine("DecreaseSize");
     }
 
     /// <summary> Changes size in other clients (host -> client) </summary>
@@ -49,5 +62,11 @@ public class NetworkFood : NetworkBehaviour {
     private void RpcChangeSize(float size)
     {
         transform.localScale = new Vector3(size, size, size);
+    }
+
+    [Command]
+    private void CmdEatState(bool eatState)
+    {
+        eating = eatState;
     }
 }

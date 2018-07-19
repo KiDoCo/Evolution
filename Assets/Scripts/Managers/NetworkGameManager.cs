@@ -176,9 +176,10 @@ public class NetworkGameManager : NetworkLobbyManager {
     {
         LobbyPlayer player = null;
 
+        // Finds the lobby player
         foreach (LobbyPlayer p in lobbySlots)
         {
-            if (p.playerControllerId == playerControllerId)
+            if (p.netId == conn.playerControllers[0].unetView.netId)
             {
                 player = p;
                 break;
@@ -191,8 +192,9 @@ public class NetworkGameManager : NetworkLobbyManager {
             return null;
         }
 
-        Debug.Log("Selected: " + player.CharacterSelected.name);
+        Debug.Log("Client " + conn.playerControllers[0].unetView.netId + " selected " + player.CharacterSelected.name);
 
+        // Spawns corresponding player prefab from spawnPrefabs
         GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelected.name));
 
         return spawnedPlayer;

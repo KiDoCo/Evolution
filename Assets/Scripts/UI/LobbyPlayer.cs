@@ -52,6 +52,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
 
         // Resets player UI
         readyText.SetActive(false);
+        characterDropdown.value = 0;
         characterSelectedText.text = characterDropdown.options[0].text;
 
         if (!isServer)
@@ -64,13 +65,14 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     {
         base.OnStartLocalPlayer();
 
-        // Resets ready state and button
+        // Resets UI
         SendNotReadyToBeginMessage();
         readyButtonText.SetActive(true);
         notReadyButtonText.SetActive(false);
         readyButton.SetActive(true);
         characterDropdown.gameObject.SetActive(true);
         characterSelectedText.gameObject.SetActive(false);
+        UIManager.Instance.HideCursor(false);
 
         if (NetworkGameManager.Instance != null)
         {
@@ -140,7 +142,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     {
         playerType = type;
         characterSelectedText.text = characterDropdown.options[playerType].text;
-        Debug.Log("Value changed in client to " + type);
     }
 
     // Sends player name to server
@@ -155,6 +156,5 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     public void CmdChangePlayerType(int type)
     {
         playerType = type;
-        Debug.Log("Value changed in Cmd to " + type);
     }
 }

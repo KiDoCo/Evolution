@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -74,20 +73,27 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene)
         {
-            PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
 
-            if (PauseMenu.Instance.UI.activeSelf)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                if (PauseMenu.Instance.UI.activeSelf)
+                {
+                    HideCursor(false);
+                }
+                else
+                {
+                    HideCursor(true);
+                }
             }
         }
+    }
+
+    public void HideCursor(bool hide)
+    {
+        Cursor.lockState = hide ? CursorLockMode.Locked : CursorLockMode.None; 
+        Cursor.visible = !hide;
     }
 }
