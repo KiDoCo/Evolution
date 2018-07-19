@@ -19,13 +19,9 @@ public abstract class Character : MonoBehaviour
 
     protected float velocity;
     protected float restrictAngle = Mathf.Abs(80);
-    
-    
-    
-    
+     
     //script reference
     [HideInInspector] public CameraController camerascript;
-
 
     //bools
     protected bool isMoving;
@@ -37,25 +33,18 @@ public abstract class Character : MonoBehaviour
     public bool isMovingVertical; // --"--
     public bool isMovingForward;
 
-
     //ability unlock bools used in editor
     [SerializeField] protected bool canBarrellRoll;
     [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
     
-
     //timer bools
     [SerializeField] protected bool timerStart;
     [SerializeField] protected bool coolTimer;
     //timer values
     [SerializeField] protected float dashTime = 6f;
     [SerializeField] protected float coolTime = 6f;
-
-  
-
-
-
 
     protected float health = 100;
     protected float experience = 0;
@@ -74,15 +63,29 @@ public abstract class Character : MonoBehaviour
     private AudioSource musicSource;
     private AudioSource SFXsource;
     protected GameObject cameraClone;
-   
-    private Vector3 moveDirection;
-    private Vector3 surfaceNormal;
-    private Vector3 capsuleNormal;
-    private Vector3 colDirection;
-    private Vector3 colNormal;
-    private Vector3 colPoint;
+
     private CapsuleCollider col;
     private bool collided = false;
+    private bool canMove = true;
+    private bool bothSidesCol = false;
+    private bool grounded = false;
+    private Vector3 dir;
+    private Vector3 curNormal = Vector3.up;
+    private Vector3 curRight = Vector3.right;
+    private Vector3 curLeft = Vector3.left;
+    private Vector3 colPosition;
+    private Vector3 surfaceNormal = Vector3.up;
+    private Vector3 colPoint;
+    private RaycastHit hitDown;
+    private RaycastHit hitInfo;
+    public LayerMask ground;
+    private float Height = 0.3f;
+    public float HeightPadding = 0.05f;
+    public float MaxGroundAngle = 120f;
+    private float step;
+    private float groundAngle;
+    private float smooth;
+    private int i = 0;
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -277,7 +280,6 @@ public abstract class Character : MonoBehaviour
         if (!eating)
         {
             transform.Translate(MovementInputVector);
-
         }
     }
 
@@ -323,7 +325,7 @@ public abstract class Character : MonoBehaviour
     }
     protected virtual void Dash() // sprint for herbivores
     {
-        if (canDash)
+        if (canDash && isMoving)
         {
             Vector3 inputVectorX = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Dash") * dashSpeed * Time.deltaTime);
             transform.Translate(inputVectorX);
@@ -339,9 +341,7 @@ public abstract class Character : MonoBehaviour
                 //StopCoroutine(DashTimer());
             }
         }
-    }
-
-    
+    }  
 
     public IEnumerator DashTimer() //used in Dash();
     {
@@ -364,10 +364,170 @@ public abstract class Character : MonoBehaviour
         canDash = true;
 
     }
-    
 
-   
-   
+    /// <summary>
+    /// Checks if player can move in wanted direction
+    /// returns true if there is not another bject's collider in way
+    /// and false if player would collide with another collider
+    /// </summary>
+    private void CheckCollision()
+    {
+        collided = false;
+        canMove = true;
+        float castDistance;
+        if (isDashing)
+        {
+            smooth = dashSpeed;
+            castDistance = (MovementInputVector * dashSpeed).magnitude;
+            print("castdistance when dashing: " + castDistance);
+        }
+        else
+        {
+            smooth = speed;
+            castDistance = 0.3f;
+        }
+
+        //initialize rays
+        Ray rayForward = new Ray(transform.position, transform.forward);
+        Ray rayBack = new Ray(transform.position, -transform.forward);
+        Ray rayUp = new Ray(transform.position, transform.up);
+        Ray rayDown = new Ray(transform.position, -transform.up);
+        Ray rayRight = new Ray(transform.position, transform.right);
+        Ray rayLeft = new Ray(transform.position, -transform.right);
+
+        //calculating and setting points and distances for capsule cast (and rays)
+        float distanceToPoints = col.height / 2 - col.radius;
+        Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
+        Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
+        float radius = col.radius;
+        Height = col.height;
+
+        //shoot capsuleCast
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, Height + HeightPadding, dir, castDistance * smooth, ground);
+
+        // check al collisions for their type and move of not accordingly
+        foreach (RaycastHit objectHit in hits)
+        {
+            if (Physics.Raycast(rayDown, out hitInfo, castDistance + 2.5f))
+            {
+                grounded = true;
+                colPoint = hitInfo.point;
+                print("ground");
+                //check if ground angle allows movement
+                if (groundAngle < MaxGroundAngle)
+                {
+                    if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
+                    {
+                        print(groundAngle);
+                        surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
+                    }
+
+                    //Rotate character according to ground angle
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), step);
+
+                    //check distance to 
+                    if (Vector3.Distance(transform.position, colPoint) < Height + HeightPadding)
+                    {
+                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Height, Time.fixedDeltaTime * 4);
+                        grounded = true;
+                    }
+                }
+            }
+            else
+            {
+                grounded = false;
+            }
+
+            //check direction and determinate angle for normal and colPoint
+            if (Physics.Raycast(rayForward, out hitInfo, (castDistance)) || Physics.Raycast(rayBack, out hitInfo, (castDistance)) || Physics.Raycast(rayUp, out hitInfo, castDistance) || Physics.Raycast(rayDown, out hitInfo, radius + HeightPadding))
+            {
+                print("front or up collision");
+                if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
+                {
+                    curNormal = objectHit.normal;
+                    colPoint = objectHit.point;
+                }
+                else
+                {
+                    curNormal = hitInfo.normal;
+                    colPoint = hitInfo.point;
+                }
+
+                collided = true;
+            }
+
+            //Check side collisions and if both sides collide turn canMove to false
+            if (Physics.Raycast(rayRight, out hitInfo, castDistance) || Physics.Raycast(rayLeft, out hitInfo,castDistance))
+            {
+                curNormal = hitInfo.normal;
+                colPoint = hitInfo.point;
+
+                if (Physics.Raycast(rayRight, (radius*0.05f)) && Physics.Raycast(rayLeft, (radius * 0.05f)))
+                {                  
+                    print("both sides collision");
+                    bothSidesCol = true;
+                    canMove = false;
+                }
+
+                // turn character at side collision for smoother movement
+                if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
+                {
+                    Vector3 targetDir = colPoint - transform.position;
+                    Vector3 newDirection = Vector3.Slerp(transform.forward, -targetDir, step);
+                    newDirection = Vector3.Slerp(transform.forward, newDirection, step);
+                    transform.rotation = Quaternion.LookRotation(newDirection);
+                }
+            }
+
+
+            //check if character can fit through caves etc. and if character collides head first
+            if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, (castDistance)) || Physics.CapsuleCast(point1, point2, radius, transform.up, out hitInfo, radius *0.2f) || Physics.CapsuleCast(point1, point2, radius, -transform.up, out hitInfo, radius))
+            {
+                print(groundAngle);
+                canMove = false;
+                curNormal = hitInfo.normal;
+                colPoint = hitInfo.point;
+                print("can't move");
+
+                if (!Physics.CapsuleCast(point1, point2, radius * 0.7f, transform.forward, out hitInfo, (radius)))
+                {
+                    canMove = true;                   
+                }
+
+
+                if (grounded)
+                {
+                    if (groundAngle < MaxGroundAngle)
+                        canMove = true;
+                    print("can move");
+                }
+            }
+            else
+            {
+                canMove = true;
+            }
+
+            //Keep character at given distance of colliding objects
+            if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
+            {
+                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius * 1.1f), step * Time.fixedDeltaTime);
+            }
+        }
+    }
+
+    /// <summary>
+    /// calculate ground angle 
+    /// </summary>
+    private void CalculateGroundAngle()
+    {
+        if (!collided)
+        {
+            groundAngle = 90;
+            return;
+        }
+        groundAngle = Vector3.Angle(dir, hitDown.normal);
+    }
+
 
     /// <summary>
     /// Reset z rotation to 0 every frame
@@ -416,19 +576,30 @@ public abstract class Character : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Cursor.lockState = CursorLockMode.None;
-        }
-
-       
+        }      
     }
 
     protected virtual void FixedUpdate()
     {
-
+        step = speed * Time.deltaTime;
         //Stabilize();
-       
-        Move();
-        BarrellRoll();
-        Dash();
+
+        dir = transform.TransformDirection(MovementInputVector);
+        CalculateGroundAngle();
+        CheckCollision();
+
+        if (collided || !canMove)
+        {
+            canDash = false;
+            return;
+        }
+        else
+        {
+            canDash = true;
+            Move();
+            BarrellRoll();
+            Dash();
+        }
     }
    
 }

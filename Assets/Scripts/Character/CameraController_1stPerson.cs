@@ -66,7 +66,7 @@ public class CameraController_1stPerson : MonoBehaviour
         startcameraPos = cameraPos; //set camera default location
         if (target == null) Debug.LogError("Missing target to look at");
         Camera1st.fieldOfView = 60f;
-        Camera1st.cullingMask = 1 << 0; //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
+        Camera1st.cullingMask = (1 << 0 | 1<<15); //hide everything but default and ground layers, NEEDED to hide carnivore from camera, carnivore is in different layer;
 
     }
 

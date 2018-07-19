@@ -10,10 +10,12 @@ public class CameraController : MonoBehaviour
     public Transform target;
     public Transform pivotpoint;
     public Camera Camera3rd;
+    Transform camTrans;
+    LayerMask ground;
 
     //bools
     public bool FreeCamera;
-   
+
     //values
     Vector3 velocity = Vector3.one;
     [SerializeField] Vector3 cameraPos = new Vector3(0f, 0.2f, -2f);
@@ -26,11 +28,13 @@ public class CameraController : MonoBehaviour
     [SerializeField] protected float rotationSpeed = 2f; //camera rotation speed
     [SerializeField] protected float resetLerpValue = 5; // camera reset speed
 
-  
     //FOV
     public float FOVValue = 60f;
     [HideInInspector] public float m_FieldOfView = 60f;
 
+    public float DefZ;
+    private float curZ;
+    public float ZSpeed = 19;
 
     //reset point
     Vector3 resetPos = Vector3.zero;
@@ -56,12 +60,12 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-
         resetPos = cameraPos;
         m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
         distanceDamp = distanceDampValue;
         rotationalDamp = rotationalDampValue;
-
+        camTrans = this.transform;
+        curZ = DefZ;
     }
 
     void FixedUpdate()
@@ -69,7 +73,7 @@ public class CameraController : MonoBehaviour
         if (target == null) Debug.LogError("Camera needs a target");
 
         if (pivotpoint == null) Debug.LogError("Camera needs a pivotpoint to look at");
-        
+
         SetDampening();
         ControlCamera();
         SmoothFollow();
@@ -154,7 +158,7 @@ public class CameraController : MonoBehaviour
         transform.Rotate(0, 0, -z);
     }
 
-    
+
     void ControlCamera()// Camera input 
     {
 
@@ -172,13 +176,13 @@ public class CameraController : MonoBehaviour
 
             Quaternion camTurnAngleH = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * rotationSpeed, Vector3.up); //laske horisontaalinen liike
             Quaternion camTurnAngleV = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * rotationSpeed, Vector3.right);// laske vertikaalinen liike
-            
+
             //laske kulmat yhteen
-            Quaternion sum = camTurnAngleH * camTurnAngleV; 
+            Quaternion sum = camTurnAngleH * camTurnAngleV;
 
             //lisää summa cameran cameraPos arvoon
             cameraPos = sum * cameraPos;
-          
+
         }
         else if (!FreeCamera)
         {
@@ -193,4 +197,71 @@ public class CameraController : MonoBehaviour
             cameraPos = resetLoc;
         }
     }
+
+    private void HandlePivotPosition()
+    {
+        float targetZ = DefZ;
+
+        CameraCollision(DefZ, ref targetZ);
+
+        curZ = Mathf.Lerp(curZ, targetZ, Time.deltaTime * ZSpeed);
+        Vector3 temp = Vector3.zero;
+        temp.z = curZ;
+        camTrans.localPosition = temp;
+    }
+
+    private void CameraCollision(float targetZ, ref float actualZ)
+    {
+        float step = Mathf.Abs(targetZ);
+        int stepCount = 2;
+        float stepIncrement = step / stepCount;
+
+        RaycastHit hit;
+        Vector3 origin = pivotpoint.position;
+        Vector3 direction = -pivotpoint.position;
+
+        if (Physics.Raycast(origin, direction, out hit, step, ground))
+        {
+            float distance = Vector3.Distance(hit.point, origin);
+            actualZ = -(distance / 2);
+        }
+        else
+        {
+            for(int s = 0; s< stepCount; s++)
+            {
+                for(int i =0; i<4; i++)
+                {
+                    Vector3 dir = Vector3.zero;
+                    Vector3 secondOrigin = origin + (direction * s) * stepIncrement;
+
+                    switch(i)
+                    {
+                        case 0:
+                            dir = camTrans.right;
+                            break;
+                        case 1:
+                            dir = -camTrans.right;
+                            break;
+                        case 2:
+                            dir = camTrans.up;
+                            break;
+                        case 3:
+                            dir = -camTrans.up;
+                            break;
+                    }
+
+                    if(Physics.Raycast(secondOrigin, dir, out hit, 0.5f, ground))
+                    {
+                        float distance = Vector3.Distance(secondOrigin, origin);
+                        actualZ = -(distance / 2);
+                        if (actualZ < 0.2f)
+                            actualZ = 0;
+                    }
+                }
+            }
+        }
+    }
+
+
+
 }
