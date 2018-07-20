@@ -10,15 +10,53 @@ public class Herbivore : Character
 
     Quaternion originZ;
     Quaternion currentZ;
-
-    //object references
-    [HideInInspector] public static Herbivore herbiv;
     public bool mouseInput;
 
+    protected float health = 2;
+    protected float experience = 0;
+    private const float healthMax = 2;
+    private const float waitTime = 1.0f;
+    private const float deathpenaltytime = 2.0f;
+
+    //timer values
+    [SerializeField] protected float dashTime = 6f;
+    [SerializeField] protected float coolTime = 6f;
+    [SerializeField] private float dashSpeed = 2.0f;
+
     Quaternion targetRotation;
+
     public Quaternion TargetRotation
     {
         get { return targetRotation; }
+    }
+
+    public float Maxhealth { get { return healthMax; } }
+    public float Health
+    {
+        get
+        {
+            return health;
+        }
+        set
+        {
+            health = value;
+            if (health <= 0)
+            {
+                Death();
+                health = Maxhealth;
+            }
+        }
+    }
+    public float Experience
+    {
+        get
+        {
+            return experience;
+        }
+        set
+        {
+            experience = Mathf.Clamp(value, 0, 100);
+        }
     }
 
     public void MouseMove()
@@ -35,6 +73,48 @@ public class Herbivore : Character
             mouseInput = false;
     }
 
+    protected virtual void Dash() // sprint for herbivores
+    {
+        if (canDash)
+        {
+            Vector3 inputVectorX = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Dash") * dashSpeed * Time.deltaTime);
+            transform.Translate(inputVectorX);
+            if (inputVectorX.magnitude != 0)
+            {
+                isDashing = true;
+
+                StartCoroutine(DashTimer());
+            }
+            else
+            {
+                isDashing = false;
+                //StopCoroutine(DashTimer());
+            }
+        }
+    }
+
+    protected virtual IEnumerator DashTimer() //used in Dash();
+    {
+        timerStart = true;
+        yield return new WaitForSeconds(dashTime);
+
+        canDash = false;
+        timerStart = false;
+        yield return StartCoroutine(CoolTimer());
+
+
+    }
+
+    protected virtual IEnumerator CoolTimer()
+    {
+        canDash = false;
+        coolTimer = true;
+        yield return new WaitForSeconds(coolTime);
+        coolTimer = false;
+        canDash = true;
+
+    }
+
 
     /// <summary>
     /// Checks for interaction when player enters the corals bounding box
@@ -49,10 +129,22 @@ public class Herbivore : Character
             }
         }
     }
+
     protected override void AnimationChanger()
     {
         m_animator.SetBool("IsEating", eating);
         m_animator.SetBool("IsMoving", isMoving);
+    }
+
+    protected  void Death()
+    {
+        Gamemanager.Instance.RespawnPlayer(this);
+    }
+
+    protected void TakeDamage(float amount)
+    {
+        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
+        Health -= amount;
     }
 
     /// <summary>
@@ -155,10 +247,16 @@ public class Herbivore : Character
         }
     }
 
+    public void GetEaten(float dmg)
+    {
+        TakeDamage(dmg);
+    }
+
     protected override void Awake()
     {
         base.Awake();
     }
+
     protected override void Start()
     {
         if (isLocalPlayer)
@@ -173,6 +271,7 @@ public class Herbivore : Character
             canTurn = true;
         }
     }
+
     protected override void Update()
     {
         if (isLocalPlayer)
@@ -182,7 +281,6 @@ public class Herbivore : Character
             UIManager.Instance.UpdateMatchUI(this);
         }
     }
-
 
     protected override void FixedUpdate()
     {
@@ -195,11 +293,6 @@ public class Herbivore : Character
             }
             ApplyMovement();
         }
-    }
-
-    public void GetEaten(float dmg)
-    {
-        TakeDamage(dmg);
     }
 
 }

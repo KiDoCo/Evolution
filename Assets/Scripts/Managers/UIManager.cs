@@ -44,7 +44,7 @@ public class UIManager : MonoBehaviour
         }
     }
     //Match UI
-    public void UpdateMatchUI(Character source)
+    public void UpdateMatchUI(Herbivore source)
     {
         HUDController.Instance.MaxHealth = (int)source.Maxhealth;
         HUDController.Instance.CurProgress = source.Experience;

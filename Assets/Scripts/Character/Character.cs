@@ -12,7 +12,6 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
     [SerializeField] protected float rotateSpeed = 2f;     //barrelroll speed
     [SerializeField] protected float strafeSpeed = 2f;     //carnivore strafe
-    [SerializeField] protected float dashSpeed = 20f;      //herbivore sprint
 
     //Movement variables
     [SerializeField] protected float maxSpeed = 10.0f;
@@ -26,17 +25,6 @@ public abstract class Character : NetworkBehaviour
     protected float restrictAngle = Mathf.Abs(80);
     public float turnSpeed = 2.0f;
     protected float defaultSpeed = 1.0f;
-
-    //timer values
-    [SerializeField] protected float dashTime = 6f;
-    [SerializeField] protected float coolTime = 6f;
-
-    //character stats
-    protected float health = 2;
-    protected float experience = 0;
-    private const float healthMax = 2;
-    private const float waitTime = 1.0f;
-    private const float deathpenaltytime = 2.0f;
 
     #endregion
 
@@ -65,10 +53,10 @@ public abstract class Character : NetworkBehaviour
     #endregion
 
     [SerializeField] protected GameObject cameraClone;
-    protected CameraController camerascript;
     protected Animator m_animator;
     private AudioSource musicSource;
     protected AudioSource SFXsource;
+
     //Movement vectors
     protected Vector3 Y;
     protected Vector3 X;
@@ -93,7 +81,7 @@ public abstract class Character : NetworkBehaviour
     //End variables
 
     #region Getter&Setter
-    public float Maxhealth { get { return healthMax; } }
+
     public float ForwardVelocity
     {
         get
@@ -106,33 +94,7 @@ public abstract class Character : NetworkBehaviour
             forwardVelocity = Mathf.Clamp(value, -maxSpeed, maxSpeed);
         }
     }
-    public float Health
-    {
-        get
-        {
-            return health;
-        }
-        set
-        {
-            health = value;
-            if (health <= 0)
-            {
-                Death();
-                health = Maxhealth;
-            }
-        }
-    }
-    public float Experience
-    {
-        get
-        {
-            return experience;
-        }
-        set
-        {
-            experience = Mathf.Clamp(value, 0, 100);
-        }
-    }
+
     protected float Speed
     {
         get
@@ -161,20 +123,6 @@ public abstract class Character : NetworkBehaviour
             return inputVector;
         }
     }
-    #endregion
-
-    #region EventMethods
-
-    protected virtual void Death()
-    {
-        Gamemanager.Instance.RespawnPlayer(this);
-    }
-
-    protected virtual void TakeDamage(float amount)
-    {
-        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
-        Health -= amount;
-    }
 
     #endregion
 
@@ -191,7 +139,7 @@ public abstract class Character : NetworkBehaviour
     protected abstract void AnimationChanger();
 
     /// <summary>
-    /// Avoid control jerkiness with ristricting x rotation
+    /// Avoid control jerkiness with restricting x rotation
     /// </summary>
     protected virtual void Restrict()
     {
@@ -207,7 +155,6 @@ public abstract class Character : NetworkBehaviour
             value = limit2;
         return value;
     }
-
 
     protected virtual void BarrelRoll() //if needed 
     {
@@ -231,53 +178,9 @@ public abstract class Character : NetworkBehaviour
 
     }
 
-    protected virtual void Dash() // sprint for herbivores
-    {
-        if (canDash)
-        {
-            Vector3 inputVectorX = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Dash") * dashSpeed * Time.deltaTime);
-            transform.Translate(inputVectorX);
-            if (inputVectorX.magnitude != 0)
-            {
-                isDashing = true;
-
-                StartCoroutine(DashTimer());
-            }
-            else
-            {
-                isDashing = false;
-                //StopCoroutine(DashTimer());
-            }
-        }
-    }
-
     #endregion
 
-
-    protected virtual IEnumerator DashTimer() //used in Dash();
-    {
-        timerStart = true;
-        yield return new WaitForSeconds(dashTime);
-
-        canDash = false;
-        timerStart = false;
-        yield return StartCoroutine(CoolTimer());
-
-
-    }
-
-    protected virtual IEnumerator CoolTimer()
-    {
-        canDash = false;
-        coolTimer = true;
-        yield return new WaitForSeconds(coolTime);
-        coolTimer = false;
-        canDash = true;
-
-    }
-
-
-    protected bool CollisionCheck()
+    public bool CollisionCheck()
     {
         float distanceToPoints = col.height / 2 - col.radius;
 
@@ -343,18 +246,11 @@ public abstract class Character : NetworkBehaviour
     {
         accPerSec = maxSpeed / accTimeToMax;
         decPerSec = -maxSpeed / decTimeToMin;
-        //Cursor lock state and quaterions
-        Cursor.lockState = CursorLockMode.Locked;
-
         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
         ForwardMovement();
         UpwardsMovement();
         SidewayMovement();
@@ -364,8 +260,6 @@ public abstract class Character : NetworkBehaviour
     {
         Restrict();
         Stabilize();
-
-        // BarrelRoll();
     }
 
     #endregion

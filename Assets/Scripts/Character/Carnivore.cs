@@ -6,53 +6,92 @@ using UnityEngine;
 public class Carnivore : Character
 {
 
-    [SerializeField] protected bool canCharge;
-    [SerializeField] protected float chargeSpeed = 50f;
-    [SerializeField] new GameObject camera;
     [SerializeField] protected bool canMouseMove = true;
-    [SerializeField] protected float chargeTime = 2f;
-    [SerializeField] protected float chargeCoolTime = 6f;
-    public bool IsCharging;
+
+    //character stats
     public float stamina;
     private bool isEating;
-    private bool isCharging;
     private const float staminaValue = 20.0f;
-    private Vector3 inputStrafeZ;
 
+    #region Charge Variables
 
-    public Vector3 InputStrafeZ
+    //Charge
+    [SerializeField] private float coolDownTime;
+    [SerializeField] private float chargeTime = 4;
+    private Camera playerCam;
+    private float defaultFov;
+    private bool onCooldown = false;
+    private bool hitTarget = false;
+    private bool charging = false;
+    private float momentumTimer = 0;
+    private float speed;
+
+    #endregion
+
+    #region Eat Variables
+    //Eat
+    [SerializeField] private float eatCooldown;
+    [SerializeField] private float xpReward;
+    [SerializeField] private float damage;
+    [SerializeField] [Range(0, 1)] private float slowDown;
+
+    #endregion
+
+    private float FieldOfView
     {
         get
         {
-            return inputStrafeZ;
+            return playerCam.fieldOfView;
+        }
+        set
+        {
+            playerCam.fieldOfView = Mathf.Clamp(value, 60f, 90f);
         }
     }
 
-
-
+    //methods
 
     protected override void AnimationChanger()
     {
         m_animator.SetBool("IsMoving", isMoving);
         m_animator.SetBool("IsEating", isEating);
-        m_animator.SetBool("IsCharging", isCharging);
+        m_animator.SetBool("IsCharging", charging);
     }
 
+    #region EatMethods
 
-    protected override void ApplyMovement()
+    private void EatChecker()
     {
-        inputVector = X + Y + Z;
-        transform.Translate(inputVector);
+        for (int i = 0; i < Gamemanager.Instance.HerbivorePrefabs.ToArray().Length; i++)
+        {
+            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
+            {
+                Eat(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
+            }
+        }
     }
 
-    protected override void BarrelRoll()
+    private void Eat(Character col)
     {
+        if (col.GetType() == typeof(Herbivore))
+        {
+            Herbivore vor = col as Herbivore;
+            Debug.Log("mums, mums....");
+            StartCoroutine(EatCoolDown());
+            EatHerbivore(xpReward, slowDown);
+            vor.GetEaten(damage);
+        }
     }
 
-    protected override void SidewayMovement()
+    private IEnumerator EatCoolDown()
     {
-        X = new Vector3(1, 0, 0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
+        yield return new WaitForSeconds(eatCooldown);
+        RestoreSpeed();
     }
+
+    #endregion
+
+    #region MovementMethods
 
     /// <summary>
     /// Inputs for rotating with the mouse
@@ -61,8 +100,8 @@ public class Carnivore : Character
     {
         if (!canMouseMove) return;
 
-        float v = verticalSpeed * Input.GetAxis("Mouse Y");
-        float h = horizontalSpeed * Input.GetAxis("Mouse X");
+        float v = charging ? verticalSpeed / 10 * Input.GetAxis("Mouse Y") : verticalSpeed * Input.GetAxis("Mouse Y");
+        float h = charging ? horizontalSpeed / 10 * Input.GetAxis("Mouse X") : horizontalSpeed * Input.GetAxis("Mouse X");
 
         if (v != 0 || h != 0)
         {
@@ -73,10 +112,16 @@ public class Carnivore : Character
         transform.Rotate(v, h, 0);
     }
 
+    protected override void SidewayMovement()
+    {
+        X = new Vector3(1, 0, 0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
+    }
+
     protected override void UpwardsMovement()
     {
         Y = InputManager.Instance.GetAxis("Altitude") * Vector3.up * rotateSpeed * Time.deltaTime;
     }
+
     protected override void ForwardMovement()
     {
 
@@ -95,134 +140,173 @@ public class Carnivore : Character
             ForwardVelocity = Mathf.SmoothStep(ForwardVelocity, 0, -decPerSec);
         }
 
-        Debug.Log(ForwardVelocity);
         Z = (Vector3.forward * ForwardVelocity) * Time.deltaTime;
 
     }
 
+    protected override void ApplyMovement()
+    {
+        inputVector = X + Y + Z;
+        transform.Translate(inputVector);
+    }
 
-    /// <summary>
-    /// IN TESTING
-    /// </summary>
+    #endregion
+
+    #region ChargeMethods
+
     private void Charge()
     {
-
-        if (canCharge) //ability check
+        if (InputManager.Instance.GetButton("Ability"))
         {
-            if (!IsCharging)
-            {
-                canMouseMove = true;
-                // CameraController_1stPerson.cam1.m_FieldOfView = CameraController_1stPerson.cam1.FOVValue; //reset CAM FOV in camerascipt
-            }
+            Charge(10);
+        }
 
-            if (IsCharging) // put down mousecontrols when charging
-            {
-                canMouseMove = false;
-                // CameraController_1stPerson.cam1.m_FieldOfView += 60f;
-            }
-
-            if (Input.GetKeyDown(KeyCode.LeftShift)) //charge function
-            {
-
-                Vector3 inputVectorX = new Vector3(0, 0, chargeSpeed) * Time.deltaTime;
-                transform.Translate(inputVectorX);
-                if (inputVectorX.magnitude != 0)
-                {
-                    IsCharging = true;
-                    isMoving = true;
-                    StartCoroutine(ChargeTimer());
-                }
-            }
-            else
-            {
-                IsCharging = false;
-                StopAllCoroutines();
-            }
+        if (charging)
+        {
+            momentumTimer += Time.deltaTime;
         }
         else
         {
-            isCharging = false;
-            StopAllCoroutines();
+            if(momentumTimer != 0)
+            momentumTimer = 0;
+        }
+        GetComponent<Carnivore>().Z += (Vector3.forward * momentumTimer * speed) * Time.deltaTime;
+    }
+
+    public void Charge(float speed)
+    {
+        if (onCooldown)
+        {
+            return;
+        }
+        else
+        {
+            StartCoroutine(ChargeForward(speed));
+            StartCoroutine(ChargeCooldown());
+            charging = true;
         }
     }
 
+    private IEnumerator ChargeForward(float ass)
+    {
+        speed = ass;
+        while (momentumTimer < chargeTime || hitTarget)
+        {
+            Mathf.Lerp(playerCam.fieldOfView, playerCam.fieldOfView + 2 * momentumTimer, 10 * Time.deltaTime);
+            FieldOfView += momentumTimer;
+            for (int i = 0; i < Gamemanager.Instance.HerbivorePrefabs.ToArray().Length; i++)
+            {
+                if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
+                {
+                    HitCheck(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
+
+                }
+            }
+            yield return null;
+        }
+        charging = false;
+        hitTarget = false;
+        yield return RestoreFov();
+
+    }
+
+    private IEnumerator RestoreFov()
+    {
+        while (playerCam.fieldOfView > defaultFov + 2)
+        {
+            FieldOfView = Mathf.Lerp(playerCam.fieldOfView, defaultFov, Time.deltaTime);
+            yield return null;
+        }
+        FieldOfView = defaultFov;
+    }
+
+    private IEnumerator ChargeCooldown()
+    {
+        onCooldown = true;
+        charging = true;
+        yield return new WaitForSeconds(coolDownTime);
+        onCooldown = false;
+    }
+
+    private void HitCheck(Character herb)
+    {
+        if (herb.GetType() == typeof(Herbivore) && charging)
+        {
+            Herbivore vor = herb as Herbivore;
+            Debug.Log("charge");
+            if ((momentumTimer / chargeTime) >= 0.4f)
+            {
+                Debug.Log("Kill herbivore");
+                //Kill target
+                vor.gameObject.GetComponent<Herbivore>().GetEaten(500);
+            }
+            else
+            {
+                Debug.Log("Hurt herbivore");
+                //1 damage
+                vor.gameObject.GetComponent<Herbivore>().GetEaten(1);
+            }
+            hitTarget = true;
+        }
+        else if (GetComponent<Carnivore>().CollisionCheck() && charging)
+        {
+            Debug.Log("osu");
+            hitTarget = true;
+            //Stun for 1.5s
+        }
+    }
+
+    #endregion
+
     public void EatHerbivore(float xp, float slow)
     {
-        speed *= slow;
-        Experience += xp;
+        defaultSpeed *= slow;
     }
 
     public void RestoreSpeed()
     {
-        speed = SpeedValue;
-    }
-
-    public IEnumerator ChargeTimer() //Charge uses this
-    {
-        timerStart = true;
-        yield return new WaitForSeconds(chargeTime);
-
-        canCharge = false;
-        canMouseMove = false;
-        timerStart = false;
-        yield return StartCoroutine(CoolTimer());
-
-
+        defaultSpeed = 1.0f;
     }
 
     protected override void Awake()
     {
         base.Awake();
-
     }
 
     protected override void Start()
     {
-        if (!isLocalPlayer) return;
-        base.Start();
-        m_animator = gameObject.GetComponent<Animator>();
-        stamina = staminaValue;
-        cameraClone = Instantiate(cameraClone);
-        cameraClone.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
-        cameraClone.name = "FollowCamera";
-        UIManager.Instance.InstantiateInGameUI(this);
+        if (isLocalPlayer)
+        {
+            base.Start();
+            m_animator = gameObject.GetComponent<Animator>();
+            stamina = staminaValue;
+            cameraClone = Instantiate(cameraClone);
+            cameraClone.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
+            cameraClone.name = "FollowCamera";
+            UIManager.Instance.InstantiateInGameUI(this);
+            playerCam = GetComponent<Carnivore>().CameraClone.GetComponent<Camera>();
+            defaultFov = playerCam.fieldOfView;
+            slowDown = 1 - slowDown;
+        }
     }
 
     protected override void Update()
     {
-        if (!isLocalPlayer) return;
-        base.Update();
-
-        if (stamina > 0)
+        if (isLocalPlayer)
         {
-            canDash = true;
-        }
 
-        else if (stamina <= 0)
-        {
-            canDash = false;
-            dashSpeed = Speed;
+            base.Update();
+            Charge();
+            EatChecker();
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                isEating = true;
+            }
+            else
+            {
+                isEating = false;
+            }
         }
-
-
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            isEating = true;
-        }
-        else
-        {
-            isEating = false;
-        }
-
-        if (Input.GetKey(KeyCode.T))
-        {
-            isCharging = true;
-        }
-        else
-        {
-            isCharging = false;
-        }
-
     }
 
     protected override void FixedUpdate()
@@ -230,10 +314,8 @@ public class Carnivore : Character
         if (isLocalPlayer)
         {
             base.FixedUpdate();
-            Dash();
             MouseMove();
             AnimationChanger();
-            Charge();
             ApplyMovement();
         }
     }

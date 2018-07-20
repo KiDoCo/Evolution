@@ -68,6 +68,19 @@ public class Gamemanager : NetworkBehaviour
         }
     }
 
+    public List<GameObject> HerbivorePrefabs
+    {
+        get
+        {
+            return herbivorePrefabs;
+        }
+
+        set
+        {
+            herbivorePrefabs = value;
+        }
+    }
+
     #endregion
 
     //Methods
@@ -113,7 +126,7 @@ public class Gamemanager : NetworkBehaviour
     /// <param name="player"></param>
     /// <returns></returns>
 
-    private IEnumerator Respawn(Character player)
+    private IEnumerator Respawn(Herbivore player)
     {
         player.gameObject.SetActive(false);
         yield return new WaitForSeconds(deathPenaltyTime);
@@ -179,7 +192,7 @@ public class Gamemanager : NetworkBehaviour
     /// Checks if the player can be spawned
     /// </summary>
     /// <param name="player"></param>
-    public void RespawnPlayer(Character player)
+    public void RespawnPlayer(Herbivore player)
     {
         if (lifeCount > 0)
         {
@@ -212,13 +225,13 @@ public class Gamemanager : NetworkBehaviour
 
         for (int i = 0; i < Htemp.Count; i++)
         {
-            herbivorePrefabs.Add(Htemp[i]);
+            HerbivorePrefabs.Add(Htemp[i]);
         }
         Ctemp.Clear();
         Htemp.Clear();
 
         Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
-        Debug.Log("Herbivores loaded: " + herbivorePrefabs.Count);
+        Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
     }
 
     public void LoadGame()

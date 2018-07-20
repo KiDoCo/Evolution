@@ -23,7 +23,6 @@ public class CameraController_1stPerson : MonoBehaviour
     [SerializeField] protected float fastRotationDamp = 1000;
 
 
-    private float m_FieldOfView;
     public const float FOVValue = 75.0f;
 
 
@@ -56,8 +55,8 @@ public class CameraController_1stPerson : MonoBehaviour
         rotationalDamp = rotationalDampValue; // --"--
 
 
-        m_FieldOfView = FOVValue; // set camera Field of view to fixed value
         startcameraPos = cameraPos; //set camera default location
+        
         Camera1st.fieldOfView = 60f;
         //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
         Camera1st.cullingMask = 1 << 0; 
@@ -70,14 +69,13 @@ public class CameraController_1stPerson : MonoBehaviour
         SetDampening(); //this has to be first
         FollowRot();
         Stabilize();
-        CameraFOV();
 
 
     }
 
     public void InstantiateCamera(Character test)
     {
-        if (test.isLocalPlayer)
+        //if (test.isLocalPlayer)
         {
             Target = test.transform;
         }
@@ -106,7 +104,7 @@ public class CameraController_1stPerson : MonoBehaviour
 
         //Rotation
         //HUOM!!!! vaihda  tämän rivin koodissa transform.positionin ja target positionin +-merkit, jos cameraPos:in z asetetaan uudestaan editorissa positiiviseen arvoon :O
-        Quaternion toRot = Quaternion.LookRotation(transform.position - target.position, target.up); 
+        Quaternion toRot = Quaternion.LookRotation(transform.position - target.position + new Vector3(0,-0.2f,0), target.up); 
 
         Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
         transform.rotation = curRot;
@@ -128,26 +126,6 @@ public class CameraController_1stPerson : MonoBehaviour
     public void ResetCamera() //back to original fixed cameraPos point
     {
         cameraPos = startcameraPos;
-    }
-
-    /// <summary>
-    /// changing camera FOV with F key (in testing)
-    /// </summary>
-    public void CameraFOV()
-    {
-        if (Input.GetKey(KeyCode.F)) //|| target.GetComponent<Carnivore2>().isDashing) // if carnie is charging, FOV increases to make "cool" effect
-        {
-            Debug.Log("FOV");
-            m_FieldOfView = 90f;
-            Camera1st.fieldOfView = m_FieldOfView;
-        }
-        else 
-        {
-            m_FieldOfView = FOVValue; //reset camera FOV default
-            Camera1st.fieldOfView = m_FieldOfView;
-        }
-
-
     }
 
     /// <summary>

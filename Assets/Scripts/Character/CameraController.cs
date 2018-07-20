@@ -34,7 +34,6 @@ public class CameraController : MonoBehaviour
     public float minXRotation = -85;
     public float vOrbitSmooth = 150;
     public float hOrbitSmooth = 150;
-    float vOrbitInput, hOrbitInput;
 
     //FOV
     public float FOVValue = 60f;
@@ -75,6 +74,7 @@ public class CameraController : MonoBehaviour
 
             //find clippoint coordinates with relation to our camera position
             float z = camera.nearClipPlane;
+
             // "cushion" between cameras position and collision
             float x = Mathf.Tan(camera.fieldOfView / 3.41f) * z;
             float y = x / camera.aspect;
@@ -185,8 +185,8 @@ public class CameraController : MonoBehaviour
 
     void GetInput()
     {
-        vOrbitInput = Input.GetAxisRaw("Mouse X");
-        hOrbitInput = Input.GetAxisRaw("Mouse Y");
+        Input.GetAxisRaw("Mouse X");
+        Input.GetAxisRaw("Mouse Y");
     }
 
     void OrbitTarget() //restict camera angle
@@ -230,9 +230,11 @@ public class CameraController : MonoBehaviour
     public void CameraPlaceOnDeath(Character test)
     {
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
-    }    /// <summary>
-         /// Checks if target is backing up or changing altitude, then changes camera values
-         /// </summary>
+    }
+
+    /// <summary>
+    /// Checks if target is backing up or changing altitude, then changes camera values
+    /// </summary>
     void SetDampening()
     {
         if (target.GetComponent<Herbivore>().InputVector.y < 0)
