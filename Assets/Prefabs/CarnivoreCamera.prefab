@@ -24,7 +24,6 @@ GameObject:
   - component: {fileID: 81421864330589394}
   - component: {fileID: 114111424429189472}
   - component: {fileID: 114540255015382484}
-  - component: {fileID: 114187430326988594}
   m_Layer: 0
   m_Name: CarnivoreCamera
   m_TagString: Untagged
@@ -100,20 +99,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 982aae529381c164ca28fdce0f2120b7, type: 2}
---- !u!114 &114187430326988594
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1824946988335758}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02b65c1eccb9ce34092a6a48ebcc3c65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Character: {fileID: 0}
-  offset: {x: 0, y: 2, z: -7}
-  rotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &114540255015382484
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -125,13 +110,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4be9ea4337ee2654b802643b6cbbb7c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultDistance: {x: 0, y: 0.5, z: -2}
+  target: {fileID: 0}
+  offset: {x: 0, y: 2, z: -10}
   distanceDamp: 0.15
+  distanceDampValue: 0.4
+  distanceDampValueB: 0.02
+  distanceDampValueV: 0.02
   rotationalDamp: 10
+  rotationalDampValue: 5
   velocity: {x: 0, y: 0, z: 0}
-  freeCamera: 0
-  speedH: 2
-  speedV: 2
+  RotationsSpeed: 2
+  FreeCamera: 0
+  Camera3rd: {fileID: 0}
+  reset: 0
+  Herbivorescript: {fileID: 0}
+  FOVValue: 60
+  m_FieldOfView: 60
 --- !u!124 &124295382332995030
 Behaviour:
   m_ObjectHideFlags: 1
