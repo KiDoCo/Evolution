@@ -11,6 +11,7 @@ public class Gamemanager : NetworkBehaviour
 {
     //Ingnore pragmas for unnecessary warnings
 #pragma warning disable
+
     public static Gamemanager Instance;
 
     //Match variables
@@ -96,20 +97,35 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private IEnumerator StartMatch()
     {
-        if (!isServer) yield return null;
+        if (!isServer)
+        {
+            ClientScene.RegisterPrefab(foodsources[0]);
+            ClientScene.RegisterPrefab(BerryPrefab);
+            for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
+            {
+                Destroy(FoodSpawnPointList[a].gameObject);
+            }
+            EventManager.Broadcast(EVENT.DoAction);
+            yield break;
+        }
+
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
 
+        for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
+        {
+            Destroy(FoodSpawnPointList[a].gameObject);
+        }
         lifeCount = maxLifeCount;
 
         MatchTimer = startingMatchTimer * minutesToSeconds;
 
-        SpawnFoodSources();
-
+        yield return SpawnFoodSources();
         EventManager.Broadcast(EVENT.DoAction);
         FoodSpawnPointList.Clear();
         deathCameraPlace = new GameObject();
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
         yield return matchTimer;
+
     }
 
     /// <summary>
@@ -155,30 +171,29 @@ public class Gamemanager : NetworkBehaviour
         player.gameObject.SetActive(false);
     }
 
+    /// <summary>
     /// Spawns the sources to the environment
     /// </summary>
-    private void SpawnFoodSources()
+    private IEnumerator SpawnFoodSources()
     {
-        //search every spawnpoint for foodsources
-        for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
-        {
-            FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
-        }
-        for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
-        {
-            GameObject clone = Instantiate(foodsources[0], FoodSpawnPointList[i].position, Quaternion.identity);
-            for (int a = 0; a < clone.transform.GetChild(0).transform.childCount; i++)
-            {
-                NetworkServer.Spawn(clone.transform.GetChild(0).transform.GetChild(a).gameObject);
-            }
-            clone.name = foodSourceName + i;
-        }
-        for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
-        {
-            Destroy(FoodSpawnPointList[a].gameObject);
-        }
+        while (!NetworkServer.active && !NetworkServer.localClientActive) yield return null;
 
+        if (isServer)
+        {
+            for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
+            {
+                FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
+            }
+            for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
+            {
+                GameObject clone = Instantiate(foodsources[0], FoodSpawnPointList[i].position, Quaternion.identity);
+                NetworkServer.Spawn(clone);
+                clone.name = foodSourceName + i;
+            }
+        }
+        yield return 1;
     }
+
 
     /// <summary>
     /// Checks if the player can be spawned
@@ -250,7 +265,6 @@ public class Gamemanager : NetworkBehaviour
     {
         LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
-        EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
         SceneManager.LoadSceneAsync("Menu");
     }
 

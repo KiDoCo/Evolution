@@ -73,7 +73,7 @@ public class Herbivore : Character
 
     #region dash
 
-    protected virtual void Dash() // sprint for herbivores
+    protected void Dash() // sprint for herbivores
     {
         if (canDash)
         {
@@ -93,14 +93,14 @@ public class Herbivore : Character
         }
     }
 
-    protected virtual IEnumerator DashTimer()
+    protected IEnumerator DashTimer()
     {
         yield return new WaitForSeconds(dashTime);
         canDash = false;
         yield return StartCoroutine(CoolTimer());
     }
 
-    protected virtual IEnumerator CoolTimer()
+    protected IEnumerator CoolTimer()
     {
         yield return new WaitForSeconds(coolTime);
         canDash = true;
@@ -118,6 +118,7 @@ public class Herbivore : Character
         {
             if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
             {
+
                 Eat(Gamemanager.Instance.FoodPlaceList[i]);
             }
         }
@@ -125,8 +126,8 @@ public class Herbivore : Character
 
     protected override void AnimationChanger()
     {
-        m_animator.SetBool("IsEating", eating);
-        m_animator.SetBool("IsMoving", isMoving);
+        m_animator.SetBool("isEating", eating);
+        m_animator.SetBool("isMoving", isMoving);
     }
 
     protected void Death()
@@ -147,7 +148,8 @@ public class Herbivore : Character
     private void Eat(GameObject go)
     {
         FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
-        if (eatObject == null || eatObject.AmountFood <= 0)
+
+        if (eatObject == null || eatObject.AmountOfFood <= 0)
         {
             eating = false;
         }
@@ -159,6 +161,7 @@ public class Herbivore : Character
                 Experience += eatObject.GetAmount();
                 CmdEat(go);
 
+
             }
             else
             {
@@ -167,6 +170,7 @@ public class Herbivore : Character
                 eatObject.Eaten = eating;
             }
         }
+
     }
 
     [Command]
@@ -180,11 +184,11 @@ public class Herbivore : Character
             eatObject.DecreaseFood(eatObject.FoodPerSecond * Time.deltaTime);
             StartCoroutine(eatObject.EatChecker());
             eatObject.CoolDownTime = 5.0f;
-
             if (!eatObject.Source().isPlaying)
             {
                 EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
             }
+
         }
     }
 
@@ -259,7 +263,7 @@ public class Herbivore : Character
         {
             base.Start();
             cameraClone = Instantiate(cameraClone);
-            cameraClone.GetComponent<CameraController>().target = this.transform;
+            cameraClone.GetComponent<CameraController>().InstantiateCamera(this);
             SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
             m_animator = gameObject.GetComponent<Animator>();
             UIManager.Instance.InstantiateInGameUI(this);
@@ -273,6 +277,7 @@ public class Herbivore : Character
         if (isLocalPlayer)
         {
             base.Update();
+            Dash();
             InteractionChecker();
             UIManager.Instance.UpdateMatchUI(this);
         }

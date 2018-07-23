@@ -8,7 +8,7 @@ using UnityEngine;
 public interface IEatable 
 {
     int MaxAmountFood { get;  set; }
-    float AmountFood { get;  set; }
+    float AmountOfFood { get;  set; }
     float FoodPerSecond { get; set; }
     float CoolDownTime { get; set; }
     bool Eaten { get; set; }

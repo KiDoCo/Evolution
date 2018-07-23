@@ -9,22 +9,23 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
 {
 
     //Food variables
-    private int         maxAmountFood     = 10;
+    private int maxAmountFood = 10;
     [SyncVar(hook = "CmdOnDecreaseFood")]
-    private float       amountOfFood      = 10;
-    private float       foodPerSecond     = 4.0f;
+    private float amountOfFood = 10;
+    private float foodPerSecond = 4.0f;
     private const float regenerationTimer = 2.0f;
-    private const float sizeMultiplier    = 1.5f;
-    private const float DefaultSize       = 2.0f;
-    private float       cooldownTime;      
-    private bool        isEatening        = false;
-    private bool        eaten;
+    private const float sizeMultiplier = 1.5f;
+    private const float DefaultSize = 2.0f;
+    private float cooldownTime;
+    private bool isEatening = false;
+    private bool eaten;
 
     //collider variables
-    private const float radiusMultiplier  = 1.5f;
-    private Collider    coralCollider;
+    private const float radiusMultiplier = 1.5f;
+    private Collider coralCollider;
     private AudioSource source;
-    private Vector3     originalPos;
+    private Vector3 originalPos;
+
     #region Getters&setters
     //interface properties
     public int MaxAmountFood
@@ -40,7 +41,7 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
         }
     }
 
-    public float AmountFood
+    public float AmountOfFood
     {
         get
         {
@@ -48,7 +49,7 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
         }
         set
         {
-            amountOfFood = Mathf.Clamp(value,0,maxAmountFood);
+            amountOfFood = Mathf.Clamp(value, 0, maxAmountFood);
         }
     }
 
@@ -111,7 +112,7 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
 
         set
         {
-            cooldownTime = Mathf.Clamp(value, 0 , 5);
+            cooldownTime = Mathf.Clamp(value, 0, 5);
         }
     }
 
@@ -154,14 +155,13 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
 
     public void DecreaseFood(float food)
     {
-        AmountFood -= food;
-        CmdSizeChanger();
+        AmountOfFood -= food;
     }
+
     public void CmdOnDecreaseFood(float food)
     {
         Debug.Log("ASDF");
-        food = amountOfFood;
-        CmdSizeChanger();
+        AmountOfFood = food;
     }
 
 
@@ -179,12 +179,26 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
     /// <summary>
     /// Changes the size depending on the food amount
     /// </summary>
-    public void CmdSizeChanger()
+    public void SizeChanger()
     {
-        if(AmountFood <= MaxAmountFood && amountOfFood > 0)
+        if (AmountOfFood <= MaxAmountFood && amountOfFood > 0)
         {
-            MathFunctions.BoxScaleObject(transform, transform.GetChild(0), originalPos, AmountFood / MaxAmountFood);
+            BoxScaleObject(transform, transform.GetChild(0), originalPos, AmountOfFood / MaxAmountFood);
         }
+
+    }
+    /// <summary>
+    /// Calculates the scaling of an box object which is a child 
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="transform"></param>
+    /// <param name="position"></param>
+    /// <param name="amount"></param>
+    public void BoxScaleObject(Transform parent, Transform transform, Vector3 position, float amount)
+    {
+        Vector3 scale = new Vector3(amount, amount, amount);
+        transform.localScale = Vector3.Lerp(scale, transform.localScale, Time.deltaTime / 1000);
+        transform.position = parent.position + (position * scale.y);
     }
 
     /// <summary>
@@ -214,6 +228,8 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
 
     public void Update()
     {
+        SizeChanger();
+
         CoolDownTime -= Time.deltaTime;
     }
 }

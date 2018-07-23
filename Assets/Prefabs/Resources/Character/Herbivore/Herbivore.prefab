@@ -283,9 +283,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4545756819794900}
-  - component: {fileID: 114136138898005116}
   m_Layer: 9
-  m_Name: Pivotpoint
+  m_Name: PivotPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -899,41 +898,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114136138898005116
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1761279140399184}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 135dc0f4c75f9254e93dd68288f4bd5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  verticalSpeed: 2
-  horizontalSpeed: 2
-  rotateSpeed: 2
-  strafeSpeed: 2
-  maxSpeed: 10
-  accTimeToMax: 1.5
-  decTimeToMin: 1
-  turnSpeed: 2
-  turning: 0
-  rolling: 0
-  isDashing: 0
-  isStrafing: 0
-  hasjustRolled: 0
-  coolTimer: 0
-  canBarrellRoll: 0
-  canStrafe: 0
-  canTurn: 0
-  canDash: 0
-  cameraClone: {fileID: 0}
-  Rotatingspeed: 0
-  mouseInput: 0
-  dashTime: 6
-  coolTime: 6
-  dashSpeed: 20
 --- !u!114 &114195918228129132
 MonoBehaviour:
   m_ObjectHideFlags: 1

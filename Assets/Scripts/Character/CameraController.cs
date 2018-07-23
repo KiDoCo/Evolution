@@ -64,6 +64,8 @@ public class CameraController : MonoBehaviour
             adjustedCameraClipPoints = new Vector3[5];
             desiredCameraClipPoints = new Vector3[5];
         }
+
+
         //get clip points and pass the values into array (Quaternion = cameras rotation)
         public void UpdateCameraClipPoints(Vector3 cameraPosition, Quaternion atRotation, ref Vector3[] intoArray)
         {
@@ -158,8 +160,6 @@ public class CameraController : MonoBehaviour
     {
         if (target == null) Debug.LogError("Camera needs a target");
 
-        if (pivotpoint == null) Debug.LogError("Camera needs a pivotpoint to look at");
-
         //testiä varten
         if (Input.GetKey(KeyCode.R))
         {
@@ -169,10 +169,8 @@ public class CameraController : MonoBehaviour
         SetDampening();
         ControlCamera();
         SmoothFollow();
-        //SmoothRotate();
         FollowRot2();
         Stabilize();
-        //OrbitTarget();
         Restrict();
     }
 
@@ -180,7 +178,8 @@ public class CameraController : MonoBehaviour
     public void InstantiateCamera(Character test)
     {
         Target = test.transform;
-        pivotpoint = Target.GetChild(3);
+        Debug.Log(Target);
+        pivotpoint = Target.Find("PivotPoint").transform;
     }
 
     void GetInput()
@@ -218,10 +217,6 @@ public class CameraController : MonoBehaviour
             transform.Rotate(-x, 0, 0);
         }
     }
-    protected void Restrict2()
-    {
-
-    }
 
     /// <summary>
     /// Sets the camera target to fixed point
@@ -237,11 +232,11 @@ public class CameraController : MonoBehaviour
     /// </summary>
     void SetDampening()
     {
-        if (target.GetComponent<Herbivore>().InputVector.y < 0)
+        if (target.GetComponent<Herbivore>().InputVector.normalized.y < 0)
         {
             distanceDamp = distanceDampValueB;
         }
-        else if (target.GetComponent<Herbivore>().InputVector.z != 0)
+        else if (target.GetComponent<Herbivore>().InputVector.normalized.z != 0)
         {
             distanceDamp = distanceDampValueV;
         }
@@ -264,19 +259,9 @@ public class CameraController : MonoBehaviour
         transform.LookAt(pivotpoint, target.up);
     }
 
-
-
-
-    void FollowRot()//Alternative camera rotate
+    void FollowRot2() //camera is looking position of the target with the offset!
     {
-        Quaternion toRot = Quaternion.LookRotation(target.position - transform.position, target.up);
-        Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
-        transform.rotation = curRot;
-    }
-
-    void FollowRot2() //camera is looking position of the target with the offset! no pivotpoint needed GOOD METHOD
-    {
-        targetPos = target.position + targetPosOffset; //välissä pivotpoint
+        targetPos = target.position + targetPosOffset; 
         Quaternion targetRotation = Quaternion.LookRotation(targetPos - transform.position, target.up);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lookSmooth * Time.deltaTime);
     }
@@ -289,7 +274,7 @@ public class CameraController : MonoBehaviour
 
     void ResetCamera()
     {
-        if (!FreeCamera) // || !target.GetComponent<Herbivore>().isMovingForward || target.GetComponent<Herbivore>().mouseInput)
+        if (!FreeCamera) 
         {
 
             Vector3 resetLoc = Vector3.Lerp(offset, startOffset, resetLerpValue * Time.deltaTime);
