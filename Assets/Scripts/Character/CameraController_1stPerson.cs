@@ -5,15 +5,10 @@ using UnityEngine;
 
 public class CameraController_1stPerson : MonoBehaviour
 {
-
-
-
-    //[SerializeField] Transform target;
-
     public Transform target;
 
     //values
-    [SerializeField] Vector3 offset = new Vector3(0f, 2f, -10f);
+    [SerializeField] Vector3 cameraPos = new Vector3(0f, -0.2f, -1f);
     [SerializeField] protected float distanceDamp = 10f;
     [SerializeField] protected float rotationalDamp = 10f;
     Vector3 velocity = Vector3.one;
@@ -21,32 +16,32 @@ public class CameraController_1stPerson : MonoBehaviour
     //fixed damp values (Set Dampening käyttää näitä)
     [SerializeField] protected float distanceDampValue = 0.025f;
     [SerializeField] protected float rotationalDampValue = 10f;
-    
-    [SerializeField] protected float fastDistanceDamp = 0.2f;
+
+    [SerializeField] protected float strafeDamp = 0.2f;
+    [SerializeField] protected float verticalDamp = 0.2f;
+    [SerializeField] protected float rotationYDamp = 12f;
     [SerializeField] protected float fastRotationDamp = 1000;
-    
-    
-    [HideInInspector] public float m_FieldOfView = 60f;
-    public float FOVValue = 30f;
 
-    
-    public Camera Camera1st;
 
-   
-   
+    public const float FOVValue = 75.0f;
+
+
+    private Camera Camera1st;
+
+
+
 
     //camera reset point
-    Vector3 startOffset = Vector3.zero;
+    Vector3 startcameraPos = Vector3.zero;
 
 
-#pragma warning restore
     Transform Target
     {
         get
         {
             return target;
         }
-    
+
         set
         {
             target = value;
@@ -55,115 +50,98 @@ public class CameraController_1stPerson : MonoBehaviour
 
     protected void Start()
     {
+        Camera1st = GetComponent<Camera>();
         distanceDamp = distanceDampValue; // reset damping values to fixed values
         rotationalDamp = rotationalDampValue; // --"--
 
-        m_FieldOfView = FOVValue; // set camera Field of view to fixed value
-        startOffset = offset; //set camera default location
-        if (target == null) Debug.LogError("Missing target to look at");
-        Camera1st.fieldOfView = 60f;
-        Camera1st.cullingMask = 1 << 0; //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
 
-        transform.position = target.position + (target.rotation * offset);
+        startcameraPos = cameraPos; //set camera default location
+        
+        Camera1st.fieldOfView = 60f;
+        //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
+        Camera1st.cullingMask = 1 << 0; 
+
     }
 
     public void FixedUpdate()
     {
 
-        if (target == null) return;
-
         SetDampening(); //this has to be first
         FollowRot();
         Stabilize();
-        CameraFOV();
-        
+
 
     }
+
     public void InstantiateCamera(Character test)
     {
-        Target = test.transform;
+        //if (test.isLocalPlayer)
+        {
+            Target = test.transform;
+        }
     }
 
-    
-
     /// <summary>
-    /// Follows target movement and rotation smoothly (using distanceDamp and rotationalDamp values, offset is camera distance from target)
+    /// Follows target movement and rotation smoothly (using distanceDamp and rotationalDamp values, cameraPos is camera distance from target)
     /// </summary>
     public void FollowRot()
     {
         //movement
-        Vector3 toPos = target.position - (target.rotation * offset);
+        Vector3 toPos = target.position - (target.rotation * cameraPos);
         Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
         transform.position = curPos;
 
         //Rotation
-        Quaternion toRot = Quaternion.LookRotation(-transform.position + target.position, target.up);
+        //HUOM!!!! vaihda  tämän rivin koodissa transform.positionin ja target positionin +-merkit, jos cameraPos:in z asetetaan uudestaan editorissa positiiviseen arvoon :O
+        Quaternion toRot = Quaternion.LookRotation(transform.position - target.position + new Vector3(0,-0.2f,0), target.up); 
+
         Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
         transform.rotation = curRot;
-        
+
     }
+
 
     /// <summary>
     /// Needed to stabilize camera
     /// </summary>
     public void Stabilize()
     {
-
         float z = transform.eulerAngles.z;
         //Debug.Log(z);
         transform.Rotate(0, 0, -z);
-
     }
 
-   
-    public void ResetCamera() //back to original fixed offset point
+
+    public void ResetCamera() //back to original fixed cameraPos point
     {
-        offset = startOffset;
-    }
-
-    /// <summary>
-    /// changing camera FOV with F key (in testing)
-    /// </summary>
-    public void CameraFOV()
-    {
-        if (Input.GetKeyDown(KeyCode.F)) //|| target.GetComponent<Carnivore2>().isDashing) // if carnie is charging, FOV increases to make "cool" effect
-        {
-            Debug.Log("FOV");
-            m_FieldOfView = 90f;
-            Camera1st.fieldOfView = m_FieldOfView;
-        }
-        if (Input.GetKeyUp(KeyCode.F))
-        {
-            m_FieldOfView = FOVValue; //reset camera FOV default
-            Camera1st.fieldOfView = m_FieldOfView;
-        }
-
-
+        cameraPos = startcameraPos;
     }
 
     /// <summary>
     /// Camera follows more stricktly when doing these things
     /// </summary>
-    public void SetDampening() 
+    public void SetDampening()
     {
-        if (target.GetComponent<Carnivore>().isStrafing) 
+        if (target.GetComponent<Carnivore>().InputVector.x != 0)
         {
-            distanceDamp = 0;
-            
+            distanceDamp = strafeDamp;
+
         }
-        else if (target.GetComponent<Carnivore>().isMovingVertical)
+
+        else if (target.GetComponent<Carnivore>().InputVector.y != 0)
         {
-            distanceDamp = 0;
+            distanceDamp = verticalDamp;
         }
-        else if (target.GetComponent<Carnivore>().isReversing)
+
+        else if (target.GetComponent<Carnivore>().InputVector.y < 0 || target.GetComponent<Carnivore>().InputVector.y > 0)
         {
-            distanceDamp = 0;
+            distanceDamp = distanceDampValue;
         }
-        else if (target.GetComponent<Carnivore>().isMovingForward)
-        {
-            distanceDamp = 0;
-        }
-        else 
+        // else if (target.GetComponent<Carnivoremove>().rotationY)
+        // {
+        //     rotationalDamp = rotationYDamp;
+        //  }
+        else
             distanceDamp = distanceDampValue;
 
     }

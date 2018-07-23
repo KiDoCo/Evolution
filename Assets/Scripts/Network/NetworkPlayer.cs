@@ -38,9 +38,7 @@ public class NetworkPlayer : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            // Spawn camera
-			
-            UIManager.Instance.InstantiateInGameUI();
+            // Spawn camera and activate player HUD
         }
     }
 }

@@ -14,9 +14,8 @@ public interface IEatable
     bool Eaten { get; set; }
     bool IsEatening { get; set; }
     float GetAmount();
-    void SizeChanger();
     void Awake();
-    void DecreaseFood();
     Collider GetCollider();
     AudioSource Source();
+    object GetInstance { get; set; } 
 }

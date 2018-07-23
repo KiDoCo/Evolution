@@ -5,32 +5,22 @@ using UnityEngine.UI;
 
 public class HUDController : MonoBehaviour
 {
-    public static HUDController instance;
+    public static HUDController Instance;
 #pragma warning disable
-    private float curProgress; //testing
-
-    [SerializeField] private Slider progressSlider;
+    private float curProgress; 
     [SerializeField] private Text curHealthText;
     [SerializeField] private Text maxHealthText;
     [SerializeField] private int maxHealth;
     private int curHealth;
+    private Animator anim;
+    private AnimationClip clip;
 
     //Cooldowns
     [SerializeField] private int abilityCount;
     [SerializeField] private List<GameObject> coolDownObjects;
 #pragma warning restore
-    public Slider ProgressSlider
-    {
-        get
-        {
-            return progressSlider;
-        }
 
-        set
-        {
-            progressSlider = value;
-        }
-    }
+    #region getters&setters
 
     public Text CurHealthText
     {
@@ -97,25 +87,36 @@ public class HUDController : MonoBehaviour
         }
     }
 
-    void Start()
+    public Animator Anim
     {
+        get
+        {
+            return anim;
+        }
 
-        UpdateHUD();
+        set
+        {
+            anim = value;
+        }
     }
 
+    #endregion
 
-    void Update() //remove this update after testing =)
+    public void Inst(GameObject obj)
     {
-        UpdateHUD();
-        // UpdateCooldowns();
+        Anim = obj.GetComponent<Animator>();
     }
 
-
-    private void UpdateHUD() //set reference to player here
+    public void UpdateHUD()
     {
         curHealthText.text = "" + curHealth;
         maxHealthText.text = "/" + maxHealth;
-        progressSlider.value = curProgress * 0.01f;
+    }
+
+    public void AnimationChanger()
+    {
+        if (Anim != null)
+        Anim.Play("Take", 0 , (1.0f / 99) * curProgress );
     }
 
     private void UpdateCooldowns() //for testing
@@ -141,6 +142,13 @@ public class HUDController : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        Instance = this;
+    }
+
+    private void Update() 
+    {
+        UpdateHUD();
+        AnimationChanger();
+        // UpdateCooldowns();
     }
 }

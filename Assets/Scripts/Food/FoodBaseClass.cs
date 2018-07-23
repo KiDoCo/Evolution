@@ -1,14 +1,16 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 
 /// <summary>
 /// This class takes care of the functionality of a food source
 /// </summary>
-public class FoodBaseClass : MonoBehaviour, IEatable
+public class FoodBaseClass : NetworkBehaviour, IEatable
 {
 
     //Food variables
     private int         maxAmountFood     = 10;
+    [SyncVar(hook = "CmdOnDecreaseFood")]
     private float       amountOfFood      = 10;
     private float       foodPerSecond     = 4.0f;
     private const float regenerationTimer = 2.0f;
@@ -20,13 +22,10 @@ public class FoodBaseClass : MonoBehaviour, IEatable
 
     //collider variables
     private const float radiusMultiplier  = 1.5f;
-    //private float       vectoroffset      = 0.55f;
     private Collider    coralCollider;
-    //private BoxCollider box;
     private AudioSource source;
     private Vector3     originalPos;
-
-
+    #region Getters&setters
     //interface properties
     public int MaxAmountFood
     {
@@ -57,7 +56,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         if (amountOfFood > 0)
         {
-            return (foodPerSecond / 4) * Time.deltaTime;
+            return (FoodPerSecond / 4) * Time.deltaTime;
         }
         else
         {
@@ -69,11 +68,11 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         get
         {
-            return foodPerSecond;
+            return FoodPerSecond;
         }
         set
         {
-            foodPerSecond = value;
+            FoodPerSecond = value;
         }
     }
 
@@ -116,6 +115,31 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         }
     }
 
+    public object GetInstance
+    {
+        get
+        {
+            return this;
+        }
+
+        set
+        {
+        }
+    }
+
+    public float FoodPerSecond
+    {
+        get
+        {
+            return foodPerSecond;
+        }
+
+        set
+        {
+            foodPerSecond = value;
+        }
+    }
+
     public Collider GetCollider()
     {
         return coralCollider;
@@ -126,17 +150,20 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         return source;
     }
 
-    //Methods
+    #endregion
 
-    /// <summary>
-    /// Decreases food from source
-    /// </summary>
-    public void DecreaseFood()
+    public void DecreaseFood(float food)
     {
-        StartCoroutine(EatChecker());
-        AmountFood -= foodPerSecond * Time.deltaTime;
-        CoolDownTime = 5.0f;
+        AmountFood -= food;
+        CmdSizeChanger();
     }
+    public void CmdOnDecreaseFood(float food)
+    {
+        Debug.Log("ASDF");
+        food = amountOfFood;
+        CmdSizeChanger();
+    }
+
 
     /// <summary>
     /// Increases food to source
@@ -145,14 +172,14 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         if (amountOfFood < MaxAmountFood && !Eaten && CoolDownTime <= 0)
         {
-            amountOfFood += (foodPerSecond / 4) * Time.deltaTime;
+            amountOfFood += (FoodPerSecond / 4) * Time.deltaTime;
         }
     }
 
     /// <summary>
     /// Changes the size depending on the food amount
     /// </summary>
-    public void SizeChanger()
+    public void CmdSizeChanger()
     {
         if(AmountFood <= MaxAmountFood && amountOfFood > 0)
         {
@@ -164,7 +191,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     /// Checks if this object is being eaten
     /// </summary>
     /// <returns></returns>
-    IEnumerator EatChecker()
+    public IEnumerator EatChecker()
     {
         Eaten = true;
         yield return new WaitForSeconds(1.0f);
@@ -175,10 +202,8 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
-        //box = coralCollider.GetComponent<BoxCollider>();
         source = GetComponent<AudioSource>();
-        if (Gamemanager.Instance != null)
-            Gamemanager.Instance.FoodPlaceList.Add(this);
+        Gamemanager.Instance.FoodPlaceList.Add(gameObject);
     }
 
     public void Start()
@@ -190,6 +215,5 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     public void Update()
     {
         CoolDownTime -= Time.deltaTime;
-        SizeChanger();
     }
 }

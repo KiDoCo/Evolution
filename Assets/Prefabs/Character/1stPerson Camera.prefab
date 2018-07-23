@@ -38,8 +38,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1443851604809318}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 190.02, y: 9.78, z: 253.92}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -99,12 +99,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  offset: {x: 0, y: 0.2, z: 1}
+  cameraPos: {x: 0, y: -0.2, z: -1}
   distanceDamp: 0.025
-  rotationalDamp: 100
+  rotationalDamp: 50
   distanceDampValue: 0.025
   rotationalDampValue: 20
-  fastDistanceDamp: 0
+  strafeDamp: 0.005
+  verticalDamp: 0.003
   fastRotationDamp: 20
   m_FieldOfView: 30
   FOVValue: 90
