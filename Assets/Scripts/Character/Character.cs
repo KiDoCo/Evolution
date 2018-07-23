@@ -41,7 +41,6 @@ public abstract class Character : NetworkBehaviour
     protected bool eating;
 
     //timer bools
-    [SerializeField] protected bool timerStart;
     [SerializeField] protected bool coolTimer;
 
     //ability unlock bools used in editor

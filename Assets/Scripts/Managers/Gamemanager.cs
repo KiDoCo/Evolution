@@ -41,8 +41,6 @@ public class Gamemanager : NetworkBehaviour
     //Prefabs
     public GameObject BerryPrefab;
 
-
-
 #pragma warning restore
 
     #region getters&setters
@@ -93,26 +91,20 @@ public class Gamemanager : NetworkBehaviour
         EventManager.Broadcast(EVENT.Increase);
     }
 
-    public override void OnStartServer()
-    {
-        SpawnFoodSources();
-        base.OnStartServer();
-
-    }
-
     /// <summary>
     /// Starts the match between players. Must be called after loading the game scene
     /// </summary>
     private IEnumerator StartMatch()
     {
-        yield return new WaitForSeconds(2.0f);
+        if (!isServer) yield return null;
+        if (SceneManager.GetActiveScene().name != gameScene) yield return null;
+
         lifeCount = maxLifeCount;
-        //Stop for a moment to scene to load
-        yield return new WaitForSeconds(2.0f);
 
         MatchTimer = startingMatchTimer * minutesToSeconds;
 
         SpawnFoodSources();
+
         EventManager.Broadcast(EVENT.DoAction);
         FoodSpawnPointList.Clear();
         deathCameraPlace = new GameObject();
@@ -125,7 +117,6 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
-
     private IEnumerator Respawn(Herbivore player)
     {
         player.gameObject.SetActive(false);
@@ -186,6 +177,7 @@ public class Gamemanager : NetworkBehaviour
         {
             Destroy(FoodSpawnPointList[a].gameObject);
         }
+
     }
 
     /// <summary>
@@ -243,7 +235,6 @@ public class Gamemanager : NetworkBehaviour
 
     private void Update()
     {
-
         if (MatchTimer <= 0 && SceneManager.GetActiveScene().name == "Demoscene")
         {
             EventManager.Broadcast(EVENT.RoundEnd);
@@ -258,7 +249,6 @@ public class Gamemanager : NetworkBehaviour
     private void Start()
     {
         LoadAssetToDictionaries();
-        EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
         SceneManager.LoadSceneAsync("Menu");

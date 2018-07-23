@@ -1,8 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Linq;
 
 
 public class Herbivore : Character
@@ -19,7 +17,7 @@ public class Herbivore : Character
     private const float deathpenaltytime = 2.0f;
 
     //timer values
-    [SerializeField] protected float dashTime = 6f;
+    [SerializeField] protected float dashTime = 2f;
     [SerializeField] protected float coolTime = 6f;
     [SerializeField] private float dashSpeed = 2.0f;
 
@@ -73,13 +71,15 @@ public class Herbivore : Character
             mouseInput = false;
     }
 
+    #region dash
+
     protected virtual void Dash() // sprint for herbivores
     {
         if (canDash)
         {
-            Vector3 inputVectorX = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Dash") * dashSpeed * Time.deltaTime);
-            transform.Translate(inputVectorX);
-            if (inputVectorX.magnitude != 0)
+            Vector3 inputVectorZ = InputManager.Instance.GetButton("Ability") ? Vector3.forward * dashSpeed * Time.deltaTime : Vector3.zero;
+
+            if (inputVectorZ.magnitude != 0)
             {
                 isDashing = true;
 
@@ -88,38 +88,31 @@ public class Herbivore : Character
             else
             {
                 isDashing = false;
-                //StopCoroutine(DashTimer());
             }
+            Z += inputVectorZ;
         }
     }
 
-    protected virtual IEnumerator DashTimer() //used in Dash();
+    protected virtual IEnumerator DashTimer()
     {
-        timerStart = true;
         yield return new WaitForSeconds(dashTime);
-
         canDash = false;
-        timerStart = false;
         yield return StartCoroutine(CoolTimer());
-
-
     }
 
     protected virtual IEnumerator CoolTimer()
     {
-        canDash = false;
-        coolTimer = true;
         yield return new WaitForSeconds(coolTime);
-        coolTimer = false;
         canDash = true;
 
     }
 
+    #endregion
 
     /// <summary>
     /// Checks for interaction when player enters the corals bounding box
     /// </summary>
-    protected virtual void CmdInteractionChecker()
+    protected virtual void InteractionChecker()
     {
         for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
         {
@@ -136,7 +129,7 @@ public class Herbivore : Character
         m_animator.SetBool("IsMoving", isMoving);
     }
 
-    protected  void Death()
+    protected void Death()
     {
         Gamemanager.Instance.RespawnPlayer(this);
     }
@@ -195,6 +188,8 @@ public class Herbivore : Character
         }
     }
 
+    #region movement
+
     protected override void ForwardMovement()
     {
 
@@ -213,8 +208,6 @@ public class Herbivore : Character
             ForwardVelocity = Mathf.SmoothStep(ForwardVelocity, 0, -decPerSec);
         }
 
-
-        Debug.Log(ForwardVelocity);
         Z = (Vector3.forward * ForwardVelocity) * Time.deltaTime;
     }
 
@@ -236,7 +229,7 @@ public class Herbivore : Character
 
         if (CollisionCheck())
         {
-            transform.Translate((X + Z)* defaultSpeed);
+            transform.Translate((X + Z) * defaultSpeed);
             transform.Rotate(Y * defaultSpeed);
         }
         else
@@ -247,6 +240,8 @@ public class Herbivore : Character
         }
     }
 
+    #endregion
+
     public void GetEaten(float dmg)
     {
         TakeDamage(dmg);
@@ -254,6 +249,7 @@ public class Herbivore : Character
 
     protected override void Awake()
     {
+
         base.Awake();
     }
 
@@ -277,7 +273,7 @@ public class Herbivore : Character
         if (isLocalPlayer)
         {
             base.Update();
-            CmdInteractionChecker();
+            InteractionChecker();
             UIManager.Instance.UpdateMatchUI(this);
         }
     }

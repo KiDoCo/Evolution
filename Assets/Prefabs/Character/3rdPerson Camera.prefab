@@ -24,14 +24,13 @@ GameObject:
   - component: {fileID: 81812026616519396}
   - component: {fileID: 114703077202592306}
   - component: {fileID: 114689218469743634}
-  - component: {fileID: 114154801377839884}
   m_Layer: 0
   m_Name: 3rdPerson Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4599923784488548
 Transform:
   m_ObjectHideFlags: 1
@@ -88,38 +87,6 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1953833088195292}
   m_Enabled: 1
---- !u!114 &114154801377839884
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1953833088195292}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5f1af73f71c6c045be84c2fc8b102b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  lookSmooth: 100
-  offsetFromTarget: {x: 0, y: 0.2, z: -1}
-  targetPosOffset: {x: 0, y: 0.2, z: 0}
-  distanceFromTarget: -1
-  xTilt: 10
-  zoomSmooth: 100
-  maxZoom: -2
-  minZoom: -15
-  xRotation: -20
-  yRotation: -180
-  maxXRotation: 25
-  minXRotation: -85
-  vOrbitSmooth: 150
-  hOrbitSmooth: 150
-  ORBIT_HORIZONTAL_SNAP: OrbitHorizontalSnap
-  ORBIT_HORIZONTAL: OrbitHorizontal
-  ORBIT_VERTICAL: OrbitVertical
-  ZOOM: Mouse ScrollWheel
-  velocity: {x: 1, y: 1, z: 1}
-  distanceDamp: 0.03
 --- !u!114 &114689218469743634
 MonoBehaviour:
   m_ObjectHideFlags: 1
