@@ -83,15 +83,6 @@ public class CameraController : MonoBehaviour
         Target = test.transform;
     }
 
-    /// <summary>
-    /// Sets the camera target to fixed point
-    /// </summary>
-    /// <param name="source"></param>
-    public void CameraPlaceOnDeath(Character test)
-    {
-        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
-    }
-
     void SmoothFollow()// follow every frame
     {
         Vector3 toPos = target.position + (target.rotation * offset);

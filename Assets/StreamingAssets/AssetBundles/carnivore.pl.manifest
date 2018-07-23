@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3380888693
+CRC: 621936098
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 4b1eecb463b6f0060b4dedc1956d53e8
+    Hash: 4913f6273d9210b5824bf75fbc574e3f
   TypeTreeHash:
     serializedVersion: 2
-    Hash: e7337a92b1f4c602efd021ea9bd64f96
+    Hash: 311bd3b7328913e49fd024ae0522fd61
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -38,17 +38,17 @@ ClassTypes:
 - Class: 95
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  Script: {fileID: 11500000, guid: fb6536a3b1235d24496ee4772094987d, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 1835b6d47ad5c564f850805f3cfeaf7f, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 275936ab173aa8541b27914cf22beb20, type: 3}
+  Script: {fileID: 11500000, guid: 9b17d407cc45d47419bb41f2cb96e649, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 454403b8f5f6317479775b3ec12e4130, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9b17d407cc45d47419bb41f2cb96e649, type: 3}
+  Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: fb6536a3b1235d24496ee4772094987d, type: 3}
+  Script: {fileID: 11500000, guid: 275936ab173aa8541b27914cf22beb20, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 124
@@ -60,4 +60,4 @@ ClassTypes:
 Assets:
 - Assets/Prefabs/Character/Carnivore.prefab
 Dependencies:
-- C:/Users/Aapon/Desktop/Evolution/Assets/StreamingAssets/AssetBundles/music.mfg
+- C:/Users/AapoRit/Desktop/Evolution/Assets/StreamingAssets/AssetBundles/music.mfg

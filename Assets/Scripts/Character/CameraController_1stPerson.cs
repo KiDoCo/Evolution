@@ -84,15 +84,6 @@ public class CameraController_1stPerson : MonoBehaviour
         Target = test.transform;
     }
 
-    /// <summary>
-    /// Sets the camera target to fixed point
-    /// </summary>
-    /// <param name="source"></param>
-    public void CameraPlaceOnDeath(Character test)
-    {
-        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
-    }
-
     
 
     /// <summary>

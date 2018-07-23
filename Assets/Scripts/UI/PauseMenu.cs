@@ -22,7 +22,7 @@ public class PauseMenu : NetworkBehaviour {
 
     // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
 
-    public void B_BackToLobby()
+    public void B_Disconnect()
     {
         if (NetworkGameManager.Instance != null)
         {

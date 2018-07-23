@@ -26,8 +26,10 @@ public class NetworkGameManager : NetworkLobbyManager {
     public GameObject PlayerListContent { get { return playerListContent; } }
     public string PlayerName { get { return playerName.text; } }
     public bool Hosting { get { return thisIsHosting; } }
+    public List<Character> PlayerList { get { return playerList; } }
 
     private GameObject[] UIWindows;
+    private List<Character> playerList = new List<Character>();
     private bool thisIsHosting = false;
     private string externalIP = "";
 
@@ -161,7 +163,10 @@ public class NetworkGameManager : NetworkLobbyManager {
     {
         base.OnLobbyServerSceneChanged(sceneName);
 
-        Debug.Log("Scene changed to " + sceneName);
+        if (sceneName == playScene)
+        {
+            EventManager.Broadcast(EVENT.RoundBegin);
+        }
     }
 
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
@@ -173,7 +178,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         {
             lobbyUI.SetActive(false);
         }
-        else
+        else if (SceneManager.GetActiveScene().name == lobbyScene)
         {
             lobbyUI.SetActive(true);
         }
@@ -186,7 +191,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         // Finds the lobby player
         foreach (LobbyPlayer p in lobbySlots)
         {
-            if (p.netId == conn.playerControllers[0].unetView.netId)
+            if (p.netId == conn.playerControllers[playerControllerId].unetView.netId)
             {
                 player = p;
                 break;
@@ -199,10 +204,11 @@ public class NetworkGameManager : NetworkLobbyManager {
             return null;
         }
 
-        Debug.Log("Client " + conn.playerControllers[0].unetView.netId + " selected " + player.CharacterSelected.name);
+        Debug.Log("Client " + conn.playerControllers[playerControllerId].unetView.netId + " selected " + player.CharacterSelected.name);
 
         // Spawns corresponding player prefab from spawnPrefabs (spawns to random position)
         GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelected.name), startPositions[Random.Range(0, startPositions.Count)]);
+        playerList.Add(spawnedPlayer.GetComponent<Character>());
 
         return spawnedPlayer;
     }
