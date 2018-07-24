@@ -24,6 +24,7 @@ public class PathManager : NetworkBehaviour
     public GameObject fishPrefab;
     private GameObject locationContainer;
 
+
 #pragma warning restore
 
     public void NodeAssign()
@@ -69,6 +70,7 @@ public class PathManager : NetworkBehaviour
             if (fishAmount >= 20 || timer >= 0) return;
             GameObject clone = Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
             NetworkServer.Spawn(clone);
+            ClientScene.RegisterPrefab(clone);
             fishAmount++;
             timer = spawnInterval;
         }

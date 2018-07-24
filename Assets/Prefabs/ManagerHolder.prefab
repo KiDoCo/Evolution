@@ -21,9 +21,9 @@ GameObject:
   - component: {fileID: 4051470161595944}
   - component: {fileID: 114645961939973826}
   - component: {fileID: 114040489428283660}
-  - component: {fileID: 114141536841826530}
   - component: {fileID: 114678784116004828}
   - component: {fileID: 114888800012075566}
+  - component: {fileID: 114141536841826530}
   - component: {fileID: 114586484764480368}
   m_Layer: 0
   m_Name: ManagerHolder

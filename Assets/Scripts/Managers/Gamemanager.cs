@@ -105,7 +105,6 @@ public class Gamemanager : NetworkBehaviour
             {
                 Destroy(FoodSpawnPointList[a].gameObject);
             }
-            EventManager.Broadcast(EVENT.DoAction);
             yield break;
         }
 
