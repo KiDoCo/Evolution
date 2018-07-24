@@ -10,6 +10,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public static NetworkGameManager Instance;
 
+    [Space]
     [SerializeField] private GameObject lobbyUI = null;
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)

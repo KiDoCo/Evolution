@@ -15,11 +15,11 @@ public class Gamemanager : NetworkBehaviour
 
 
     // Match variables
-    private const float             startingMatchTimer = 5.0f;  // Time value in minutes
-    private const float             minutesToSeconds   = 60.0f; // Converting value
-    private const float             interval           = 0.1f;  // The time in seconds that spawning will happen
-    private const float             deathPenaltyTime   = 2.0f;
-    private const float experiencePenalty = 25.0f;
+    private const float startingMatchTimer = 5.0f;  // Time value in minutes
+    private const float minutesToSeconds   = 60.0f; // Converting value
+    private const float interval           = 0.1f;  // The time in seconds that spawning will happen
+    private const float deathPenaltyTime   = 2.0f;
+    private const float experiencePenalty  = 25.0f;
 
     [SyncVar (hook = "changeMatchTimer")]
     private float matchTimer;
@@ -29,13 +29,12 @@ public class Gamemanager : NetworkBehaviour
     private GameObject deathCameraPlace;
 
     // Gamemanager lists
-    private List<GameObject> carnivorePrefabs               = new List<GameObject>();
-    private List<GameObject> herbivorePrefabs               = new List<GameObject>();
-    public  Dictionary<string, GameObject> PlayerPrefabs    = new Dictionary<string, GameObject>();
+    private List<GameObject> carnivorePrefabs = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs = new List<GameObject>();
+    public  Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
     public List<GameObject> foodsources;
     public List<GameObject> FoodPlaceList = new List<GameObject>();
     private List<Transform> FoodSpawnPointList = new List<Transform>();
-
 
     // Strings
     private string gameScene = "DemoScene";
@@ -122,7 +121,6 @@ public class Gamemanager : NetworkBehaviour
         // Disable player (kill player)
         yield return new WaitForSeconds(deathPenaltyTime);
         // Enable player (respawn)
-        // DO THIS IN PLAYER (Character) -> EventManager.SoundBroadcast(EVENT.PlayMusic, player.GetComponent<AudioSource>(), (int)MusicEvent.Ambient);
         yield return null;
     }
 
