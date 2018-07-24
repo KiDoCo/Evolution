@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node
+public class Node 
 {
 #pragma warning disable
     private PathManager pathManager;

@@ -5,13 +5,14 @@ using UnityEngine.Networking;
 
 public class FishController : NetworkBehaviour
 {
-
     public PathManager pathManager;
-    private Node node;
+    public Node node;
     private LayerMask obstacleMask;
-    public Vector3 movement;
-    public Vector3 lookDir;
+    private Vector3 movement;
+    private Vector3 lookDir;
     private Vector3 reference;
+    private Vector3 start;
+    private float startTime;
     private enum States { roam, chased };
     States curState = States.roam;
 
@@ -30,9 +31,9 @@ public class FishController : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcMovement(Vector3 move)
+    private void RpcMovement(Vector3 pos)
     {
-        transform.position = Vector3.SmoothDamp(transform.position, move, ref reference, Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, pos, Time.deltaTime * pathManager.speed);
     }
 
     [ClientRpc]
@@ -64,46 +65,50 @@ public class FishController : NetworkBehaviour
         curState = States.roam;
     }
 
+
+
     void Start()
     {
         pathManager = FindObjectOfType<PathManager>();
         node = pathManager.GetClosestNode(transform.position);
         obstacleMask = pathManager.obstacleLayer;
+        startTime = Time.time;
+
     }
 
-    void FixedUpdate()
+    void Update()
     {
+
         if (isServer)
         {
-            switch (curState)
+            if (curState == States.roam)
             {
-                case States.roam: //Wander randomly between nodes
-                    if (Vector3.Distance(gameObject.transform.position, node.position) > 0.1f)
-                    {
-                        transform.position = Vector3.MoveTowards(transform.position, node.position, pathManager.speed * Time.deltaTime);
-                        movement = transform.position;
-                        RpcMovement(movement);
-                        if (Vector3.Distance(transform.position, pathManager.enemy.transform.position) < pathManager.visionRange)
-                        {
-                            CheckVisible();
-                        }
-                    }
-                    else
-                    {
-                        node = pathManager.GetNextNode(transform.position, node);
-                        transform.LookAt(node.position);
-                        lookDir = node.position;
-                        RpcLook(lookDir);
-                    }
-                    break;
+                //Wander randomly between nodes
+                if (Vector3.Distance(gameObject.transform.position, node.position) > 0)
+                {
+                    RpcMovement(node.position);
 
-                case States.chased: //Move forward for a given time and avoid obstacles
-                    transform.Translate(Vector3.forward * pathManager.escapeSpeed * Time.deltaTime);
-                    CheckObstacles();
-                    Debug.DrawRay(transform.position, transform.forward * 1.5f, Color.green);
-                    break;
+                    if (Vector3.Distance(transform.position, pathManager.enemy.transform.position) < pathManager.visionRange)
+                    {
+                        CheckVisible();
+                    }
+                }
+                else
+                {
+                    start = transform.position;
+                    node = pathManager.GetNextNode(transform.position, node);
+                    lookDir = node.position;
+                    RpcLook(lookDir);
+                }
             }
+            else if (curState == States.chased)
+            {
+                //Move forward for a given time and avoid obstacles
+                movement = (Vector3.forward * pathManager.escapeSpeed * Time.deltaTime);
+                CheckObstacles();
+                Debug.DrawRay(transform.position, transform.forward * 1.5f, Color.green);
 
+            }
         }
     }
 }

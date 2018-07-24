@@ -348,7 +348,7 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 512
-  speed: 1
+  speed: 0.5
   escapeSpeed: 2
   visionRange: 4
   maxVisionAngle: 45

@@ -99,8 +99,6 @@ public class Gamemanager : NetworkBehaviour
     {
         if (!isServer)
         {
-            ClientScene.RegisterPrefab(foodsources[0]);
-            ClientScene.RegisterPrefab(BerryPrefab);
             for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
             {
                 Destroy(FoodSpawnPointList[a].gameObject);
