@@ -12,6 +12,8 @@ public class Herbivore : Character
     [SerializeField] new GameObject  CameraClone;
     [SerializeField] GameObject Camera3rd;
     public bool mouseInput;
+    Camera camCol;
+    CameraController cc = new CameraController();
 
     Quaternion targetRotation;
     public Quaternion TargetRotation
@@ -46,7 +48,7 @@ public class Herbivore : Character
         base.Start();
         herbiv = this;
         GameObject cam = Instantiate(Camera3rd);
-        cam.GetComponent<CameraController>().target = this.transform;
+        cam.GetComponent<CameraController>().target = this.transform;      
         canBarrellRoll = true;
         canTurn = true;
         //CameraClone.GetComponent<CameraController>().InstantiateCamera(this);

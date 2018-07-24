@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraCollisionChecker : MonoBehaviour
+public class CameraCollisionChecker 
 {
     //Cast ray from camera to player to check if anything in between or if camera colliding
     //Find near clip plane points of camera (left-up, right-up, left-down, right-down, camera-position)
@@ -11,32 +11,33 @@ public class CameraCollisionChecker : MonoBehaviour
 
     //Fade character if camera too close
 
+
+    Camera camera3rd;
     public LayerMask collisionLayer;
 
     [HideInInspector] public bool Colliding = false;
     [HideInInspector] public Vector3[] AdjustedcameraClipPoints;
     [HideInInspector] public Vector3[] DesiredCameraClipPoints;
 
-    Camera camera;
 
     public void Initialize(Camera cam)
     {
-        camera = cam;
+        camera3rd = cam;
         AdjustedcameraClipPoints = new Vector3[5];
         DesiredCameraClipPoints = new Vector3[5];
     }
 
     public void UpdateCameraClipPoints(Vector3 cameraPosition, Quaternion atRotation, ref Vector3[] intoArray)
     {
-        if (!camera)
+        if (!camera3rd)
             return;
 
         //clear the contents of intoArray
         intoArray = new Vector3[5];
 
-        float z = camera.nearClipPlane;
-        float x = Mathf.Tan(camera.fieldOfView / 3.41f) * z;
-        float y = x / camera.aspect;
+        float z = camera3rd.nearClipPlane;
+        float x = Mathf.Tan(camera3rd.fieldOfView / 3.41f) * z;
+        float y = x / camera3rd.aspect;
 
         //top left
         intoArray[0] = (atRotation * new Vector3(-x, y, z) + cameraPosition); //added and rotated the point relative to camera
@@ -47,17 +48,17 @@ public class CameraCollisionChecker : MonoBehaviour
         //bottom right
         intoArray[3] = (atRotation * new Vector3(x, -y, z) + cameraPosition); //added and rotated the point relative to camera
         //camera position
-        intoArray[4] = cameraPosition - camera.transform.forward;
+        intoArray[4] = cameraPosition - camera3rd.transform.forward;
 
     }
 
     bool CollisionDetectedAtClipPoint(Vector3[] clipPoints, Vector3 fromPosition)
     {
-        for(int i = 0; i < clipPoints.Length; i++)
+        for (int i = 0; i < clipPoints.Length; i++)
         {
             Ray ray = new Ray(fromPosition, clipPoints[i] - fromPosition);
             float distance = Vector3.Distance(clipPoints[i], fromPosition);
-            if(Physics.Raycast(ray, distance, collisionLayer))
+            if (Physics.Raycast(ray, distance, collisionLayer))
             {
                 return true;
             }
@@ -70,11 +71,11 @@ public class CameraCollisionChecker : MonoBehaviour
     {
         float distance = -1;
 
-        for(int i=0; i < DesiredCameraClipPoints.Length; i++)
+        for (int i = 0; i < DesiredCameraClipPoints.Length; i++)
         {
             Ray ray = new Ray(from, DesiredCameraClipPoints[i] - from);
             RaycastHit hit;
-            if(Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit))
             {
                 if (distance == -1)
                     distance = hit.distance;
@@ -96,13 +97,13 @@ public class CameraCollisionChecker : MonoBehaviour
 
     public void CheckColliding(Vector3 targetPosition)
     {
-        if(CollisionDetectedAtClipPoint(DesiredCameraClipPoints, targetPosition))
+        if (CollisionDetectedAtClipPoint(DesiredCameraClipPoints, targetPosition))
         {
-           Colliding = true;
+            Colliding = true;
         }
         else
         {
-           Colliding = false;
+            Colliding = false;
         }
     }
 }

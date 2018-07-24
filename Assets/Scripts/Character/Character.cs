@@ -71,8 +71,6 @@ public abstract class Character : MonoBehaviour
     private bool grounded = false;
     private Vector3 dir;
     private Vector3 curNormal = Vector3.up;
-    private Vector3 curRight = Vector3.right;
-    private Vector3 curLeft = Vector3.left;
     private Vector3 colPosition;
     private Vector3 surfaceNormal = Vector3.up;
     private Vector3 colPoint;
@@ -85,7 +83,6 @@ public abstract class Character : MonoBehaviour
     private float step;
     private float groundAngle;
     private float smooth;
-    private int i = 0;
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -428,7 +425,7 @@ public abstract class Character : MonoBehaviour
                     //check distance to 
                     if (Vector3.Distance(transform.position, colPoint) < Height + HeightPadding)
                     {
-                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Height, Time.fixedDeltaTime * 4);
+                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * (radius * 1.1f), Time.fixedDeltaTime * 4);
                         grounded = true;
                     }
                 }
