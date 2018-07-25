@@ -158,8 +158,6 @@ public class CameraController : MonoBehaviour
     {
         if (target == null) Debug.LogError("Camera needs a target");
 
-        if (pivotpoint == null) Debug.LogError("Camera needs a pivotpoint to look at");
-
         //testiä varten
         if (Input.GetKey(KeyCode.R))
         {

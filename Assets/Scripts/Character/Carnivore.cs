@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Networking;
 
 public class Carnivore : Character
 {
@@ -60,27 +60,28 @@ public class Carnivore : Character
 
     #region EatMethods
 
+    [ServerCallback]
     private void EatChecker()
     {
-        for (int i = 0; i < Gamemanager.Instance.HerbivorePrefabs.ToArray().Length; i++)
+        foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
         {
-            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
+            if (GetComponent<Collider>().bounds.Intersects(p.GetComponent<Collider>().bounds))
             {
-                Eat(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
+                if (col.GetType() == typeof(Herbivore))
+                {
+                    Eat(p);
+                }
             }
         }
     }
 
     private void Eat(Character col)
     {
-        if (col.GetType() == typeof(Herbivore))
-        {
-            Herbivore vor = col as Herbivore;
-            Debug.Log("mums, mums....");
-            StartCoroutine(EatCoolDown());
-            EatHerbivore(xpReward, slowDown);
-            vor.GetEaten(damage);
-        }
+        Herbivore vor = col as Herbivore;
+        Debug.Log("mums, mums....");
+        StartCoroutine(EatCoolDown());
+        EatHerbivore(xpReward, slowDown);
+        vor.GetEaten(damage);
     }
 
     private IEnumerator EatCoolDown()
@@ -294,10 +295,14 @@ public class Carnivore : Character
     {
         if (isLocalPlayer)
         {
-
             base.Update();
             Charge();
-            EatChecker();
+
+            if (isServer)
+            {
+                EatChecker();
+            }
+
             if (Input.GetKeyDown(KeyCode.H))
             {
                 isEating = true;

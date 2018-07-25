@@ -13,7 +13,6 @@ public class Gamemanager : NetworkBehaviour
 #pragma warning disable
     public static Gamemanager Instance;
 
-
     // Match variables
     private const float startingMatchTimer = 5.0f;  // Time value in minutes
     private const float minutesToSeconds   = 60.0f; // Converting value
@@ -47,7 +46,6 @@ public class Gamemanager : NetworkBehaviour
 
 #pragma warning restore
     
-
     #region getters&setters
     //Properties
     public float MatchTimer
@@ -78,9 +76,6 @@ public class Gamemanager : NetworkBehaviour
     }
 
     #endregion
-
-    //Methods
-
 
     #region match Methods
 
@@ -132,10 +127,12 @@ public class Gamemanager : NetworkBehaviour
     {
         CancelInvoke();
         // get stats and stop/end match for in game players
-        foreach (Character p in NetworkGameManager.Instance.PlayerList)
-        {
 
-        }
+        /*foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
+        {
+            
+        }*/
+
         // show match end screen
         // return to the lobby after x secs
     }
@@ -223,7 +220,6 @@ public class Gamemanager : NetworkBehaviour
             StartCoroutine(StartMatch());
     }
 
-    #region Unity Methods
     private void changeLifeCount(int life)
     {
         lifeCount = life;
@@ -237,7 +233,7 @@ public class Gamemanager : NetworkBehaviour
         // HUD update
     }
 
-    // -- Unity methods
+    #region Unity Methods
 
     private void Update()
     {
@@ -249,12 +245,13 @@ public class Gamemanager : NetworkBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
+        LoadAssetToDictionaries();
         Instance = this;
     }
 
     private void Start()
     {
-        LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.FoodSpawn, SpawnFoodSources);

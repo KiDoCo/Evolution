@@ -47,6 +47,9 @@ public class LobbyPlayer : NetworkLobbyPlayer {
             characterDropdown.RefreshShownValue();
         }
 
+        Debug.Log("Gamemanager characters: " + Gamemanager.Instance.PlayerPrefabs.Count);
+        Debug.Log("Dropdown characters: " + characterDropdown.options.Count);
+
         // Puts client in the player list
         transform.SetParent(NetworkGameManager.Instance.PlayerListContent.transform, false);
 

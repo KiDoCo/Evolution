@@ -66,10 +66,12 @@ public class CameraController_1stPerson : MonoBehaviour
     public void FixedUpdate()
     {
 
-        SetDampening(); //this has to be first
-        FollowRot();
-        Stabilize();
-
+        if (target != null)
+        {
+            SetDampening(); //this has to be first
+            FollowRot();
+            Stabilize();
+        }
 
     }
 
@@ -122,10 +124,10 @@ public class CameraController_1stPerson : MonoBehaviour
     /// </summary>
     public void SetDampening()
     {
+        
         if (target.GetComponent<Carnivore>().InputVector.x != 0)
         {
             distanceDamp = strafeDamp;
-
         }
 
         else if (target.GetComponent<Carnivore>().InputVector.y != 0)
@@ -143,7 +145,6 @@ public class CameraController_1stPerson : MonoBehaviour
         //  }
         else
             distanceDamp = distanceDampValue;
-
     }
 
 }
