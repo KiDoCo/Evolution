@@ -8040,11 +8040,6 @@ GameObject:
   m_PrefabParentObject: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426,
     type: 2}
   m_PrefabInternal: {fileID: 1511782048}
---- !u!4 &523931252 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4599923784488548, guid: 536744b968ea00b4aaa27528762ce426,
-    type: 2}
-  m_PrefabInternal: {fileID: 1511782048}
 --- !u!1 &529037443
 GameObject:
   m_ObjectHideFlags: 0
@@ -13631,6 +13626,15 @@ Prefab:
         type: 2}
       propertyPath: ground.m_Bits
       value: 32768
+      objectReference: {fileID: 0}
+    - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+      propertyPath: MaxGroundAngle
+      value: 170
+      objectReference: {fileID: 0}
+    - target: {fileID: 4936352485961292, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 1.0311183
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
@@ -27904,35 +27908,13 @@ Prefab:
       propertyPath: pivotpoint
       value: 
       objectReference: {fileID: 1735347126}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
+    - target: {fileID: 20080875289540046, guid: 536744b968ea00b4aaa27528762ce426,
         type: 2}
-      propertyPath: collisionLayer.m_Bits
-      value: 4294966783
+      propertyPath: near clip plane
+      value: 0.01
       objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: collisionMask.m_Bits
-      value: 4294966783
-      objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: DefZ
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: camTrans
-      value: 
-      objectReference: {fileID: 523931252}
-    - target: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
-      propertyPath: m_TagString
-      value: MainCamera
-      objectReference: {fileID: 0}
-    - target: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 135551939750097190, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
   m_IsPrefabParent: 0
 --- !u!43 &1518189164

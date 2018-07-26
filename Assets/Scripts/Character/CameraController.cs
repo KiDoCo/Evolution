@@ -10,13 +10,13 @@ public class CameraController : MonoBehaviour
     public Transform target;
     public Transform pivotpoint;
     public Camera Camera3rd;
-   
+
     //bools
     public bool FreeCamera;
 
     //values
     Vector3 velocity = Vector3.one;
-    [SerializeField] Vector3 cameraPos = new Vector3(0f, 0.2f, -2f);
+    [SerializeField] Vector3 cameraOffset = new Vector3(0f, 0.2f, -2f);
     private float distanceDamp = 10f;
     [SerializeField] protected float distanceDampValue = 0.4f;
     [SerializeField] protected float reverseDistanceDamp = 0.02f; //used in reverse movement
@@ -38,31 +38,6 @@ public class CameraController : MonoBehaviour
     [SerializeField] protected float lookSmooth = 100f;
     [SerializeField] protected Vector3 pivotPos = new Vector3(0, 0, 0);
 
-
-    [Header("Collision variables")]
-    public bool addDefaultAsNormal;
-    public float moveSpeed = 5;
-    public string activeStateID;
-    private float turnSmoothing = 0.1f;
-    Vector3 targetPosition;
-    [HideInInspector] Vector3 targetPositionOffset;
-    float x;
-    float y;
-    float lookAngle;
-    float tiltAngle;
-    float offsetX;
-    float offsetY;
-    float smoothX = 0;
-    float smoothY = 0;
-    float smoothXVelocity = 0;
-    float smoothYVelocity = 0;
-    public float minAngle = 35;
-    public float maxAngle = 35;
-    Transform camTrans;
-    public LayerMask player;
-    float destination;
-    
-
 #pragma warning restore
     public Transform Target
     {
@@ -79,18 +54,11 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-        resetPos = cameraPos;
+        resetPos = cameraOffset;
         m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
         distanceDamp = distanceDampValue;
         rotationalDamp = rotationalDampValue;
     }
-
-    //public void SetCamtrans(Camera cam)
-    //{
-    //    camTrans = cam.transform;
-    //    print("setting camTrans");
-    //    FixPositions();
-    //}
 
 
     void FixedUpdate()
@@ -116,40 +84,49 @@ public class CameraController : MonoBehaviour
 
     private void FixPositions()
     {
-        //print("here");
-        //float targetZ = camTrans.localPosition.z;
-        //float actualZ = targetZ;
+        Vector3 desiredPos = new Vector3(cameraOffset.x, cameraOffset.y + 0.2f, cameraOffset.z);
+        float actualZ = desiredPos.z;
+        float actualX = desiredPos.x;
+        float actualY = desiredPos.y;
 
-        CameraCollision();
+        CameraCollision(ref actualZ, ref actualX, ref actualY);
 
-        //Vector3 targetP = camTrans.localPosition;
-        //targetP.z = Mathf.Lerp(targetP.z, actualZ, Time.deltaTime * 5);
-        //transform.position = targetP;
+        //Vector3 correctedPos = new Vector3(actualX, actualY - 0.2f, actualZ);
+        //cameraOffset = correctedPos;
+        Vector3 targetP = cameraOffset;
+        targetP.z = Mathf.Lerp(targetP.z, actualZ, Time.deltaTime * 5);
+        targetP.x = Mathf.Lerp(targetP.x, actualX, Time.deltaTime * 5);
+        targetP.y = Mathf.Lerp(targetP.y, actualY, Time.deltaTime * 5);
+        cameraOffset = targetP;
+        //velocity = targetP;
 
-        //float targetFov = m_FieldOfView;
+        float targetFov = m_FieldOfView;
 
-        //if (targetFov < 1)
-        //{
-        //    targetFov = 2;
-        //}
-        //Camera3rd.fieldOfView = Mathf.Lerp(Camera3rd.fieldOfView, targetFov, Time.deltaTime * 5);
+        if (targetFov < 1)
+        {
+            targetFov = 1;
+        }
+        Camera3rd.fieldOfView = Mathf.Lerp(Camera3rd.fieldOfView, targetFov, Time.deltaTime * 5);
     }
 
-    void CameraCollision()
+    void CameraCollision(ref float actualZ, ref float actualX, ref float actualY)
     {
-        Vector3 adjustedPosition = Vector3.zero;
-
         Debug.DrawLine(target.position, transform.position, Color.blue);
 
-        float step = Mathf.Abs(Vector3.Distance(target.position, transform.position));
-        int stepCount = 4;
+        float step = Vector3.Distance(target.position, transform.position);
+        int stepCount = 2;
         float stepIncremental = step / stepCount;
-
+        RaycastHit hit;
         Vector3 dir = transform.forward;
+
+        if (Physics.SphereCast(target.position,0.5f, dir, out hit, step))
+        {
+            float distance = Vector3.Distance(hit.point, target.position);
+            actualZ = -(distance * 0.5f);
+        }
 
         for (int s = 0; s < stepCount + 1; s++)
         {
-            RaycastHit hit;
             Vector3 secondOrigin = target.position - (dir * s) * stepIncremental;
 
             for (int i = 0; i < 4; i++)
@@ -175,11 +152,17 @@ public class CameraController : MonoBehaviour
 
                 if (Physics.Raycast(secondOrigin, direction, out hit, 1))
                 {
-                    float distance = Vector3.Distance(secondOrigin, target.position);
-                    adjustedPosition.z = -(distance / 2);
+                    float distanceZ = Vector3.Distance(secondOrigin, target.position);
+                    actualZ = -(distanceZ * 0.5f);
+
+                    float distanceX = Vector3.Distance(secondOrigin, hit.point);
+                    actualX = -(distanceX * 0.5f);
+
+                    //float distanceY = Vector3.Distance(secondOrigin, hit.point);
+                    //actualY = -(distanceY * 0.5f);
+
                 }
             }
-
 
         }
     }
@@ -228,7 +211,7 @@ public class CameraController : MonoBehaviour
 
     void SmoothFollow()// follow every frame
     {
-        Vector3 toPos = target.position + (target.rotation * cameraPos);
+        Vector3 toPos = target.position + (target.rotation * cameraOffset);
         Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
         transform.position = curPos;
     }
@@ -246,17 +229,6 @@ public class CameraController : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lookSmooth * Time.deltaTime);
     }
 
-    void HandleOffsets()
-    {
-        if(offsetX !=0)
-        {
-            offsetX = Mathf.MoveTowards(offsetX, 0, Time.deltaTime);
-        }
-        if (offsetY != 0)
-        {
-            offsetY = Mathf.MoveTowards(offsetY, 0, Time.deltaTime);
-        }
-    }
 
     void Stabilize()
     {
@@ -287,7 +259,7 @@ public class CameraController : MonoBehaviour
             Quaternion sum = camTurnAngleH * camTurnAngleV;
 
             //lisää summa cameran cameraPos arvoon
-            cameraPos = sum * cameraPos;
+            cameraOffset = sum * cameraOffset;
 
         }
         else if (!FreeCamera)
@@ -299,8 +271,8 @@ public class CameraController : MonoBehaviour
     {
         if (!FreeCamera)
         {
-            Vector3 resetLoc = Vector3.Lerp(cameraPos, resetPos, resetLerpValue * Time.deltaTime);
-            cameraPos = resetLoc;
+            Vector3 resetLoc = Vector3.Lerp(cameraOffset, resetPos, resetLerpValue * Time.deltaTime);
+            cameraOffset = resetLoc;
         }
     }
 }
