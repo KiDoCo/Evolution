@@ -19,10 +19,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4480704697252256}
-  - component: {fileID: 114410111391734876}
   - component: {fileID: 114314828878141864}
   - component: {fileID: 114266387562950848}
   - component: {fileID: 114861859203676364}
+  - component: {fileID: 114421367401158780}
   m_Layer: 0
   m_Name: ManagerHolder
   m_TagString: Untagged
@@ -138,7 +138,7 @@ MonoBehaviour:
   matchResultScreen: {fileID: 0}
   helixCamera: {fileID: 1009143415174350, guid: 08c85d6115cdd8b48bd765bc3d098c84,
     type: 2}
---- !u!114 &114410111391734876
+--- !u!114 &114421367401158780
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

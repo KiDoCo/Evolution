@@ -146,7 +146,7 @@ public class NetworkGameManager : NetworkLobbyManager {
             clientAddressText.text = networkAddress + ":" + networkPort;
             UIManager.switchGameObject(UIWindows, clientUI);
         }
-        Debug.Log("Client joined!");
+        Debug.Log("Client joined");
     }
 
     public override void OnLobbyClientExit()
@@ -165,11 +165,11 @@ public class NetworkGameManager : NetworkLobbyManager {
     {
         base.OnLobbyServerSceneChanged(sceneName);
 
-        Debug.Log("Scene changed!");
+        Debug.Log("Scene changed");
 
         if (sceneName == playScene)
         {
-            EventManager.Broadcast(EVENT.RoundBegin);
+            //EventManager.Broadcast(EVENT.RoundBegin);
         }
     }
 
@@ -181,11 +181,12 @@ public class NetworkGameManager : NetworkLobbyManager {
         if (SceneManager.GetActiveScene().name == playScene)
         {
             lobbyUI.SetActive(false);
-            Gamemanager.Instance.LoadGame();
+            UIManager.Instance.HideCursor(true);
         }
         else if (SceneManager.GetActiveScene().name == lobbyScene)
         {
             lobbyUI.SetActive(true);
+            UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
         }
     }
@@ -212,7 +213,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         Debug.Log("Client " + conn.playerControllers[playerControllerId].unetView.netId + " selected " + player.CharacterSelected.name);
 
-        // Spawns corresponding player prefab from spawnPrefabs (spawns to random position)
+        // Spawns corresponding player prefab from spawnPrefabs
         GameObject spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
         InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
 

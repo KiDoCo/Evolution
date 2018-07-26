@@ -70,6 +70,7 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        HideCursor(false);
     }
 
     private void Update()

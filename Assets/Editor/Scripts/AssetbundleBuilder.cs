@@ -17,6 +17,7 @@ public class AssetbundleBuilder : MonoBehaviour
         }
         Debug.Log("Rebuilding");
         BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.UncompressedAssetBundle,EditorUserBuildSettings.activeBuildTarget);
+        Debug.Log("Done building!");
     }
 
 

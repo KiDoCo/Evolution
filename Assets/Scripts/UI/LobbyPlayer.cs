@@ -38,7 +38,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     {
         base.OnClientEnterLobby();
 
-        Debug.Log("Client enter lobby");
+        Debug.Log("Client " + netId + " entered lobby");
 
         // Adds players to dropbox
         if (characterDropdown.options.Count == 0)
@@ -46,9 +46,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
             characterDropdown.AddOptions(new List<string>(Gamemanager.Instance.PlayerPrefabs.Keys));
             characterDropdown.RefreshShownValue();
         }
-
-        Debug.Log("Gamemanager characters: " + Gamemanager.Instance.PlayerPrefabs.Count);
-        Debug.Log("Dropdown characters: " + characterDropdown.options.Count);
 
         // Puts client in the player list
         transform.SetParent(NetworkGameManager.Instance.PlayerListContent.transform, false);
@@ -75,7 +72,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         readyButton.SetActive(true);
         characterDropdown.gameObject.SetActive(true);
         characterSelectedText.gameObject.SetActive(false);
-        UIManager.Instance.HideCursor(false);
 
         if (NetworkGameManager.Instance != null)
         {

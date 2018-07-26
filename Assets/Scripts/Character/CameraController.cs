@@ -156,7 +156,11 @@ public class CameraController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (target == null) Debug.LogError("Camera needs a target");
+        if (target == null)
+        {
+            Debug.Log("Camera needs a target");
+            return;
+        }
 
         //testiä varten
         if (Input.GetKey(KeyCode.R))

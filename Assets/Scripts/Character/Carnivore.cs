@@ -7,6 +7,7 @@ public class Carnivore : Character
 {
 
     [SerializeField] protected bool canMouseMove = true;
+    [SerializeField] private GameObject carnivoreMesh;
 
     //character stats
     public float stamina;
@@ -288,6 +289,7 @@ public class Carnivore : Character
             playerCam = GetComponent<Carnivore>().CameraClone.GetComponent<Camera>();
             defaultFov = playerCam.fieldOfView;
             slowDown = 1 - slowDown;
+            carnivoreMesh.SetActive(false);
         }
     }
 

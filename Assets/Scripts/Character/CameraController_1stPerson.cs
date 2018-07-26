@@ -12,7 +12,6 @@ public class CameraController_1stPerson : MonoBehaviour
     [SerializeField] protected float distanceDamp = 10f;
     [SerializeField] protected float rotationalDamp = 10f;
     Vector3 velocity = Vector3.one;
-
     //fixed damp values (Set Dampening käyttää näitä)
     [SerializeField] protected float distanceDampValue = 0.025f;
     [SerializeField] protected float rotationalDampValue = 10f;
@@ -54,25 +53,22 @@ public class CameraController_1stPerson : MonoBehaviour
         distanceDamp = distanceDampValue; // reset damping values to fixed values
         rotationalDamp = rotationalDampValue; // --"--
 
-
         startcameraPos = cameraPos; //set camera default location
         
         Camera1st.fieldOfView = 60f;
-        //hide everything but default layer, NEEDED to hide carnivore from camera, carnivore is in different layer;
-        Camera1st.cullingMask = 1 << 0; 
-
     }
 
     public void FixedUpdate()
     {
-
-        if (target != null)
+        if (target == null)
         {
-            SetDampening(); //this has to be first
-            FollowRot();
-            Stabilize();
+            Debug.Log("Camera needs a target");
+            return;
         }
 
+        SetDampening(); //this has to be first
+        FollowRot();
+        Stabilize();
     }
 
     public void InstantiateCamera(Character test)

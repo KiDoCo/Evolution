@@ -1233,6 +1233,7 @@ MonoBehaviour:
     type: 2}
   Rotatingspeed: 0
   canMouseMove: 1
+  carnivoreMesh: {fileID: 1175654593334706}
   stamina: 0
   coolDownTime: 0
   chargeTime: 2
