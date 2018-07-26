@@ -240,13 +240,13 @@ public class Carnivore : Character
             {
                 Debug.Log("Kill herbivore");
                 //Kill target
-                vor.gameObject.GetComponent<Herbivore>().GetEaten(500);
+                vor.gameObject.GetComponent<Herbivore>().GetEaten(2 * damage);
             }
             else
             {
                 Debug.Log("Hurt herbivore");
                 //1 damage
-                vor.gameObject.GetComponent<Herbivore>().GetEaten(1);
+                vor.gameObject.GetComponent<Herbivore>().GetEaten(damage);
             }
             hitTarget = true;
         }
@@ -295,7 +295,7 @@ public class Carnivore : Character
 
     protected override void Update()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
             base.Update();
             Charge();
@@ -318,7 +318,7 @@ public class Carnivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
             base.FixedUpdate();
             MouseMove();

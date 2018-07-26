@@ -19,6 +19,7 @@ public class Gamemanager : NetworkBehaviour
     private const float interval           = 0.1f;  // The time in seconds that spawning will happen
     private const float deathPenaltyTime   = 2.0f;
     private const float experiencePenalty  = 25.0f;
+    private const float endScreenTime      = 20f;
 
     [SyncVar (hook = "changeMatchTimer")]
     private float matchTimer;
@@ -113,9 +114,11 @@ public class Gamemanager : NetworkBehaviour
     /// <returns></returns>
     private IEnumerator Respawn(Character player)
     {
-        // Disable player (kill player)
+        player.EnablePlayer(false);
+        // - Change camera to fixed camera
         yield return new WaitForSeconds(deathPenaltyTime);
-        // Enable player (respawn)
+        // - Reset values
+        player.EnablePlayer(true);
         yield return null;
     }
 
@@ -126,15 +129,21 @@ public class Gamemanager : NetworkBehaviour
     private void EndMatch()
     {
         CancelInvoke();
-        // get stats and stop/end match for in game players
-
-        /*foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
+        // Get stats and stop/end match for in game players
+        foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
         {
-            
-        }*/
+            p.EnablePlayer(false);
+            // - Get stats for end screen (ShowEndScreen())
+            // - Fixed camera in scene with end screen
+        }
 
-        // show match end screen
-        // return to the lobby after x secs
+        StartCoroutine(ReturnToLobby(endScreenTime));
+    }
+
+    private IEnumerator ReturnToLobby(float time)
+    {
+        yield return new WaitForSeconds(time);
+        NetworkGameManager.Instance.SendReturnToLobby();
     }
 
     /// <summary>
@@ -142,8 +151,8 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     public void EndMatchForPlayer(Character player)
     {
-        // Kill player
-        // Fixed camera in scene. Spectate others?
+        player.EnablePlayer(false);
+        // - Fixed camera in scene. Spectate others?
     }
 
     /// <summary>

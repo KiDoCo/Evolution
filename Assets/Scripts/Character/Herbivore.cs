@@ -125,8 +125,8 @@ public class Herbivore : Character
 
     protected override void AnimationChanger()
     {
-        //m_animator.SetBool("IsEating", eating);
-        //m_animator.SetBool("IsMoving", isMoving);
+        m_animator.SetBool("IsEating", eating);
+        m_animator.SetBool("IsMoving", isMoving);
     }
 
     protected void Death()
@@ -265,12 +265,13 @@ public class Herbivore : Character
             UIManager.Instance.InstantiateInGameUI(this);
             canBarrellRoll = true;
             canTurn = true;
+            experience = 100;
         }
     }
 
     protected override void Update()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
             base.Update();
             InteractionChecker();
@@ -280,7 +281,7 @@ public class Herbivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
             base.FixedUpdate();
             if (!CameraClone.GetComponent<CameraController>().FreeCamera)

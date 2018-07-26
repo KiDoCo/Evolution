@@ -221,9 +221,10 @@ GameObject:
   - component: {fileID: 114401673902600974}
   - component: {fileID: 114213708722299978}
   - component: {fileID: 114089988995669340}
+  - component: {fileID: 54280091110362696}
   m_Layer: 8
   m_Name: Carnivore
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1034,6 +1035,21 @@ Transform:
   m_Father: {fileID: 4897727222533810}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &54280091110362696
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!82 &82769841182586898
 AudioSource:
   m_ObjectHideFlags: 1
@@ -1232,6 +1248,7 @@ MonoBehaviour:
   cameraClone: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9,
     type: 2}
   Rotatingspeed: 0
+  playerMesh: {fileID: 137726244424343562}
   canMouseMove: 1
   carnivoreMesh: {fileID: 1175654593334706}
   stamina: 0
@@ -1239,7 +1256,7 @@ MonoBehaviour:
   chargeTime: 2
   eatCooldown: 0
   xpReward: 0
-  damage: 0
+  damage: 1
   slowDown: 0
 --- !u!136 &136574025905355464
 CapsuleCollider:

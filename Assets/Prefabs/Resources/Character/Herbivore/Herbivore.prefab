@@ -71,6 +71,7 @@ GameObject:
   - component: {fileID: 114195918228129132}
   - component: {fileID: 114619651010595612}
   - component: {fileID: 136234758914983154}
+  - component: {fileID: 54507834085646450}
   m_Layer: 9
   m_Name: Herbivore
   m_TagString: Player
@@ -691,6 +692,21 @@ Transform:
   m_Father: {fileID: 4224209384883938}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &54507834085646450
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1063323722126642}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!82 &82244652018528298
 AudioSource:
   m_ObjectHideFlags: 1
@@ -930,6 +946,7 @@ MonoBehaviour:
   canDash: 0
   cameraClone: {fileID: 0}
   Rotatingspeed: 0
+  playerMesh: {fileID: 0}
   mouseInput: 0
   dashTime: 6
   coolTime: 6
@@ -1019,6 +1036,7 @@ MonoBehaviour:
   cameraClone: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426,
     type: 2}
   Rotatingspeed: 0
+  playerMesh: {fileID: 137369921943156194}
   mouseInput: 0
   dashTime: 3
   coolTime: 5

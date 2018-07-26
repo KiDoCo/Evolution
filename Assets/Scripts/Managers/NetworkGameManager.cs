@@ -43,7 +43,6 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         // Resets UI
         UIManager.switchGameObject(UIWindows, mainUI);
-        lobbyUI.SetActive(true);    // Temp fix because main menu doesn't exist
         insertNameError.SetActive(false);
     }
 
@@ -169,7 +168,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         if (sceneName == playScene)
         {
-            //EventManager.Broadcast(EVENT.RoundBegin);
+            EventManager.Broadcast(EVENT.RoundBegin);
         }
     }
 
@@ -188,6 +187,7 @@ public class NetworkGameManager : NetworkLobbyManager {
             lobbyUI.SetActive(true);
             UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
+            Gamemanager.Instance.FoodPlaceList.Clear();
         }
     }
 
