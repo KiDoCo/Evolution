@@ -126,6 +126,18 @@ public abstract class Character : NetworkBehaviour
         }
     }
 
+    public bool InputEnabled
+    {
+        get
+        {
+            return inputEnabled;
+        }
+        set
+        {
+            inputEnabled = value;
+        }
+    }
+
     #endregion
 
     #region Movement methods
@@ -236,10 +248,12 @@ public abstract class Character : NetworkBehaviour
         transform.Rotate(0, 0, -z);
     }
 
+    [ServerCallback]
     public void EnablePlayer(bool enabled)
     {
         playerMesh.enabled = enabled;
         inputEnabled = enabled;
+        GetComponent<Collider>().enabled = enabled;
         RpcEnablePlayer(enabled);
     }
 
@@ -247,6 +261,7 @@ public abstract class Character : NetworkBehaviour
     private void RpcEnablePlayer(bool enabled)
     {
         playerMesh.enabled = enabled;
+        GetComponent<Collider>().enabled = enabled;
         inputEnabled = enabled;
     }
 

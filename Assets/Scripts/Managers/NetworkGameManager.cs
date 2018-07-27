@@ -11,6 +11,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     public static NetworkGameManager Instance;
 
     [Space]
+    [SerializeField] private GameObject gameManager = null;
     [SerializeField] private GameObject lobbyUI = null;
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
@@ -28,18 +29,25 @@ public class NetworkGameManager : NetworkLobbyManager {
     public string PlayerName { get { return playerName.text; } }
     public bool Hosting { get { return thisIsHosting; } }
     public List<Character> InGamePlayerList { get { return inGamePlayerList; } }
+    public Character LocalCharacter { get { return localCharacter; } }
 
     private GameObject[] UIWindows;
     private List<Character> inGamePlayerList = new List<Character>();
+    private Character localCharacter = null;
     private bool thisIsHosting = false;
     private string externalIP = "";
 
     private void Awake ()
     {
         Instance = this;
+        DontDestroyOnLoad(gameObject);
+        Instantiate(gameManager);
+    }
+
+    private void Start()
+    {
         SceneManager.LoadSceneAsync("Menu");
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
-        DontDestroyOnLoad(gameObject);
 
         // Resets UI
         UIManager.switchGameObject(UIWindows, mainUI);
@@ -175,6 +183,13 @@ public class NetworkGameManager : NetworkLobbyManager {
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
     {
         base.OnLobbyClientSceneChanged(conn);
+
+        // ! TODO: Find local player
+        /*Character connectedPlayer = conn.playerControllers[0].gameObject.GetComponent<Character>();
+        if (connectedPlayer.isLocalPlayer)
+        {
+            localCharacter = connectedPlayer;
+        }*/
 
         // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)

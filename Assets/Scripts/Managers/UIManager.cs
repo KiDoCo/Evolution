@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
 public class UIManager : MonoBehaviour
 {
@@ -70,6 +71,10 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Start()
+    {
         HideCursor(false);
     }
 
@@ -83,10 +88,28 @@ public class UIManager : MonoBehaviour
 
                 if (PauseMenu.Instance.UI.activeSelf)
                 {
+                    if (!Gamemanager.Instance.MatchEnd)
+                    {
+                        if (NetworkGameManager.Instance.LocalCharacter == null)
+                        {
+                            Debug.Log("Local player not found!");
+                            return;
+                        }
+                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
+                    }
                     HideCursor(false);
                 }
                 else
                 {
+                    if (!Gamemanager.Instance.MatchEnd)
+                    {
+                        if (NetworkGameManager.Instance.LocalCharacter == null)
+                        {
+                            Debug.Log("Local player not found!");
+                            return;
+                        }
+                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
+                    }
                     HideCursor(true);
                 }
             }

@@ -19,10 +19,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4480704697252256}
-  - component: {fileID: 114314828878141864}
   - component: {fileID: 114266387562950848}
-  - component: {fileID: 114861859203676364}
+  - component: {fileID: 114314828878141864}
   - component: {fileID: 114421367401158780}
+  - component: {fileID: 114891638722384864}
   m_Layer: 0
   m_Name: ManagerHolder
   m_TagString: Untagged
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f436b916a80fe41a722b6031a32692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114861859203676364
+--- !u!114 &114891638722384864
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

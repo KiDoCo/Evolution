@@ -8,7 +8,7 @@ public class EndLine : NetworkBehaviour {
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Herbivore")
+        if (other.gameObject.layer == LayerMask.NameToLayer("Herbivore"))
         {
             Herbivore p = other.gameObject.GetComponent<Herbivore>();
 

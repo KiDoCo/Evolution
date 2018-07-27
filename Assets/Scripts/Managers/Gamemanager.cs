@@ -27,6 +27,7 @@ public class Gamemanager : NetworkBehaviour
     private int lifeCount;
     private const int maxLifeCount = 2;
     private GameObject deathCameraPlace;
+    private bool matchEnd = false;
 
     // Gamemanager lists
     private List<GameObject> carnivorePrefabs = new List<GameObject>();
@@ -73,6 +74,14 @@ public class Gamemanager : NetworkBehaviour
         set
         {
             herbivorePrefabs = value;
+        }
+    }
+
+    public bool MatchEnd
+    {
+        get
+        {
+            return matchEnd;
         }
     }
 
@@ -128,6 +137,7 @@ public class Gamemanager : NetworkBehaviour
     [ServerCallback]
     private void EndMatch()
     {
+        matchEnd = true;
         CancelInvoke();
         // Get stats and stop/end match for in game players
         foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
@@ -138,6 +148,7 @@ public class Gamemanager : NetworkBehaviour
         }
 
         StartCoroutine(ReturnToLobby(endScreenTime));
+        matchEnd = false;
     }
 
     private IEnumerator ReturnToLobby(float time)
@@ -255,12 +266,12 @@ public class Gamemanager : NetworkBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        LoadAssetToDictionaries();
         Instance = this;
     }
 
     private void Start()
     {
+        LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.FoodSpawn, SpawnFoodSources);

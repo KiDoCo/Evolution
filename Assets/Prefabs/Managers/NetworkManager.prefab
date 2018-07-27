@@ -1043,11 +1043,13 @@ MonoBehaviour:
   m_MinPlayers: 1
   m_LobbyPlayerPrefab: {fileID: 114493853544814176, guid: f7d2adf45033c40488da639df377bb54,
     type: 2}
-  m_GamePlayerPrefab: {fileID: 1063323722126642, guid: 0247f83a354ed3044b8def18bfc70964,
+  m_GamePlayerPrefab: {fileID: 1721564963840014, guid: d7f78912cad554e4fa0b89d247cb60f7,
     type: 2}
   m_LobbyScene: Menu
   m_PlayScene: DemoScene
   lobbySlots: []
+  gameManager: {fileID: 1404718516752614, guid: d47b7b8acc8846d41a0677c983e7469b,
+    type: 2}
   lobbyUI: {fileID: 1678181856082178}
   mainUI: {fileID: 1115911705310670}
   hostUI: {fileID: 1536484938154256}

@@ -249,7 +249,6 @@ public class Herbivore : Character
 
     protected override void Awake()
     {
-
         base.Awake();
     }
 
@@ -265,8 +264,9 @@ public class Herbivore : Character
             UIManager.Instance.InstantiateInGameUI(this);
             canBarrellRoll = true;
             canTurn = true;
-            experience = 100;
         }
+
+        experience = 100f;  // For testing purposes
     }
 
     protected override void Update()

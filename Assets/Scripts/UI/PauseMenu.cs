@@ -13,7 +13,10 @@ public class PauseMenu : NetworkBehaviour {
     private void Awake()
     {
         Instance = this;
+    }
 
+    private void Start()
+    {
         UI.SetActive(false);
 
         stopGameButton.SetActive(NetworkGameManager.Instance.Hosting);
