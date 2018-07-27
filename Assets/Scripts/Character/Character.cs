@@ -39,6 +39,7 @@ public abstract class Character : NetworkBehaviour
     protected bool barrelRoll;
     private bool ready;
     protected bool eating;
+    protected bool end;
 
     //timer bools
     [SerializeField] protected bool coolTimer;
@@ -61,7 +62,6 @@ public abstract class Character : NetworkBehaviour
     protected Vector3 X;
     protected Vector3 Z;
     protected Vector3 inputVector;
-    protected Vector3 MovementInputVector;
     private Vector3 rotationInputVector;
 
     #region Collider variables
@@ -120,6 +120,19 @@ public abstract class Character : NetworkBehaviour
         get
         {
             return inputVector;
+        }
+    }
+
+    public bool End
+    {
+        get
+        {
+            return end;
+        }
+
+        set
+        {
+            end = value;
         }
     }
 
@@ -233,6 +246,8 @@ public abstract class Character : NetworkBehaviour
             transform.Rotate(0, 0, -z);
     }
 
+    protected abstract void EndGame();
+
     #region Unity Methods
 
     protected virtual void Awake()
@@ -262,5 +277,4 @@ public abstract class Character : NetworkBehaviour
     }
 
     #endregion
-
 }

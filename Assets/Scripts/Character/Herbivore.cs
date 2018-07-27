@@ -5,28 +5,35 @@ using UnityEngine.Networking;
 
 public class Herbivore : Character
 {
-
-    Quaternion originZ;
-    Quaternion currentZ;
+    //Component search
+    private Quaternion originZ;
+    private Quaternion currentZ;
+    private Color visibilityColor;
+    public Material defaultMat;
+    public Material glassMat;
+    private bool HasRespawned;
+    private float surTime;
     public bool mouseInput;
-
-    protected float health = 2;
-    protected float experience = 0;
-    private const float healthMax = 2;
-    private const float waitTime = 1.0f;
-    private const float deathpenaltytime = 2.0f;
+    private bool cloaked = false;
+    public float defSmooth = 0;
 
     //timer values
     [SerializeField] protected float dashTime = 2f;
     [SerializeField] protected float coolTime = 6f;
     [SerializeField] private float dashSpeed = 2.0f;
 
-    Quaternion targetRotation;
+    #region Character stats
 
-    public Quaternion TargetRotation
-    {
-        get { return targetRotation; }
-    }
+    protected float health = 2;
+    private const float healthMax = 2;
+    private const float waitTime = 1.0f;
+    private const float deathpenaltytime = 2.0f;
+    protected float experience = 0;
+    private int deathcount;
+
+    #endregion
+
+    #region Getters&Setters
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -56,6 +63,29 @@ public class Herbivore : Character
             experience = Mathf.Clamp(value, 0, 100);
         }
     }
+    public int Deathcount
+    {
+        get
+        {
+            return deathcount;
+        }
+
+        set
+        {
+            deathcount = value;
+        }
+    }
+    public float SurTime
+    {
+        get
+        {
+            return surTime;
+        }
+    }
+
+    #endregion
+
+    //methods
 
     public void MouseMove()
     {
@@ -70,6 +100,156 @@ public class Herbivore : Character
         else
             mouseInput = false;
     }
+
+    /// <summary>
+    /// Checks for interaction when player enters the corals bounding box
+    /// </summary>
+    protected virtual void InteractionChecker()
+    {
+        for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
+        {
+            if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+            {
+
+                Eat(InGameManager.Instance.FoodPlaceList[i]);
+            }
+        }
+    }
+
+    protected override void AnimationChanger()
+    {
+        m_animator.SetBool("isEating", eating);
+        m_animator.SetBool("isMoving", isMoving);
+    }
+
+    protected void Death()
+    {
+        if (InGameManager.Instance.LifeCount > 0)
+        {
+            if (!HasRespawned)
+            {
+                surTime = InGameManager.Instance.MatchTimer;
+                HasRespawned = true;
+            }
+            Deathcount++;
+            InGameManager.Instance.RespawnPlayer(this);
+        }
+        else
+        {
+            InGameManager.Instance.EndMatchForPlayer(this);
+        }
+    }
+
+    protected void TakeDamage(float amount)
+    {
+        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
+        Health -= amount;
+    }
+
+    protected override void EndGame()
+    {
+        end = true;
+        UIManager.Instance.MatchResultScreen(this);
+    }
+
+    private void ComponentSearch()
+    {
+        cameraClone = Instantiate(cameraClone);
+        cameraClone.GetComponent<CameraController>().InstantiateCamera(this);
+        visibilityColor = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.color;
+        SFXsource = transform.GetChild(2).GetComponent<AudioSource>();
+        m_animator = gameObject.GetComponent<Animator>();
+    }
+
+    public void GetEaten(float dmg)
+    {
+        TakeDamage(dmg);
+    }
+
+    #region Eat methods
+
+    /// <summary>
+    /// Takes care of the eating for the player
+    /// </summary>
+    /// <param name="eatObject"></param>
+    private void Eat(GameObject go)
+    {
+        FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
+
+        if (eatObject == null || eatObject.AmountOfFood <= 0)
+        {
+            eating = false;
+        }
+        else
+        {
+            if (Input.GetButton("Fire1"))
+            {
+                eating = true;
+                Experience += eatObject.GetAmount();
+                if (isServer)
+                    RpcEat(go);
+                else
+                    CmdEat(go);
+
+
+            }
+            else
+            {
+                eating = false;
+                EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
+                eatObject.Eaten = eating;
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Sends information to the server
+    /// </summary>
+    /// <param name="go"></param>
+    [ClientRpc]
+    private void RpcEat(GameObject go)
+    {
+        Debug.Log(go);
+        if (go != null)
+        {
+            FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
+            eatObject.Eaten = eating;
+            eatObject.DecreaseFood(eatObject.FoodPerSecond * Time.deltaTime);
+            StartCoroutine(eatObject.EatChecker());
+            eatObject.CoolDownTime = 5.0f;
+
+            if (!eatObject.Source().isPlaying)
+            {
+                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sends information to other players
+    /// </summary>
+    /// <param name="go"></param>
+    [Command]
+    private void CmdEat(GameObject go)
+    {
+        Debug.Log(go);
+        if (go != null)
+        {
+            FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
+            eatObject.Eaten = eating;
+            eatObject.DecreaseFood(eatObject.FoodPerSecond * Time.deltaTime);
+            StartCoroutine(eatObject.EatChecker());
+            eatObject.CoolDownTime = 5.0f;
+
+            if (!eatObject.Source().isPlaying)
+            {
+                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+            }
+        }
+    }
+
+    #endregion
 
     #region dash
 
@@ -109,89 +289,6 @@ public class Herbivore : Character
 
     #endregion
 
-    /// <summary>
-    /// Checks for interaction when player enters the corals bounding box
-    /// </summary>
-    protected virtual void InteractionChecker()
-    {
-        for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
-        {
-            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
-            {
-
-                Eat(Gamemanager.Instance.FoodPlaceList[i]);
-            }
-        }
-    }
-
-    protected override void AnimationChanger()
-    {
-        m_animator.SetBool("isEating", eating);
-        m_animator.SetBool("isMoving", isMoving);
-    }
-
-    protected void Death()
-    {
-        Gamemanager.Instance.RespawnPlayer(this);
-    }
-
-    protected void TakeDamage(float amount)
-    {
-        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
-        Health -= amount;
-    }
-
-    /// <summary>
-    /// Takes care of the eating for the player
-    /// </summary>
-    /// <param name="eatObject"></param>
-    private void Eat(GameObject go)
-    {
-        FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
-
-        if (eatObject == null || eatObject.AmountOfFood <= 0)
-        {
-            eating = false;
-        }
-        else
-        {
-            if (Input.GetButton("Fire1"))
-            {
-                eating = true;
-                Experience += eatObject.GetAmount();
-                CmdEat(go);
-
-
-            }
-            else
-            {
-                eating = false;
-                EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
-                eatObject.Eaten = eating;
-            }
-        }
-
-    }
-
-    [Command]
-    private void CmdEat(GameObject go)
-    {
-        Debug.Log(go);
-        if (go != null)
-        {
-            FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
-            eatObject.Eaten = eating;
-            eatObject.DecreaseFood(eatObject.FoodPerSecond * Time.deltaTime);
-            StartCoroutine(eatObject.EatChecker());
-            eatObject.CoolDownTime = 5.0f;
-            if (!eatObject.Source().isPlaying)
-            {
-                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
-            }
-
-        }
-    }
-
     #region movement
 
     protected override void ForwardMovement()
@@ -229,31 +326,114 @@ public class Herbivore : Character
     {
         inputVector = X + Y + Z;
         isMoving = inputVector.normalized.magnitude != 0 ? true : false;
-        AnimationChanger();
 
         if (CollisionCheck())
         {
             transform.Translate((X + Z) * defaultSpeed);
             transform.Rotate(Y * defaultSpeed);
         }
+    }
+
+
+
+    #endregion
+
+    #region Cloak
+
+    private void ToggleCloak() //Change this to non-toggle if needed
+    {
+        Debug.Log("toggle cloak");
+        cloaked = !cloaked;
+        if (cloaked)
+        {
+            visibilityColor.a = 0;
+            StartCoroutine(SwapColor(visibilityColor));
+
+        }
         else
         {
-            moveDirection = Vector3.Cross(colPoint, surfaceNormal);
-            moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
-            moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
+            StartCoroutine(RemoveGlass());
         }
+    }
+
+    private void SetNormal() //Change material
+    {
+        RpcMaterialChange(false);
+    }
+
+    private void SetGlass() //Change material
+    {
+        RpcMaterialChange(true);
+        StartCoroutine(SetBump());
+    }
+
+    private IEnumerator SwapColor(Color goal) //Change visiblity of normal material
+    {
+        transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.SetFloat("_Glossiness", 0);
+        float backUpTimer = 0;
+        while (Mathf.Abs(transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.color.a - goal.a) > 0.05f && backUpTimer < 2)
+        {
+            backUpTimer += Time.deltaTime;
+            RpcColorChange(Color.Lerp(transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.color, goal, 15 * Time.deltaTime));
+            yield return null;
+
+        }
+        RpcColorChange(goal);
+        if (cloaked) { SetGlass(); }
+        else { transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.SetFloat("_Glossiness", defSmooth); }
+    }
+
+    private IEnumerator SetBump() //Increase distorion for glass
+    {
+        float backUpTimer = 0;
+        float i = 0;
+        while (i < 50 && backUpTimer < 2)
+        {
+            i = Mathf.Lerp(i, 60, Time.deltaTime * 5);
+            backUpTimer += Time.deltaTime;
+            transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.SetFloat("_BumpAmt", i);
+            yield return null;
+        }
+    }
+
+    private IEnumerator RemoveGlass() //Decrease distortion for glass
+    {
+        float backUpTimer = 0;
+        float i = 50;
+        while (i > 8 && backUpTimer < 2)
+        {
+            i = Mathf.Lerp(i, 0, Time.deltaTime * 5);
+            backUpTimer += Time.deltaTime;
+            transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.SetFloat("_BumpAmt", i);
+            yield return null;
+
+        }
+
+        SetNormal();
+        visibilityColor.a = 1;
+        StartCoroutine(SwapColor(visibilityColor));
+    }
+
+    [ClientRpc]
+    private void RpcMaterialChange(bool glass)
+    {
+        Material mat = glass ? glassMat : defaultMat;
+        transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material = mat;
+    }
+
+    [ClientRpc]
+    private void RpcColorChange(Color col)
+    {
+        transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.color = col;
     }
 
     #endregion
 
-    public void GetEaten(float dmg)
-    {
-        TakeDamage(dmg);
-    }
+    #region Unitymethods
 
     protected override void Awake()
     {
-
+        gameObject.name = "Herbivore";
         base.Awake();
     }
 
@@ -262,10 +442,8 @@ public class Herbivore : Character
         if (isLocalPlayer)
         {
             base.Start();
-            cameraClone = Instantiate(cameraClone);
-            cameraClone.GetComponent<CameraController>().InstantiateCamera(this);
-            SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
-            m_animator = gameObject.GetComponent<Animator>();
+            ComponentSearch();
+            EventManager.ActionAddHandler(EVENT.RoundEnd, EndGame);
             UIManager.Instance.InstantiateInGameUI(this);
             canBarrellRoll = true;
             canTurn = true;
@@ -276,6 +454,17 @@ public class Herbivore : Character
     {
         if (isLocalPlayer)
         {
+            if (end) return;
+
+            if (Input.GetKeyDown(KeyCode.Space)) //debug
+                TakeDamage(1);
+
+            if (Input.GetKeyDown(KeyCode.Q)) //also debug
+            {
+                ToggleCloak();
+
+            }
+
             base.Update();
             Dash();
             InteractionChecker();
@@ -287,13 +476,17 @@ public class Herbivore : Character
     {
         if (isLocalPlayer)
         {
+            if (end) return;
             base.FixedUpdate();
             if (!CameraClone.GetComponent<CameraController>().FreeCamera)
             {
                 MouseMove();
             }
+            AnimationChanger();
             ApplyMovement();
         }
     }
+
+    #endregion
 
 }

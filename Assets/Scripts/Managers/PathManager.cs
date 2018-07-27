@@ -27,6 +27,9 @@ public class PathManager : NetworkBehaviour
 
 #pragma warning restore
 
+    /// <summary>
+    /// Assigns nodes to the locationContainer child positions
+    /// </summary>
     public void NodeAssign()
     {
         locationContainer = GameObject.Find("LocationContainer");
@@ -62,8 +65,10 @@ public class PathManager : NetworkBehaviour
         }
     }
 
-
-    public void SpawnFish() //instantiate a fish in random node position
+    /// <summary>
+    /// Instantiates a fish to random node
+    /// </summary>
+    public void SpawnFish() 
     {
         if (isServer)
         {
@@ -85,6 +90,11 @@ public class PathManager : NetworkBehaviour
         return prevNode.neighbors[Random.Range(0, prevNode.neighbors.Count)];
     }
 
+    /// <summary>
+    /// Finds the closest node from current node when fish has reached it
+    /// </summary>
+    /// <param name="startPos"></param>
+    /// <returns></returns>
     public Node GetClosestNode(Vector3 startPos) //Find closest node for fish using Physics.Linecast (used when fish returns to path)
     {
         float tempDist = 100;
@@ -107,7 +117,7 @@ public class PathManager : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
-        EventManager.ActionAddHandler(EVENT.DoAction, NodeAssign);
+        EventManager.ActionAddHandler(EVENT.Node, NodeAssign);
         EventManager.ActionAddHandler(EVENT.Increase, SpawnFish);
     }
 }

@@ -8,11 +8,8 @@ public class FishController : NetworkBehaviour
     public PathManager pathManager;
     public Node node;
     private LayerMask obstacleMask;
-    private Vector3 movement;
     private Vector3 lookDir;
     private Vector3 reference;
-    private Vector3 start;
-    private float startTime;
     private enum States { roam, chased };
     States curState = States.roam;
 
@@ -72,7 +69,6 @@ public class FishController : NetworkBehaviour
         pathManager = FindObjectOfType<PathManager>();
         node = pathManager.GetClosestNode(transform.position);
         obstacleMask = pathManager.obstacleLayer;
-        startTime = Time.time;
 
     }
 
@@ -95,7 +91,6 @@ public class FishController : NetworkBehaviour
                 }
                 else
                 {
-                    start = transform.position;
                     node = pathManager.GetNextNode(transform.position, node);
                     lookDir = node.position;
                     RpcLook(lookDir);
@@ -104,7 +99,7 @@ public class FishController : NetworkBehaviour
             else if (curState == States.chased)
             {
                 //Move forward for a given time and avoid obstacles
-                movement = (Vector3.forward * pathManager.escapeSpeed * Time.deltaTime);
+                RpcMovement(-pathManager.enemy.transform.position);
                 CheckObstacles();
                 Debug.DrawRay(transform.position, transform.forward * 1.5f, Color.green);
 

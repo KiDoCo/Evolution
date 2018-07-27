@@ -160,7 +160,6 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
 
     public void CmdOnDecreaseFood(float food)
     {
-        Debug.Log("ASDF");
         AmountOfFood = food;
     }
 
@@ -187,6 +186,7 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
         }
 
     }
+
     /// <summary>
     /// Calculates the scaling of an box object which is a child 
     /// </summary>
@@ -212,12 +212,13 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
         Eaten = false;
     }
 
-    //Unity methods
+    #region unityMethods
+
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
         source = GetComponent<AudioSource>();
-        Gamemanager.Instance.FoodPlaceList.Add(gameObject);
+        InGameManager.Instance.FoodPlaceList.Add(gameObject);
     }
 
     public void Start()
@@ -232,4 +233,7 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
 
         CoolDownTime -= Time.deltaTime;
     }
+
+    #endregion
+
 }

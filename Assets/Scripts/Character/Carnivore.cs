@@ -11,7 +11,7 @@ public class Carnivore : Character
     //character stats
     public float stamina;
     private bool isEating;
-    private const float staminaValue = 20.0f;
+    private int killCount;
 
     #region Charge Variables
 
@@ -32,7 +32,7 @@ public class Carnivore : Character
     //Eat
     [SerializeField] private float eatCooldown;
     [SerializeField] private float xpReward;
-    [SerializeField] private float damage;
+    [SerializeField] private float damage = 1;
     [SerializeField] [Range(0, 1)] private float slowDown;
 
     #endregion
@@ -49,6 +49,19 @@ public class Carnivore : Character
         }
     }
 
+    public int KillCount
+    {
+        get
+        {
+            return killCount;
+        }
+
+        set
+        {
+            killCount = value;
+        }
+    }
+
     //methods
 
     protected override void AnimationChanger()
@@ -58,28 +71,66 @@ public class Carnivore : Character
         m_animator.SetBool("IsCharging", charging);
     }
 
+    protected override void EndGame()
+    {
+        end = true;
+        UIManager.Instance.MatchResultScreen(this);
+    }
+
+    public void RestoreSpeed()
+    {
+        defaultSpeed = 1.0f;
+    }
+
+    private void ComponentSearch()
+    {
+        m_animator = gameObject.GetComponent<Animator>();
+        cameraClone = Instantiate(cameraClone);
+        cameraClone.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
+        playerCam = CameraClone.GetComponent<Camera>();
+    }
+
     #region EatMethods
 
+    /// <summary>
+    /// checks if carnivore hits the player and starts invoking eat
+    /// </summary>
     private void EatChecker()
     {
-        for (int i = 0; i < Gamemanager.Instance.HerbivorePrefabs.ToArray().Length; i++)
+        for (int i = 0; i < InGameManager.Instance.HerbivorePrefabs.ToArray().Length; i++)
         {
-            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
+            if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
             {
-                Eat(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
+                Eat(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
             }
         }
     }
 
+    /// <summary>
+    /// Damages the herbivore if player presses the eat button
+    /// </summary>
+    /// <param name="col"></param>
     private void Eat(Character col)
     {
         if (col.GetType() == typeof(Herbivore))
         {
-            Herbivore vor = col as Herbivore;
-            Debug.Log("mums, mums....");
-            StartCoroutine(EatCoolDown());
-            EatHerbivore(xpReward, slowDown);
-            vor.GetEaten(damage);
+            if (InputManager.Instance.GetButton("Eat"))
+            {
+                Herbivore vor = col as Herbivore;
+                Debug.Log("mums, mums....");
+                StartCoroutine(EatCoolDown());
+                EatHerbivore(slowDown, vor.Health);
+                vor.GetEaten(damage);
+            }
+        }
+    }
+
+    public void EatHerbivore(float slow, float hp)
+    {
+        defaultSpeed *= slow;
+        if (hp <= 0)
+        {
+            killCount++;
         }
     }
 
@@ -147,13 +198,20 @@ public class Carnivore : Character
     protected override void ApplyMovement()
     {
         inputVector = X + Y + Z;
-        transform.Translate(inputVector);
+        isMoving = InputVector.normalized.magnitude != 0 ? true : false;
+        if (!hitTarget || CollisionCheck())
+        {
+            transform.Translate(inputVector);
+        }
     }
 
     #endregion
 
     #region ChargeMethods
 
+    /// <summary>
+    /// Non overloaded method that is called in update
+    /// </summary>
     private void Charge()
     {
         if (InputManager.Instance.GetButton("Ability"))
@@ -167,8 +225,8 @@ public class Carnivore : Character
         }
         else
         {
-            if(momentumTimer != 0)
-            momentumTimer = 0;
+            if (momentumTimer != 0)
+                momentumTimer = 0;
         }
         GetComponent<Carnivore>().Z += (Vector3.forward * momentumTimer * speed) * Time.deltaTime;
     }
@@ -194,11 +252,11 @@ public class Carnivore : Character
         {
             Mathf.Lerp(playerCam.fieldOfView, playerCam.fieldOfView + 2 * momentumTimer, 10 * Time.deltaTime);
             FieldOfView += momentumTimer;
-            for (int i = 0; i < Gamemanager.Instance.HerbivorePrefabs.ToArray().Length; i++)
+            for (int i = 0; i < InGameManager.Instance.HerbivorePrefabs.ToArray().Length; i++)
             {
-                if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
+                if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
                 {
-                    HitCheck(Gamemanager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
+                    HitCheck(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
 
                 }
             }
@@ -228,6 +286,10 @@ public class Carnivore : Character
         onCooldown = false;
     }
 
+    /// <summary>
+    /// Checks if we hit herbivore during charge
+    /// </summary>
+    /// <param name="herb"></param>
     private void HitCheck(Character herb)
     {
         if (herb.GetType() == typeof(Herbivore) && charging)
@@ -238,17 +300,18 @@ public class Carnivore : Character
             {
                 Debug.Log("Kill herbivore");
                 //Kill target
-                vor.gameObject.GetComponent<Herbivore>().GetEaten(500);
+                vor.GetEaten(damage * 2);
+                EatHerbivore(0.5f, vor.Health);
             }
             else
             {
                 Debug.Log("Hurt herbivore");
                 //1 damage
-                vor.gameObject.GetComponent<Herbivore>().GetEaten(1);
+                vor.GetEaten(damage);
             }
             hitTarget = true;
         }
-        else if (GetComponent<Carnivore>().CollisionCheck() && charging)
+        else if (CollisionCheck() && charging)
         {
             Debug.Log("osu");
             hitTarget = true;
@@ -258,15 +321,7 @@ public class Carnivore : Character
 
     #endregion
 
-    public void EatHerbivore(float xp, float slow)
-    {
-        defaultSpeed *= slow;
-    }
-
-    public void RestoreSpeed()
-    {
-        defaultSpeed = 1.0f;
-    }
+    #region UnityMethods
 
     protected override void Awake()
     {
@@ -278,13 +333,9 @@ public class Carnivore : Character
         if (isLocalPlayer)
         {
             base.Start();
-            m_animator = gameObject.GetComponent<Animator>();
-            stamina = staminaValue;
-            cameraClone = Instantiate(cameraClone);
-            cameraClone.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
-            cameraClone.name = "FollowCamera";
+            ComponentSearch();
             UIManager.Instance.InstantiateInGameUI(this);
-            playerCam = GetComponent<Carnivore>().CameraClone.GetComponent<Camera>();
+            EventManager.ActionAddHandler(EVENT.RoundEnd, EndGame);
             defaultFov = playerCam.fieldOfView;
             slowDown = 1 - slowDown;
         }
@@ -320,5 +371,6 @@ public class Carnivore : Character
         }
     }
 
+    #endregion
 }
 

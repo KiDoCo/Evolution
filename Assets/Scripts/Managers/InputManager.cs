@@ -11,13 +11,13 @@ public enum KeyInput { Horizontal, Vertical, Rotation, Jump, Ability, Eat }
 public class InputManager : MonoBehaviour
 {
 
-    public static InputManager      Instance;
-    private int                     xboxController = 0;
-    private int                     playstationController = 0;
-    private bool                    waitingForKey;
-    private bool                    coroutinerunning;
-    private StoredInformation       storage;
-    private string                  gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
+    public static InputManager Instance;
+    private int xboxController = 0;
+    private int playstationController = 0;
+    private bool waitingForKey;
+    private bool coroutinerunning;
+    private StoredInformation storage;
+    private string gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
 
     //Lists and dictionaries
     [SerializeField]
@@ -127,7 +127,7 @@ public class InputManager : MonoBehaviour
 
     public void LoadAllAxes()
     {
-        storage.configurations.Sort((x,y) => x.AxisName.CompareTo(y.AxisName));
+        storage.configurations.Sort((x, y) => x.AxisName.CompareTo(y.AxisName));
         inputAxes = storage.configurations;
     }
 
@@ -204,7 +204,7 @@ public class InputManager : MonoBehaviour
         }
         else
         {
-            for(int i = 0; i < inputAxes.Capacity; i++)
+            for (int i = 0; i < inputAxes.Capacity; i++)
             {
                 AssignKeyboardInput(inputAxes[i]);
             }
@@ -213,81 +213,82 @@ public class InputManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        for(int i = 0; i < inputAxes.Count; i++)
+        for (int i = 0; i < inputAxes.Count; i++)
         {
             AxisBase a = inputAxes[i];
 
             a.negative = (Input.GetKey(a.Nkey));
             a.positive = (Input.GetKey(a.Pkey));
 
-            if(a.negative)
+            if (a.negative)
             {
                 a.TargetAxis--;
             }
 
-            if(a.positive)
+            if (a.positive)
             {
                 a.TargetAxis++;
             }
 
-            if(!a.positive && !a.negative)
+            if (!a.positive && !a.negative)
             {
                 a.TargetAxis = 0;
             }
-            
+
             a.Axis = Mathf.MoveTowards(a.Axis, a.TargetAxis, Time.deltaTime * a.Sensitivity);
         }
     }
     #endregion
+
 }
 
-#region Serialized Classes
-//No touchie boios
+    #region Serialized Classes
+    //No touchie boios
 
-[System.Serializable]
-public class StoredInformation
-{
-    public List<AxisBase> configurations = new List<AxisBase>();
-    public string SaveToString()
+    [System.Serializable]
+    public class StoredInformation
     {
-        return JsonUtility.ToJson(this);
-    }
-}
-
-[System.Serializable]
-public class AxisBase
-{
-    public string AxisName;
-
-    public KeyCode Pkey;
-    public KeyCode Nkey;
-    [HideInInspector]
-    public bool positive;
-    [HideInInspector]
-    public bool negative;
-    [HideInInspector]
-    public float Axis;
-    private float targetAxis;
-    public float Sensitivity = 3;
-    public string PkeyDescription;
-    public string NkeyDescription;
-    [HideInInspector]
-    public AxisButton NUIButton;
-    [HideInInspector]
-    public AxisButton PUIButton;
-
-    public float TargetAxis
-    {
-        get
+        public List<AxisBase> configurations = new List<AxisBase>();
+        public string SaveToString()
         {
-            return targetAxis;
-        }
-
-        set
-        {
-            targetAxis = Mathf.Clamp(value, -1, 1);
+            return JsonUtility.ToJson(this);
         }
     }
 
-}
-#endregion
+    [System.Serializable]
+    public class AxisBase
+    {
+        public string AxisName;
+
+        public KeyCode Pkey;
+        public KeyCode Nkey;
+        [HideInInspector]
+        public bool positive;
+        [HideInInspector]
+        public bool negative;
+        [HideInInspector]
+        public float Axis;
+        private float targetAxis;
+        public float Sensitivity = 3;
+        public string PkeyDescription;
+        public string NkeyDescription;
+        [HideInInspector]
+        public AxisButton NUIButton;
+        [HideInInspector]
+        public AxisButton PUIButton;
+
+        public float TargetAxis
+        {
+            get
+            {
+                return targetAxis;
+            }
+
+            set
+            {
+                targetAxis = Mathf.Clamp(value, -1, 1);
+            }
+        }
+
+    }
+    #endregion

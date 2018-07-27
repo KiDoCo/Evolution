@@ -8,13 +8,14 @@ Shader "Hidden/Toony Colors Pro 2/Variants/Desktop Specular Reflection Rim Outli
 	Properties
 	{
 		//TOONY COLORS
-		_Color ("Color", Color) = (1,1,1,1)
+		_Color ("_Color", Color) = (1,1,1,1)
 		_HColor ("Highlight Color", Color) = (0.785,0.785,0.785,1.0)
 		_SColor ("Shadow Color", Color) = (0.195,0.195,0.195,1.0)
 		
 		//DIFFUSE
 		_MainTex ("Main Texture (RGB) Spec/Refl Mask (A) ", 2D) = "white" {}
-		
+		_Glossiness("_Glossiness", Range(0.000000,1.000000)) = 0.500000
+		_BumpAmt("_BumbAmt", Float) = 1.000000
 		//TOONY COLORS RAMP
 		[TCP2Gradient] _Ramp ("#RAMPT# Toon Ramp (RGB)", 2D) = "gray" {}
 		_RampThreshold ("#RAMPF# Ramp Threshold", Range(0,1)) = 0.5
@@ -81,9 +82,10 @@ Shader "Hidden/Toony Colors Pro 2/Variants/Desktop Specular Reflection Rim Outli
 		
 		fixed4 _Color;
 		sampler2D _MainTex;
-		
+		float4    _Glossiness;
 	#if TCP2_BUMP
 		sampler2D _BumpMap;
+		float3	  _BumpAmt;
 	#endif
 		fixed _Shininess;
 	#if TCP2_REFLECTION || TCP2_REFLECTION_MASKED
@@ -154,13 +156,12 @@ Shader "Hidden/Toony Colors Pro 2/Variants/Desktop Specular Reflection Rim Outli
 			half4 c = tex2D(_MainTex, IN.uv_MainTex);
 			o.Albedo = c.rgb * _Color.rgb;
 			o.Alpha = c.a * _Color.a;
-			
 			//Specular
-			o.Gloss = c.a;
+			o.Gloss = c.a + _Glossiness.a;
 			o.Specular = _Shininess;
 	#if TCP2_BUMP
 			//Normal map
-			o.Normal = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
+			o.Normal = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap)) + _BumpAmt;
 	#endif
 	#if TCP2_REFLECTION || TCP2_REFLECTION_MASKED
 			

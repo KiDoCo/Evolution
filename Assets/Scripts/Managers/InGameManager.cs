@@ -6,24 +6,28 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
+public enum PredatorRanks { ApexPredator,FishersPrey,Pacifish}
 
-public class Gamemanager : NetworkBehaviour
+public class InGameManager : NetworkBehaviour
 {
     //Ingnore pragmas for unnecessary warnings
 #pragma warning disable
 
-    public static Gamemanager Instance;
+    public static InGameManager Instance;
 
     //Match variables
-    private const float startingMatchTimer = 5.0f; //time value in minutes
+    private const float startingMatchTimer = 10.0f; //time value in minutes
     private const float minutesToSeconds = 60.0f;//converting value
     private const float interval = 0.1f; //The time in seconds that spawning will happen
     private const float deathPenaltyTime = 2.0f;
     private const float experiencePenalty = 25.0f;
+    [SyncVar(hook = "Timer")]
     private float matchTimer;
+    private float startMatchTimer;
     private int lifeCount;
     private const int maxLifeCount = 2;
     private GameObject deathCameraPlace;
+    private bool StartingMatch = true;
 
     //Gamemanager lists
     private List<GameObject> carnivorePrefabs = new List<GameObject>();
@@ -55,7 +59,7 @@ public class Gamemanager : NetworkBehaviour
 
         set
         {
-            matchTimer = value;
+            matchTimer = Mathf.Clamp(value,0,Mathf.Infinity);
         }
     }
 
@@ -80,6 +84,27 @@ public class Gamemanager : NetworkBehaviour
         }
     }
 
+    public int LifeCount
+    {
+        get
+        {
+            return lifeCount;
+        }
+
+        set
+        {
+            lifeCount = value;
+        }
+    }
+
+    public float StartMatchTimer
+    {
+        get
+        {
+            return startMatchTimer;
+        }
+    }
+
     #endregion
 
     //Methods
@@ -92,11 +117,17 @@ public class Gamemanager : NetworkBehaviour
         EventManager.Broadcast(EVENT.Increase);
     }
 
+    private void Timer(float time)
+    {
+        MatchTimer = time;
+    }
+
     /// <summary>
     /// Starts the match between players. Must be called after loading the game scene
     /// </summary>
     private IEnumerator StartMatch()
     {
+
         if (!isServer)
         {
             for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
@@ -112,16 +143,16 @@ public class Gamemanager : NetworkBehaviour
         {
             Destroy(FoodSpawnPointList[a].gameObject);
         }
-        lifeCount = maxLifeCount;
+        LifeCount = maxLifeCount;
 
-        MatchTimer = startingMatchTimer * minutesToSeconds;
 
+        startMatchTimer = MatchTimer = startingMatchTimer * minutesToSeconds;
         yield return SpawnFoodSources();
-        EventManager.Broadcast(EVENT.DoAction);
+        EventManager.Broadcast(EVENT.Node);
         FoodSpawnPointList.Clear();
         deathCameraPlace = new GameObject();
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
-        yield return matchTimer;
+        yield return StartingMatch = false;
 
     }
 
@@ -134,8 +165,8 @@ public class Gamemanager : NetworkBehaviour
     {
         player.gameObject.SetActive(false);
         yield return new WaitForSeconds(deathPenaltyTime);
-        player.gameObject.SetActive(true);
         player.Experience -= experiencePenalty;
+        player.gameObject.SetActive(true);
         EventManager.SoundBroadcast(EVENT.PlayMusic, player.GetComponent<AudioSource>(), (int)MusicEvent.Ambient);
         yield return null;
     }
@@ -145,13 +176,14 @@ public class Gamemanager : NetworkBehaviour
     /// </summary>
     private void EndMatch()
     {
+        StartingMatch = true;
         /*
         stop players movement
         match result for remaining players
         insert function to kill server after x seconds 
         and return remaining players to lobby/menu screen
         */
-        EventManager.Broadcast(EVENT.RoundEnd);
+        Debug.Log("End");
         CancelInvoke();
         //killserver
     }
@@ -159,9 +191,10 @@ public class Gamemanager : NetworkBehaviour
     /// <summary>
     /// Ends the match for a single player
     /// </summary>
-
     public void EndMatchForPlayer(Character player)
     {
+        StartingMatch = true;
+        player.End = true;
         //some client magix röh röh
 
         //Remove player from list and place camera to fixed point of the map
@@ -198,9 +231,9 @@ public class Gamemanager : NetworkBehaviour
     /// <param name="player"></param>
     public void RespawnPlayer(Herbivore player)
     {
-        if (lifeCount > 0)
+        if (LifeCount > 0)
         {
-            lifeCount--;
+            LifeCount--;
             StartCoroutine(Respawn(player));
         }
         else
@@ -238,8 +271,12 @@ public class Gamemanager : NetworkBehaviour
         Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
     }
 
+    /// <summary>
+    /// loads the game /debug perhaps
+    /// </summary>
     public void LoadGame()
     {
+        StartingMatch = true;
         StartCoroutine(StartMatch());
     }
 
@@ -247,7 +284,16 @@ public class Gamemanager : NetworkBehaviour
 
     private void Update()
     {
-        if (MatchTimer <= 0 && SceneManager.GetActiveScene().name == "Demoscene")
+        if (StartingMatch) return;
+
+        MatchTimer -= Time.deltaTime;
+
+        if(Input.GetKeyDown(KeyCode.O))
+        {
+            MatchTimer -= 20;
+        }
+
+        if (MatchTimer <= 0 && SceneManager.GetActiveScene().name == gameScene)
         {
             EventManager.Broadcast(EVENT.RoundEnd);
         }
@@ -256,13 +302,13 @@ public class Gamemanager : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
+        SceneManager.LoadSceneAsync(menuScene);
     }
 
     private void Start()
     {
         LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
-        SceneManager.LoadSceneAsync("Menu");
     }
 
     public void Blood()

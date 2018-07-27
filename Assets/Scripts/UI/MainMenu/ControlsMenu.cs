@@ -37,6 +37,9 @@ public class ControlsMenu : MonoBehaviour
         CreateAxisButtons();
     }
 
+    /// <summary>
+    /// Creates the rebind buttons
+    /// </summary>
     private void CreateAxisButtons()
     {
         foreach (AxisBase a in Axes)
@@ -58,8 +61,6 @@ public class ControlsMenu : MonoBehaviour
             }
         }
     }
-
-
 
     public void ChangeInputKey(string name, KeyCode newKey,bool negative = false)
     {
@@ -84,6 +85,11 @@ public class ControlsMenu : MonoBehaviour
         InputManager.Instance.AssignKeyboardInput(a);
     }
 
+    /// <summary>
+    /// Searches the axis 
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private AxisBase ReturnAxis(string name)
     {
         AxisBase retVal = null;
@@ -107,6 +113,9 @@ public class ControlsMenu : MonoBehaviour
         negativeKey = negative;
     }
 
+    /// <summary>
+    /// Closes button binding dialogue
+    /// </summary>
     private void CloseRebinding()
     {
         rebinding = false;
@@ -115,10 +124,15 @@ public class ControlsMenu : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Cancels the button binding
+    /// </summary>
     public void CancelRebinding()
     {
         CloseRebinding();
     }
+
+    #region unitymethods
 
     private void Awake()
     {
@@ -171,4 +185,6 @@ public class ControlsMenu : MonoBehaviour
             }
         }
     }
+
+    #endregion
 }

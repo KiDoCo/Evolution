@@ -13,23 +13,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject matchResultScreen;
     [SerializeField] private GameObject helixCamera;
 
-    private void DisplayTime()
-    {
-        // Gamemanager.Instance.MatchTimer / 60;
-    }
-
     private void InstantiateMainMenuUI()
     {
 
-    }
+    } //Eh
 
     #region MatchUI
 
 
-    private void MatchResultScreen(Character source)
-    {
-
-    }
     public void InstantiateInGameUI(Character source)
     {
         Instantiate(hud);
@@ -43,16 +34,35 @@ public class UIManager : MonoBehaviour
             cameraClone.transform.rotation = Quaternion.Euler(90, 180, 0);
         }
     }
-    //Match UI
+
     public void UpdateMatchUI(Herbivore source)
     {
         HUDController.Instance.MaxHealth = (int)source.Maxhealth;
         HUDController.Instance.CurProgress = source.Experience;
         HUDController.Instance.CurHealth = (int)source.Health;
     }
+
+    /// <summary>
+    /// Calls the hudcontroller to print the desired screen
+    /// </summary>
+    /// <param name="source"></param>
+    public void MatchResultScreen(Character source)
+    {
+        if(source.GetType() == typeof(Herbivore))
+        {
+            var a = source.GetComponent<Herbivore>();
+            HUDController.Instance.ResultScreen(a.Experience, a.Deathcount, InGameManager.Instance.MatchTimer, a.SurTime, true);
+        }
+        else if(source.GetType() == typeof(Carnivore))
+        {
+            var a = source.GetComponent<Carnivore>();
+            HUDController.Instance.ResultScreen(a.KillCount, a.KillCount,InGameManager.Instance.MatchTimer,0, false);
+        }
+    }
+
     #endregion
 
-    //unity methods
+    #region UnityMethods
 
     private void Awake()
     {
@@ -63,7 +73,6 @@ public class UIManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-
             Cursor.lockState = CursorLockMode.Locked;
         }
 
@@ -72,4 +81,6 @@ public class UIManager : MonoBehaviour
             PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
         }
     }
+
+    #endregion
 }
