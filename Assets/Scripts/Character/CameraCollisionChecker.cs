@@ -4,111 +4,38 @@ using UnityEngine;
 
 public class CameraCollisionChecker : MonoBehaviour
 {
-    public Transform target;
+    float castDistance;
+    public LayerMask collisionMask;
+    RaycastHit[] hits = new RaycastHit[10];
+    int hitCount;
+    CapsuleCollider col;
+    float Height;
 
-    public float targetHeight = 1.7f;
-    public float distance = 5.0f;
-
-    public float maxDistance = 20;
-    public float minDistance = .6f;
-
-    public float xSpeed = 250.0f;
-    public float ySpeed = 120.0f;
-
-    public int yMinLimit = -80;
-    public int yMaxLimit = 80;
-
-    public int zoomRate = 40;
-
-    public float rotationDampening = 3.0f;
-    public float zoomDampening = 5.0f;
-
-    private float x = 0.0f;
-    private float y = 0.0f;
-    private float currentDistance;
-    private float desiredDistance;
-    private float correctedDistance;
-
-    void Start()
+    private void Start()
     {
-        Vector3 angles = transform.eulerAngles;
-        x = angles.x;
-        y = angles.y;
-
-        currentDistance = distance;
-        desiredDistance = distance;
-        correctedDistance = distance;
-
+        col = GetComponent<CapsuleCollider>();
     }
 
-    /**
-     * Camera logic on LateUpdate to only update after all character movement logic has been handled.
-     */
-    void LateUpdate()
+    private void FixedUpdate()
     {
-        // Don't do anything if target is not defined
-        if (!target)
-            return;
+        Vector3 direction = transform.forward;
 
-        // If either mouse buttons are down, let the mouse govern camera position
-        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
-        {
-            x += Input.GetAxis("Mouse X") * xSpeed * 0.02f;
-            y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
-        }
-        // otherwise, ease behind the target if any of the directional keys are pressed
-        else if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
-        {
-            float targetRotationAngle = target.eulerAngles.y;
-            float currentRotationAngle = transform.eulerAngles.y;
-            x = Mathf.LerpAngle(currentRotationAngle, targetRotationAngle, rotationDampening * Time.deltaTime);
-        }
+        float distanceToPoints = col.height / 2 - col.radius;
+        Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
+        Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
+        float radius = col.radius;
+        Height = col.height;
 
-        y = ClampAngle(y, yMinLimit, yMaxLimit);
 
-        // set camera rotation
-        Quaternion rotation = Quaternion.Euler(y, x, 0);
+        hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, 1f, collisionMask, QueryTriggerInteraction.Ignore);
 
-        // calculate the desired distance
-        desiredDistance -= Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * zoomRate * Mathf.Abs(desiredDistance);
-        desiredDistance = Mathf.Clamp(desiredDistance, minDistance, maxDistance);
-        correctedDistance = desiredDistance;
-
-        // calculate desired camera position
-        Vector3 position = target.position - (rotation * Vector3.forward * desiredDistance + new Vector3(0, -targetHeight, 0));
-
-        // check for collision using the true target's desired registration point as set by user using height
-        RaycastHit collisionHit;
-        Vector3 trueTargetPosition = new Vector3(target.position.x, target.position.y + targetHeight, target.position.z);
-
-        // if there was a collision, correct the camera position and calculate the corrected distance
-        bool isCorrected = false;
-        if (Physics.Linecast(trueTargetPosition, position, out collisionHit))
-        {
-            position = collisionHit.point;
-            correctedDistance = Vector3.Distance(trueTargetPosition, position);
-            isCorrected = true;
-        }
-
-        // For smoothing, lerp distance only if either distance wasn't corrected, or correctedDistance is more than currentDistance
-        currentDistance = !isCorrected || correctedDistance > currentDistance ? Mathf.Lerp(currentDistance, correctedDistance, Time.deltaTime * zoomDampening) : correctedDistance;
-
-        // recalculate position based on the new currentDistance
-        position = target.position - (rotation * Vector3.forward * currentDistance + new Vector3(0, -targetHeight, 0));
-
-        transform.rotation = rotation;
-        transform.position = position;
+        for ()
     }
 
-    private static float ClampAngle(float angle, float min, float max)
-    {
-        if (angle < -360)
-            angle += 360;
-        if (angle > 360)
-            angle -= 360;
-        return Mathf.Clamp(angle, min, max);
-    }
-
+    //private void Update()
+    //{
+    //    Vector3 desiredCameraPoint = target
+    //}
 
     //Cast ray from camera to player to check if anything in between or if camera colliding
     //Find near clip plane points of camera (left-up, right-up, left-down, right-down, camera-position)

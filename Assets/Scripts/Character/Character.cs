@@ -459,7 +459,7 @@ public abstract class Character : MonoBehaviour
                 curNormal = hitInfo.normal;
                 colPoint = hitInfo.point;
 
-                if (Physics.Raycast(rayRight, (radius*0.05f)) && Physics.Raycast(rayLeft, (radius * 0.05f)))
+                if (Physics.Raycast(rayRight, radius) && Physics.Raycast(rayLeft, radius))
                 {                  
                     print("both sides collision");
                     bothSidesCol = true;
@@ -478,7 +478,7 @@ public abstract class Character : MonoBehaviour
 
 
             //check if character can fit through caves etc. and if character collides head first
-            if (Physics.CapsuleCast(point1, point2, radius, transform.forward, out hitInfo, (castDistance)) || Physics.CapsuleCast(point1, point2, radius, transform.up, out hitInfo, radius *0.2f) || Physics.CapsuleCast(point1, point2, radius, -transform.up, out hitInfo, radius))
+            if (Physics.CapsuleCast(point1, point2, radius, dir, out hitInfo, castDistance) || Physics.CapsuleCast(point1, point2, radius, transform.up, out hitInfo, radius) || Physics.CapsuleCast(point1, point2, radius, -transform.up, out hitInfo, radius))
             {
                 print(groundAngle);
                 canMove = false;

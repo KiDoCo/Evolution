@@ -38,6 +38,13 @@ public class CameraController : MonoBehaviour
     [SerializeField] protected float lookSmooth = 100f;
     [SerializeField] protected Vector3 pivotPos = new Vector3(0, 0, 0);
 
+    [Header("Collision varibles")]
+    public float MinDistance = 0.5f;
+    public float MaxDistance = 2.0f;
+    public float smoothTime;
+    float duration = 2;
+    float startTime;
+
 #pragma warning restore
     public Transform Target
     {
@@ -52,14 +59,26 @@ public class CameraController : MonoBehaviour
         }
     }
 
+
     private void Start()
     {
         resetPos = cameraOffset;
         m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
         distanceDamp = distanceDampValue;
         rotationalDamp = rotationalDampValue;
+
+        startTime = Time.time;
     }
 
+    private void Update()
+    {
+        smoothTime = (Time.time - startTime)/ duration;
+
+        if(smoothTime >= 1)
+        {
+            smoothTime = 0;
+        }
+    }
 
     void FixedUpdate()
     {
@@ -71,8 +90,8 @@ public class CameraController : MonoBehaviour
         SetDampening();
         ControlCamera();
         SmoothFollow();
-        //SmoothRotate(); //rotation method1
-        FollowRot(); //alternative rotation method
+        SmoothRotate(); //rotation method1
+        //FollowRot(); //alternative rotation method
         Stabilize();
         Restrict();
     }
@@ -91,22 +110,12 @@ public class CameraController : MonoBehaviour
 
         CameraCollision(ref actualZ, ref actualX, ref actualY);
 
-        //Vector3 correctedPos = new Vector3(actualX, actualY - 0.2f, actualZ);
-        //cameraOffset = correctedPos;
-        Vector3 targetP = cameraOffset;
-        targetP.z = Mathf.Lerp(targetP.z, actualZ, Time.deltaTime * 5);
-        targetP.x = Mathf.Lerp(targetP.x, actualX, Time.deltaTime * 5);
-        targetP.y = Mathf.Lerp(targetP.y, actualY, Time.deltaTime * 5);
+        Vector3 correctedPos = new Vector3(actualX, actualY - 0.2f, actualZ);
+        Vector3 targetP = correctedPos;
+        targetP.z = Mathf.Lerp(targetP.z, actualZ, Mathf.SmoothStep(0, 1, smoothTime));
+        targetP.x = Mathf.Lerp(targetP.x, actualX, Mathf.SmoothStep(0, 1, smoothTime));
+        targetP.y = Mathf.Lerp(targetP.y, actualY, Mathf.SmoothStep(0, 1, smoothTime));
         cameraOffset = targetP;
-        //velocity = targetP;
-
-        float targetFov = m_FieldOfView;
-
-        if (targetFov < 1)
-        {
-            targetFov = 1;
-        }
-        Camera3rd.fieldOfView = Mathf.Lerp(Camera3rd.fieldOfView, targetFov, Time.deltaTime * 5);
     }
 
     void CameraCollision(ref float actualZ, ref float actualX, ref float actualY)
@@ -119,10 +128,10 @@ public class CameraController : MonoBehaviour
         RaycastHit hit;
         Vector3 dir = transform.forward;
 
-        if (Physics.SphereCast(target.position,0.5f, dir, out hit, step))
+
+        if (Physics.Linecast(target.position, new Vector3(actualX, actualY, actualZ), out hit))
         {
-            float distance = Vector3.Distance(hit.point, target.position);
-            actualZ = -(distance * 0.5f);
+            actualZ = -Mathf.Clamp((hit.distance * 0.9f), MinDistance, MaxDistance);
         }
 
         for (int s = 0; s < stepCount + 1; s++)
@@ -146,24 +155,19 @@ public class CameraController : MonoBehaviour
                     case 3:
                         direction = -transform.up;
                         break;
+                    default:
+                        direction = -transform.forward;
+                        break;
                 }
 
                 Debug.DrawRay(secondOrigin, direction, Color.red);
 
-                if (Physics.Raycast(secondOrigin, direction, out hit, 1))
+                if (Physics.Linecast(secondOrigin, direction, out hit))
                 {
-                    float distanceZ = Vector3.Distance(secondOrigin, target.position);
-                    actualZ = -(distanceZ * 0.5f);
-
-                    float distanceX = Vector3.Distance(secondOrigin, hit.point);
-                    actualX = -(distanceX * 0.5f);
-
-                    //float distanceY = Vector3.Distance(secondOrigin, hit.point);
-                    //actualY = -(distanceY * 0.5f);
-
+                    float distance = Vector3.Distance(secondOrigin, target.position);
+                    actualZ = -(distance * 0.5f);
                 }
             }
-
         }
     }
 
@@ -180,6 +184,11 @@ public class CameraController : MonoBehaviour
         {
             float x = transform.eulerAngles.x;
             transform.Rotate(-x, 0, 0);
+        }
+        if(transform.rotation.y > 75 || transform.rotation.y < -75)
+        {
+            float y = transform.eulerAngles.y;
+            transform.Rotate(0, -y, 0);
         }
     }
 
