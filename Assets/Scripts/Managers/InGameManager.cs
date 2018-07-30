@@ -22,8 +22,6 @@ public class InGameManager : NetworkBehaviour
     private const float deathPenaltyTime   = 2.0f;
     private const float experiencePenalty  = 25.0f;
     private const float endScreenTime      = 20f;
-    [SyncVar(hook = "Timer")]
-    private float matchTimer;
     private float startMatchTimer;
     [SyncVar (hook = "changeMatchTimer")] private float matchTimer;
     [SyncVar (hook = "changeLifeCount")] private int lifeCount;
@@ -53,7 +51,7 @@ public class InGameManager : NetworkBehaviour
 #pragma warning restore
     
     #region getters&setters
-    //Properties
+
     public float MatchTimer
     {
         get
@@ -120,17 +118,11 @@ public class InGameManager : NetworkBehaviour
         EventManager.Broadcast(EVENT.Increase);
     }
 
-    private void Timer(float time)
-    {
-        MatchTimer = time;
-    }
-
     /// <summary>
     /// Starts the match between players. Must be called after loading the game scene
     /// </summary>
     private IEnumerator StartMatch()
     {
-
         if (!isServer)
         {
             for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
@@ -146,17 +138,17 @@ public class InGameManager : NetworkBehaviour
         {
             Destroy(FoodSpawnPointList[a].gameObject);
         }
+
         LifeCount = maxLifeCount;
-
-
         startMatchTimer = MatchTimer = startingMatchTimer * minutesToSeconds;
+
         yield return SpawnFoodSources();
+
         EventManager.Broadcast(EVENT.AINodeSpawn);
         FoodSpawnPointList.Clear();
         deathCameraPlace = new GameObject();
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
         yield return StartingMatch = false;
-
     }
 
     /// <summary>
@@ -164,7 +156,7 @@ public class InGameManager : NetworkBehaviour
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
-    private IEnumerator Respawn(Character player)
+    private IEnumerator Respawn(Herbivore player)
     {
         player.EnablePlayer(false);
         // - Change camera to fixed camera

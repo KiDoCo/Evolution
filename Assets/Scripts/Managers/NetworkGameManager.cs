@@ -195,7 +195,7 @@ public class NetworkGameManager : NetworkLobbyManager {
             lobbyUI.SetActive(true);
             UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
-            Gamemanager.Instance.FoodPlaceList.Clear();
+            InGameManager.Instance.FoodPlaceList.Clear();
         }
     }
 

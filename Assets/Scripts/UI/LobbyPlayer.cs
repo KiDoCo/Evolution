@@ -20,7 +20,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     {
         get
         {
-            return Gamemanager.Instance.PlayerPrefabs[characterDropdown.options[playerType].text];
+            return InGameManager.Instance.PlayerPrefabs[characterDropdown.options[playerType].text];
         }
     }
 
@@ -43,7 +43,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         // Adds players to dropbox
         if (characterDropdown.options.Count == 0)
         {
-            characterDropdown.AddOptions(new List<string>(Gamemanager.Instance.PlayerPrefabs.Keys));
+            characterDropdown.AddOptions(new List<string>(InGameManager.Instance.PlayerPrefabs.Keys));
             characterDropdown.RefreshShownValue();
         }
 

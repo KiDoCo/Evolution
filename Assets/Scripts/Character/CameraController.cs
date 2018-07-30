@@ -65,11 +65,6 @@ public class CameraController : MonoBehaviour
         }
     }
 
-        if (target == null)
-        {
-            Debug.Log("Camera needs a target");
-            return;
-        }
     public void InstantiateCamera(Character test)
     {
         Target = test.transform;
@@ -109,15 +104,6 @@ public class CameraController : MonoBehaviour
             float x = transform.eulerAngles.x;
             transform.Rotate(-x, 0, 0);
         }
-    }
-
-    /// <summary>
-    /// Sets the camera target to fixed point
-    /// </summary>
-    /// <param name="source"></param>
-    public void CameraPlaceOnDeath(Character test)
-    {
-        test.CameraClone.GetComponent<CameraController>().Target = InGameManager.Instance.DeathCameraPlace.transform;
     }
 
     /// <summary>
@@ -227,7 +213,11 @@ public class CameraController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (target == null) Debug.LogError("Camera needs a target");
+        if (target == null)
+        {
+            Debug.Log("Camera needs a target");
+            return;
+        }
 
         //testiä varten
         if (Input.GetKey(KeyCode.R))

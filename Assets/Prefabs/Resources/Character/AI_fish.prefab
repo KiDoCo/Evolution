@@ -279,6 +279,7 @@ GameObject:
   - component: {fileID: 114511965082340136}
   - component: {fileID: 135531366913569424}
   - component: {fileID: 114442726829027454}
+  - component: {fileID: 54371877979949956}
   m_Layer: 0
   m_Name: AI_fish
   m_TagString: Untagged
@@ -630,7 +631,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &54371877979949956
 Rigidbody:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1896606498718602}

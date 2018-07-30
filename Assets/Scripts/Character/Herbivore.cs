@@ -118,8 +118,8 @@ public class Herbivore : Character
 
     protected override void AnimationChanger()
     {
-        m_animator.SetBool("isEating", eating);
-        m_animator.SetBool("isMoving", isMoving);
+        m_animator.SetBool("IsEating", eating);
+        m_animator.SetBool("IsMoving", isMoving);
     }
 
     protected void Death()

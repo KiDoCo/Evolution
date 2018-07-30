@@ -90,7 +90,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene && !Gamemanager.Instance.MatchEnd)
+        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene && !InGameManager.Instance.MatchEnd)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
