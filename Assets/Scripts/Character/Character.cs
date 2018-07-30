@@ -40,6 +40,7 @@ public abstract class Character : NetworkBehaviour
     private bool ready;
     protected bool eating;
     protected bool end;
+    protected bool inputEnabled = true;
 
     //timer bools
     [SerializeField] protected bool coolTimer;
@@ -76,6 +77,8 @@ public abstract class Character : NetworkBehaviour
     protected bool collided = false;
 
     #endregion
+
+    [SerializeField] protected Renderer playerMesh = null;
 
     //End variables
 
@@ -135,7 +138,19 @@ public abstract class Character : NetworkBehaviour
             end = value;
         }
     }
-
+    
+    public bool InputEnabled
+    {
+        get
+        {
+            return inputEnabled;
+        }
+        set
+        {
+            inputEnabled = value;
+        }
+    }
+    
     #endregion
 
     #region Movement methods
@@ -242,11 +257,28 @@ public abstract class Character : NetworkBehaviour
     /// </summary>
     protected virtual void Stabilize()
     {
-            float z = transform.eulerAngles.z;
-            transform.Rotate(0, 0, -z);
+        float z = transform.eulerAngles.z;
+        transform.Rotate(0, 0, -z);
     }
 
     protected abstract void EndGame();
+
+    [ServerCallback]
+    public void EnablePlayer(bool enabled)
+    {
+        playerMesh.enabled = enabled;
+        inputEnabled = enabled;
+        col.enabled = enabled;
+        RpcEnablePlayer(enabled);
+    }
+
+    [ClientRpc]
+    private void RpcEnablePlayer(bool enabled)
+    {
+        playerMesh.enabled = enabled;
+        col.enabled = enabled;
+        inputEnabled = enabled;
+    }
 
     #region Unity Methods
 
@@ -258,6 +290,12 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void Start()
     {
+        if (isLocalPlayer)
+        {
+            NetworkGameManager.Instance.LocalCharacter = this;
+        }
+
+        inputEnabled = true;
         accPerSec = maxSpeed / accTimeToMax;
         decPerSec = -maxSpeed / decTimeToMin;
         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);

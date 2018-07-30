@@ -65,6 +65,11 @@ public class CameraController : MonoBehaviour
         }
     }
 
+        if (target == null)
+        {
+            Debug.Log("Camera needs a target");
+            return;
+        }
     public void InstantiateCamera(Character test)
     {
         Target = test.transform;

@@ -220,10 +220,11 @@ GameObject:
   - component: {fileID: 82769841182586898}
   - component: {fileID: 114401673902600974}
   - component: {fileID: 114213708722299978}
-  - component: {fileID: 114706164050830802}
+  - component: {fileID: 114089988995669340}
+  - component: {fileID: 54280091110362696}
   m_Layer: 8
   m_Name: Carnivore
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -844,7 +845,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1445834569832970}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 210.45479, y: 6.809, z: 220.71548}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4689268266797434}
@@ -1034,6 +1035,21 @@ Transform:
   m_Father: {fileID: 4897727222533810}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &54280091110362696
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!82 &82769841182586898
 AudioSource:
   m_ObjectHideFlags: 1
@@ -1147,6 +1163,27 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114089988995669340
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 1
+  m_SendInterval: 0.1
+  m_SyncRotationAxis: 7
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_VelocityThreshold: 0.0001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
 --- !u!114 &114213708722299978
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1161,22 +1198,22 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 221
-    i1: 115
-    i2: 206
-    i3: 96
-    i4: 218
-    i5: 193
-    i6: 94
-    i7: 212
-    i8: 8
-    i9: 43
-    i10: 177
-    i11: 98
-    i12: 253
-    i13: 41
-    i14: 88
-    i15: 60
+    i0: 175
+    i1: 70
+    i2: 148
+    i3: 9
+    i4: 83
+    i5: 67
+    i6: 194
+    i7: 228
+    i8: 155
+    i9: 200
+    i10: 220
+    i11: 142
+    i12: 124
+    i13: 167
+    i14: 39
+    i15: 10
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
 --- !u!114 &114401673902600974
@@ -1203,7 +1240,6 @@ MonoBehaviour:
   isDashing: 0
   isStrafing: 0
   hasjustRolled: 0
-  timerStart: 0
   coolTimer: 0
   canBarrellRoll: 0
   canStrafe: 0
@@ -1212,29 +1248,16 @@ MonoBehaviour:
   cameraClone: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9,
     type: 2}
   Rotatingspeed: 0
+  playerMesh: {fileID: 137726244424343562}
   canMouseMove: 1
+  carnivoreMesh: {fileID: 1175654593334706}
   stamina: 0
   coolDownTime: 0
   chargeTime: 2
   eatCooldown: 0
   xpReward: 0
-  damage: 0
-  slowDown: 0
---- !u!114 &114706164050830802
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1445834569832970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03a25188697fb884b840fc2269380d14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  eatCooldown: 5
-  xpReward: 0
   damage: 1
-  slowDown: 0.501
+  slowDown: 0
 --- !u!136 &136574025905355464
 CapsuleCollider:
   m_ObjectHideFlags: 1

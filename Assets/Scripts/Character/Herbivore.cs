@@ -395,7 +395,6 @@ public class Herbivore : Character
             yield return null;
         }
     }
-
     private IEnumerator RemoveGlass() //Decrease distortion for glass
     {
         float backUpTimer = 0;
@@ -448,11 +447,13 @@ public class Herbivore : Character
             canBarrellRoll = true;
             canTurn = true;
         }
+
+        experience = 100f;  // For testing purposes
     }
 
     protected override void Update()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
             if (end) return;
 
@@ -474,7 +475,7 @@ public class Herbivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
             if (end) return;
             base.FixedUpdate();

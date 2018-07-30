@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,6 +14,18 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject pauseMenu = null;
     [SerializeField] private GameObject matchResultScreen;
     [SerializeField] private GameObject helixCamera;
+    
+    public static void switchGameObject(GameObject[] list, GameObject obj)
+    {
+        foreach (GameObject o in list)
+        {
+            if (o == obj)
+                o.SetActive(true);
+            else
+                o.SetActive(false);
+        }
+    }
+
 
     private void InstantiateMainMenuUI()
     {
@@ -69,17 +83,37 @@ public class UIManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        HideCursor(false);
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene && !Gamemanager.Instance.MatchEnd)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
+                if (PauseMenu.Instance.UI.activeSelf)
+                {
+                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
+                    HideCursor(false);
+                }
+                else
+                {
+                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
+                    HideCursor(true);
+                }
+            }
         }
+    }
+
+    public void HideCursor(bool hide)
+    {
+        Cursor.lockState = hide ? CursorLockMode.Locked : CursorLockMode.None; 
+        Cursor.visible = !hide;
     }
 
     #endregion

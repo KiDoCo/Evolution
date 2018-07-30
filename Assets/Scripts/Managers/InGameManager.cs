@@ -15,39 +15,43 @@ public class InGameManager : NetworkBehaviour
 
     public static InGameManager Instance;
 
-    //Match variables
+    // Match variables
     private const float startingMatchTimer = 10.0f; //time value in minutes
-    private const float minutesToSeconds = 60.0f;//converting value
-    private const float interval = 0.1f; //The time in seconds that spawning will happen
-    private const float deathPenaltyTime = 2.0f;
-    private const float experiencePenalty = 25.0f;
+    private const float minutesToSeconds   = 60.0f; // Converting value
+    private const float interval           = 0.1f;  // The time in seconds that spawning will happen
+    private const float deathPenaltyTime   = 2.0f;
+    private const float experiencePenalty  = 25.0f;
+    private const float endScreenTime      = 20f;
     [SyncVar(hook = "Timer")]
     private float matchTimer;
     private float startMatchTimer;
-    private int lifeCount;
+    [SyncVar (hook = "changeMatchTimer")] private float matchTimer;
+    [SyncVar (hook = "changeLifeCount")] private int lifeCount;
+    // BUG: MatchEnd doesn't sync to other players
+    [SyncVar] private bool matchEnd = false;
     private const int maxLifeCount = 2;
     private GameObject deathCameraPlace;
     private bool StartingMatch = true;
 
-    //Gamemanager lists
+    // Gamemanager lists
     private List<GameObject> carnivorePrefabs = new List<GameObject>();
     private List<GameObject> herbivorePrefabs = new List<GameObject>();
+    public  Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
     public List<GameObject> foodsources;
     public List<GameObject> FoodPlaceList = new List<GameObject>();
     private List<Transform> FoodSpawnPointList = new List<Transform>();
 
-
-    //Strings
+    // Strings
     private string gameScene = "DemoScene";
     private string foodSourceName = "FoodSource";
     private string playerSpawnName = "player";
     private string menuScene = "Menu";
 
-    //Prefabs
+    // Prefabs
     public GameObject BerryPrefab;
 
 #pragma warning restore
-
+    
     #region getters&setters
     //Properties
     public float MatchTimer
@@ -63,13 +67,6 @@ public class InGameManager : NetworkBehaviour
         }
     }
 
-    public GameObject DeathCameraPlace
-    {
-        get
-        {
-            return deathCameraPlace;
-        }
-    }
 
     public List<GameObject> HerbivorePrefabs
     {
@@ -104,11 +101,17 @@ public class InGameManager : NetworkBehaviour
             return startMatchTimer;
         }
     }
+    
+    public bool MatchEnd
+    {
+        get
+        {
+            return matchEnd;
+        }
+    }
+
 
     #endregion
-
-    //Methods
-
 
     #region match Methods
 
@@ -148,7 +151,7 @@ public class InGameManager : NetworkBehaviour
 
         startMatchTimer = MatchTimer = startingMatchTimer * minutesToSeconds;
         yield return SpawnFoodSources();
-        EventManager.Broadcast(EVENT.Node);
+        EventManager.Broadcast(EVENT.AINodeSpawn);
         FoodSpawnPointList.Clear();
         deathCameraPlace = new GameObject();
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
@@ -161,31 +164,43 @@ public class InGameManager : NetworkBehaviour
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
-    private IEnumerator Respawn(Herbivore player)
+    private IEnumerator Respawn(Character player)
     {
-        player.gameObject.SetActive(false);
+        player.EnablePlayer(false);
+        // - Change camera to fixed camera
         yield return new WaitForSeconds(deathPenaltyTime);
+        // - Reset values
         player.Experience -= experiencePenalty;
+        player.EnablePlayer(true);
         player.gameObject.SetActive(true);
-        EventManager.SoundBroadcast(EVENT.PlayMusic, player.GetComponent<AudioSource>(), (int)MusicEvent.Ambient);
         yield return null;
     }
 
     /// <summary>
     /// Ends the match when time ends or one of the sides wins the game
     /// </summary>
+    [ServerCallback]
     private void EndMatch()
     {
         StartingMatch = true;
-        /*
-        stop players movement
-        match result for remaining players
-        insert function to kill server after x seconds 
-        and return remaining players to lobby/menu screen
-        */
-        Debug.Log("End");
+        matchEnd = true;
         CancelInvoke();
-        //killserver
+        // Get stats and stop/end match for in game players
+        foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
+        {
+            p.EnablePlayer(false);
+            // - Get stats for end screen (ShowEndScreen())
+            // - Fixed camera in scene with end screen
+        }
+
+        StartCoroutine(ReturnToLobby(endScreenTime));
+    }
+
+    private IEnumerator ReturnToLobby(float time)
+    {
+        yield return new WaitForSeconds(time);
+        matchEnd = false;
+        NetworkGameManager.Instance.SendReturnToLobby();
     }
 
     /// <summary>
@@ -195,10 +210,8 @@ public class InGameManager : NetworkBehaviour
     {
         StartingMatch = true;
         player.End = true;
-        //some client magix röh röh
-
-        //Remove player from list and place camera to fixed point of the map
-        player.gameObject.SetActive(false);
+        player.EnablePlayer(false);
+        // - Fixed camera in scene. Spectate others?
     }
 
     /// <summary>
@@ -249,23 +262,19 @@ public class InGameManager : NetworkBehaviour
     /// </summary>
     private void LoadAssetToDictionaries()
     {
-        List<GameObject> Ctemp = new List<GameObject>();
-        List<GameObject> Htemp = new List<GameObject>();
+        //Search the file with WWW class and loads them to cache
+        carnivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Carnivore"));
+        herbivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Herbivore"));
 
-        Ctemp.AddRange(Resources.LoadAll<GameObject>("Character/Carnivore"));
-        Htemp.AddRange(Resources.LoadAll<GameObject>("Character/Herbivore"));
-
-        for (int i = 0; i < Ctemp.Count; i++)
+        foreach (GameObject prefab in carnivorePrefabs)
         {
-            carnivorePrefabs.Add(Ctemp[i]);
+            PlayerPrefabs.Add(prefab.name, prefab);
         }
 
-        for (int i = 0; i < Htemp.Count; i++)
+        foreach (GameObject prefab in herbivorePrefabs)
         {
-            HerbivorePrefabs.Add(Htemp[i]);
+            PlayerPrefabs.Add(prefab.name, prefab);
         }
-        Ctemp.Clear();
-        Htemp.Clear();
 
         Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
         Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
@@ -276,8 +285,24 @@ public class InGameManager : NetworkBehaviour
     /// </summary>
     public void LoadGame()
     {
-        StartingMatch = true;
-        StartCoroutine(StartMatch());
+        if (isServer)
+        {
+            StartingMatch = true;
+            StartCoroutine(StartMatch());
+        }
+    }
+
+    private void changeLifeCount(int life)
+    {
+        lifeCount = life;
+        // HUD update
+        HUDController.Instance.CurHealth = life;
+    }
+
+    private void changeMatchTimer(float time)
+    {
+        matchTimer = time;
+        // HUD update
     }
 
     #region Unity Methods
@@ -295,22 +320,24 @@ public class InGameManager : NetworkBehaviour
 
         if (MatchTimer <= 0 && SceneManager.GetActiveScene().name == gameScene)
         {
+            Debug.Log("Time's up!");
             EventManager.Broadcast(EVENT.RoundEnd);
         }
     }
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         Instance = this;
-        SceneManager.LoadSceneAsync(menuScene);
     }
 
     private void Start()
     {
         LoadAssetToDictionaries();
+        EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
     }
-
+    
     public void Blood()
     {
         GameObject.Find("bloodParticle").GetComponent<ParticleSystem>().Play();

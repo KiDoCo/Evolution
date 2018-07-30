@@ -3,7 +3,8 @@ using UnityEngine.Networking;
 
 public class PauseMenu : NetworkBehaviour {
 
-    [SerializeField] public GameObject UI = null;
+    // All these components are child objects in this gameobject (assigned in Unity Editor)
+    [SerializeField] public GameObject UI = null;   // GameObject that is parent to all UI elements in pause menu
     [SerializeField] private GameObject disconnectButton = null;
     [SerializeField] private GameObject stopGameButton = null;
 
@@ -12,7 +13,10 @@ public class PauseMenu : NetworkBehaviour {
     private void Awake()
     {
         Instance = this;
+    }
 
+    private void Start()
+    {
         UI.SetActive(false);
 
         stopGameButton.SetActive(NetworkGameManager.Instance.Hosting);
@@ -22,14 +26,6 @@ public class PauseMenu : NetworkBehaviour {
     // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
 
     public void B_Disconnect()
-    {
-        if (NetworkGameManager.Instance != null)
-        {
-            NetworkGameManager.Instance.ServerReturnToLobby();
-        }
-    }
-
-    public void B_StopGame()
     {
         if (NetworkGameManager.Instance != null)
         {

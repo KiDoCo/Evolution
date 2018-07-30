@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Networking;
 
 public class Carnivore : Character
 {
 
     [SerializeField] protected bool canMouseMove = true;
+    [SerializeField] private GameObject carnivoreMesh;
 
     //character stats
     public float stamina;
@@ -92,16 +93,17 @@ public class Carnivore : Character
 
     #region EatMethods
 
-    /// <summary>
-    /// checks if carnivore hits the player and starts invoking eat
-    /// </summary>
+    [ServerCallback]
     private void EatChecker()
     {
-        for (int i = 0; i < InGameManager.Instance.HerbivorePrefabs.ToArray().Length; i++)
+        foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
         {
-            if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
+            if (GetComponent<Collider>().bounds.Intersects(p.GetComponent<Collider>().bounds))
             {
-                Eat(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
+                if (col.GetType() == typeof(Herbivore))
+                {
+                    Eat(p);
+                }
             }
         }
     }
@@ -112,8 +114,6 @@ public class Carnivore : Character
     /// <param name="col"></param>
     private void Eat(Character col)
     {
-        if (col.GetType() == typeof(Herbivore))
-        {
             if (InputManager.Instance.GetButton("Eat"))
             {
                 Herbivore vor = col as Herbivore;
@@ -122,7 +122,6 @@ public class Carnivore : Character
                 EatHerbivore(slowDown, vor.Health);
                 vor.GetEaten(damage);
             }
-        }
     }
 
     public void EatHerbivore(float slow, float hp)
@@ -338,17 +337,22 @@ public class Carnivore : Character
             EventManager.ActionAddHandler(EVENT.RoundEnd, EndGame);
             defaultFov = playerCam.fieldOfView;
             slowDown = 1 - slowDown;
+            carnivoreMesh.SetActive(false);
         }
     }
 
     protected override void Update()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
-
             base.Update();
             Charge();
-            EatChecker();
+
+            if (isServer)
+            {
+                EatChecker();
+            }
+
             if (Input.GetKeyDown(KeyCode.H))
             {
                 isEating = true;
@@ -362,7 +366,7 @@ public class Carnivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && inputEnabled)
         {
             base.FixedUpdate();
             MouseMove();

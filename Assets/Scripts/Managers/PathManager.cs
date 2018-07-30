@@ -117,7 +117,7 @@ public class PathManager : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
-        EventManager.ActionAddHandler(EVENT.Node, NodeAssign);
+        EventManager.ActionAddHandler(EVENT.AINodeSpawn, NodeAssign);
         EventManager.ActionAddHandler(EVENT.Increase, SpawnFish);
     }
 }
