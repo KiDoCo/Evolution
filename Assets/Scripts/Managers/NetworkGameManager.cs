@@ -29,7 +29,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     public string PlayerName { get { return playerName.text; } }
     public bool Hosting { get { return thisIsHosting; } }
     public List<Character> InGamePlayerList { get { return inGamePlayerList; } }
-    public Character LocalCharacter { get { return localCharacter; } }
+    public Character LocalCharacter { get { return localCharacter; } set { localCharacter = value; } }
 
     private GameObject[] UIWindows;
     private List<Character> inGamePlayerList = new List<Character>();
@@ -183,13 +183,6 @@ public class NetworkGameManager : NetworkLobbyManager {
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
     {
         base.OnLobbyClientSceneChanged(conn);
-
-        // ! TODO: Find local player
-        /*Character connectedPlayer = conn.playerControllers[0].gameObject.GetComponent<Character>();
-        if (connectedPlayer.isLocalPlayer)
-        {
-            localCharacter = connectedPlayer;
-        }*/
 
         // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)

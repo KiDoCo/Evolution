@@ -21,13 +21,12 @@ public class Gamemanager : NetworkBehaviour
     private const float experiencePenalty  = 25.0f;
     private const float endScreenTime      = 20f;
 
-    [SyncVar (hook = "changeMatchTimer")]
-    private float matchTimer;
-    [SyncVar (hook = "changeLifeCount")]
-    private int lifeCount;
+    [SyncVar (hook = "changeMatchTimer")] private float matchTimer;
+    [SyncVar (hook = "changeLifeCount")] private int lifeCount;
+    // BUG: MatchEnd doesn't sync to other players
+    [SyncVar] private bool matchEnd = false;
     private const int maxLifeCount = 2;
     private GameObject deathCameraPlace;
-    private bool matchEnd = false;
 
     // Gamemanager lists
     private List<GameObject> carnivorePrefabs = new List<GameObject>();
@@ -148,12 +147,12 @@ public class Gamemanager : NetworkBehaviour
         }
 
         StartCoroutine(ReturnToLobby(endScreenTime));
-        matchEnd = false;
     }
 
     private IEnumerator ReturnToLobby(float time)
     {
         yield return new WaitForSeconds(time);
+        matchEnd = false;
         NetworkGameManager.Instance.SendReturnToLobby();
     }
 
@@ -259,6 +258,7 @@ public class Gamemanager : NetworkBehaviour
     {
         if (MatchTimer <= 0 && SceneManager.GetActiveScene().name == "Demoscene")
         {
+            Debug.Log("Time's up!");
             EventManager.Broadcast(EVENT.RoundEnd);
         }
     }

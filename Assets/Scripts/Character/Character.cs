@@ -253,7 +253,7 @@ public abstract class Character : NetworkBehaviour
     {
         playerMesh.enabled = enabled;
         inputEnabled = enabled;
-        GetComponent<Collider>().enabled = enabled;
+        col.enabled = enabled;
         RpcEnablePlayer(enabled);
     }
 
@@ -261,7 +261,7 @@ public abstract class Character : NetworkBehaviour
     private void RpcEnablePlayer(bool enabled)
     {
         playerMesh.enabled = enabled;
-        GetComponent<Collider>().enabled = enabled;
+        col.enabled = enabled;
         inputEnabled = enabled;
     }
 
@@ -275,6 +275,11 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void Start()
     {
+        if (isLocalPlayer)
+        {
+            NetworkGameManager.Instance.LocalCharacter = this;
+        }
+
         inputEnabled = true;
         accPerSec = maxSpeed / accTimeToMax;
         decPerSec = -maxSpeed / decTimeToMin;

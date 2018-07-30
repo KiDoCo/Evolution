@@ -80,7 +80,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene)
+        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene && !Gamemanager.Instance.MatchEnd)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -88,28 +88,12 @@ public class UIManager : MonoBehaviour
 
                 if (PauseMenu.Instance.UI.activeSelf)
                 {
-                    if (!Gamemanager.Instance.MatchEnd)
-                    {
-                        if (NetworkGameManager.Instance.LocalCharacter == null)
-                        {
-                            Debug.Log("Local player not found!");
-                            return;
-                        }
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
-                    }
+                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
                     HideCursor(false);
                 }
                 else
                 {
-                    if (!Gamemanager.Instance.MatchEnd)
-                    {
-                        if (NetworkGameManager.Instance.LocalCharacter == null)
-                        {
-                            Debug.Log("Local player not found!");
-                            return;
-                        }
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
-                    }
+                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
                     HideCursor(true);
                 }
             }
