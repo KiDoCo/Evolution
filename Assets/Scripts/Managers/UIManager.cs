@@ -43,17 +43,32 @@ public class UIManager : MonoBehaviour
         if (source.GetType() == typeof(Herbivore))
         {
             GameObject clone = Instantiate(helix, GameObject.Find("HelixLocation").transform.position, Quaternion.identity);
-            HUDController.Instance.Inst(clone);
+            HUDController.Instance.InstantiateHelix(clone);
             GameObject cameraClone = Instantiate(helixCamera, GameObject.Find("CameraLocation").transform.position, Quaternion.identity);
             cameraClone.transform.rotation = Quaternion.Euler(90, 180, 0);
         }
+        else if (source.GetType() == typeof(Carnivore))
+        {
+            HUDController.Instance.CurHealthText.gameObject.SetActive(false);
+        }
     }
 
-    public void UpdateMatchUI(Herbivore source)
+    public void UpdateMatchUI(Character source)
     {
-        HUDController.Instance.MaxHealth = (int)source.Maxhealth;
-        HUDController.Instance.CurProgress = source.Experience;
-        HUDController.Instance.CurHealth = (int)source.Health;
+        if (source.GetType() == typeof(Herbivore))
+        {
+            Herbivore h = source.GetComponent<Herbivore>();
+
+            HUDController.Instance.MaxHealth = (int)h.Maxhealth;
+            HUDController.Instance.CurProgress = h.Experience;
+            HUDController.Instance.CurHealth = (int)h.Health;
+        }
+        /*else if (source.GetType() == typeof(Carnivore))
+        {
+            Carnivore c = source.GetComponent<Carnivore>();
+
+            // HUD updates?
+        }*/
     }
 
     /// <summary>
@@ -64,12 +79,12 @@ public class UIManager : MonoBehaviour
     {
         if(source.GetType() == typeof(Herbivore))
         {
-            var a = source.GetComponent<Herbivore>();
+            Herbivore a = source.GetComponent<Herbivore>();
             HUDController.Instance.ResultScreen(a.Experience, a.Deathcount, InGameManager.Instance.MatchTimer, a.SurTime, true);
         }
         else if(source.GetType() == typeof(Carnivore))
         {
-            var a = source.GetComponent<Carnivore>();
+            Carnivore a = source.GetComponent<Carnivore>();
             HUDController.Instance.ResultScreen(a.KillCount, a.KillCount,InGameManager.Instance.MatchTimer,0, false);
         }
     }

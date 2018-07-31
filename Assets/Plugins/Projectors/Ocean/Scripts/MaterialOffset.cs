@@ -18,7 +18,7 @@ public class MaterialOffset : MonoBehaviour
     public float amplitude;
     public float frequency;
 
-    public Renderer renderer;
+    public Renderer MaterialRenderer;
 
     Vector2 uvOffset = Vector2.zero;
     Vector2 uvOffsetNormal = Vector2.zero;
@@ -32,15 +32,15 @@ public class MaterialOffset : MonoBehaviour
 
         //transform.position += amplitude * (Mathf.Sin(2 * Mathf.PI * frequency * Time.time) - Mathf.Sin(2 * Mathf.PI * frequency * (Time.time - Time.deltaTime))) * transform.forward;
 
-        if (renderer.enabled)
+        if (MaterialRenderer.enabled)
         {
             if (moveTexture)
             {
-                renderer.materials[materialIndex].SetTextureOffset(textureName, uvOffset);
+                MaterialRenderer.materials[materialIndex].SetTextureOffset(textureName, uvOffset);
             }
             if (moveNormal)
             {
-                renderer.materials[materialIndex].SetTextureOffset(normalName, uvOffsetNormal);
+                MaterialRenderer.materials[materialIndex].SetTextureOffset(normalName, uvOffsetNormal);
             }
 
         }

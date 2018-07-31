@@ -208,7 +208,7 @@ public class CameraController : MonoBehaviour
         startOffset = offset;
         m_FieldOfView = FOVValue;  // set camera Field of view to fixed value in editor
         distanceDamp = distanceDampValue;
-
+        transform.position = target.position + (target.rotation * offset);
     }
 
     void FixedUpdate()

@@ -72,12 +72,6 @@ public class Carnivore : Character
         m_animator.SetBool("IsCharging", charging);
     }
 
-    protected override void EndGame()
-    {
-        end = true;
-        UIManager.Instance.MatchResultScreen(this);
-    }
-
     public void RestoreSpeed()
     {
         defaultSpeed = 1.0f;
@@ -114,14 +108,14 @@ public class Carnivore : Character
     /// <param name="col"></param>
     private void Eat(Character col)
     {
-            if (InputManager.Instance.GetButton("Eat"))
-            {
-                Herbivore vor = col as Herbivore;
-                Debug.Log("mums, mums....");
-                StartCoroutine(EatCoolDown());
-                EatHerbivore(slowDown, vor.Health);
-                vor.GetEaten(damage);
-            }
+        if (InputManager.Instance.GetButton("Eat"))
+        {
+            Herbivore vor = col as Herbivore;
+            Debug.Log("mums, mums....");
+            StartCoroutine(EatCoolDown());
+            EatHerbivore(slowDown, vor.Health);
+            vor.GetEaten(damage);
+        }
     }
 
     public void EatHerbivore(float slow, float hp)
@@ -334,7 +328,6 @@ public class Carnivore : Character
             base.Start();
             ComponentSearch();
             UIManager.Instance.InstantiateInGameUI(this);
-            EventManager.ActionAddHandler(EVENT.RoundEnd, EndGame);
             defaultFov = playerCam.fieldOfView;
             slowDown = 1 - slowDown;
             carnivoreMesh.SetActive(false);
@@ -366,12 +359,18 @@ public class Carnivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer && inputEnabled)
+        if (inputEnabled)
         {
-            base.FixedUpdate();
-            MouseMove();
-            AnimationChanger();
-            ApplyMovement();
+            if (isLocalPlayer)
+            {
+                base.FixedUpdate();
+                MouseMove();
+                ApplyMovement();
+            }
+            else
+            {
+                AnimationChanger();
+            }
         }
     }
 

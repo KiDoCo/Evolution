@@ -129,7 +129,7 @@ public class HUDController : MonoBehaviour
     /// Instantiates the helix
     /// </summary>
     /// <param name="obj"></param>
-    public void Inst(GameObject obj)
+    public void InstantiateHelix(GameObject obj)
     {
         Anim = obj.GetComponent<Animator>();
     }
@@ -184,18 +184,18 @@ public class HUDController : MonoBehaviour
             {
                 rank = PredatorRanks.Pacifish; 
             }
-            else if(false /* only one  herbivore survives  add logic to this*/)
+            /*else if(?) // if only one herbivore survives, add logic to this
             {
                 rank = PredatorRanks.FishersPrey;
-            }
-            else if(GameObject.Find("Herbivore") == null)
+            }*/
+            else if (GameObject.Find("Herbivore") == null)
             {
                 rank = PredatorRanks.ApexPredator;
             }
         }
 
         int temp = (int)exp;
-        int rTime = (int)(InGameManager.Instance.StartMatchTimer - time);
+        int rTime = (int)(InGameManager.Instance.StartingMatchTimer - time);
         int Atime = rTime / 60;
         int Btime = rTime % 60;
         matchTime.text = Atime + " : " + Btime.ToString("00");

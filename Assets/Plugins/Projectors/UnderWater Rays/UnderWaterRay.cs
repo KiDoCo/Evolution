@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UnderWaterRay : MonoBehaviour
 {
-    private Renderer renderer;
+    private Renderer WaterRenderer;
 
     private Vector3 startSize;
     private Vector3 startPosition;
@@ -45,8 +45,8 @@ public class UnderWaterRay : MonoBehaviour
         startSize = transform.localScale;
         startPosition = transform.position;
     
-        renderer = GetComponent(typeof(Renderer)) as Renderer;
-        if (renderer == null)
+        WaterRenderer = GetComponent(typeof(Renderer)) as Renderer;
+        if (WaterRenderer == null)
         {
             Debug.LogWarning("UnderWaterRay: No Renderer found on this gameObject", this);
             enabled = false;
@@ -102,8 +102,8 @@ public class UnderWaterRay : MonoBehaviour
                     transparency += 0.0001f;
                 }
             
-                Color newColor = renderer.material.GetColor("_TintColor");
-                renderer.material.SetColor("_TintColor", new Vector4(newColor.r, newColor.g, newColor.b, transparency));
+                Color newColor = WaterRenderer.material.GetColor("_TintColor");
+                WaterRenderer.material.SetColor("_TintColor", new Vector4(newColor.r, newColor.g, newColor.b, transparency));
 
                 transform.position = new Vector3(transform.position.x, posY, transform.position.z); //  Move Down
                 transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, scaleZ); //  Scale Up
@@ -112,11 +112,11 @@ public class UnderWaterRay : MonoBehaviour
 
         if (state == State.loop)
         {
-            Color a = renderer.material.GetColor("_TintColor"); a.a = maxTransparency / 2;  //  a.a = 0.015f;
-            Color b = renderer.material.GetColor("_TintColor"); b.a = maxTransparency;  //  b.a = 0.03f;
+            Color a = WaterRenderer.material.GetColor("_TintColor"); a.a = maxTransparency / 2;  //  a.a = 0.015f;
+            Color b = WaterRenderer.material.GetColor("_TintColor"); b.a = maxTransparency;  //  b.a = 0.03f;
 
             Color newColor = Color.Lerp(a,b, Mathf.PingPong(Time.time, loopSpeed)); // Lerping color between a & b     //  1.25f
-            renderer.material.SetColor("_TintColor", newColor);
+            WaterRenderer.material.SetColor("_TintColor", newColor);
         }
 
         if (state == State.disappear)
@@ -138,8 +138,8 @@ public class UnderWaterRay : MonoBehaviour
                     transparency -= fadeSpeed;  //  transparency -= 0.0001f;
                 }
                 
-                Color newColor = renderer.material.GetColor("_TintColor");
-                renderer.material.SetColor("_TintColor", new Vector4(newColor.r, newColor.g, newColor.b, transparency));
+                Color newColor = WaterRenderer.material.GetColor("_TintColor");
+                WaterRenderer.material.SetColor("_TintColor", new Vector4(newColor.r, newColor.g, newColor.b, transparency));
 
                 transform.position = new Vector3(transform.position.x, posY, transform.position.z); //  Move Up
                 transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, scaleZ); //  Scale Down

@@ -31,8 +31,6 @@ public class AnimateCookieTexture : MonoBehaviour
         StartCoroutine("switchCookie");
     }
 
-
-
     IEnumerator switchCookie()
     {
         while (true)
@@ -44,7 +42,7 @@ public class AnimateCookieTexture : MonoBehaviour
             {
                 case AnimMode.forwards: frameNr++; if (frameNr >= textures.Length) frameNr = 0; break;
                 case AnimMode.backwards: frameNr--; if (frameNr < 0) frameNr = textures.Length - 1; break;
-                case AnimMode.random: frameNr = Random.RandomRange(0, textures.Length); break;
+                case AnimMode.random: frameNr = Random.Range(0, textures.Length); break;
             }
         }
     }

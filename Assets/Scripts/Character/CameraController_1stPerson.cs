@@ -56,6 +56,7 @@ public class CameraController_1stPerson : MonoBehaviour
         startcameraPos = cameraPos; //set camera default location
         
         Camera1st.fieldOfView = 60f;
+        transform.position = target.position - (target.rotation * cameraPos);
     }
 
     public void FixedUpdate()

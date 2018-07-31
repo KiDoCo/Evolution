@@ -136,7 +136,7 @@ public class Herbivore : Character
         }
         else
         {
-            InGameManager.Instance.EndMatchForPlayer(this);
+            InGameManager.Instance.KillPlayer(this);
         }
     }
 
@@ -144,12 +144,6 @@ public class Herbivore : Character
     {
         EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         Health -= amount;
-    }
-
-    protected override void EndGame()
-    {
-        end = true;
-        UIManager.Instance.MatchResultScreen(this);
     }
 
     private void ComponentSearch()
@@ -442,7 +436,6 @@ public class Herbivore : Character
         {
             base.Start();
             ComponentSearch();
-            EventManager.ActionAddHandler(EVENT.RoundEnd, EndGame);
             UIManager.Instance.InstantiateInGameUI(this);
             canBarrellRoll = true;
             canTurn = true;
@@ -455,8 +448,6 @@ public class Herbivore : Character
     {
         if (isLocalPlayer && inputEnabled)
         {
-            if (end) return;
-
             if (Input.GetKeyDown(KeyCode.Space)) //debug
                 TakeDamage(1);
 
@@ -477,15 +468,15 @@ public class Herbivore : Character
     {
         if (isLocalPlayer && inputEnabled)
         {
-            if (end) return;
             base.FixedUpdate();
             if (!CameraClone.GetComponent<CameraController>().FreeCamera)
             {
                 MouseMove();
             }
-            AnimationChanger();
             ApplyMovement();
         }
+
+        AnimationChanger();
     }
 
     #endregion

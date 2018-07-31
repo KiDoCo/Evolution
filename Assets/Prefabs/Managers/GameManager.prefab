@@ -96,8 +96,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9618f2aa07f7df4888c7588603df4d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startingMatchTimer: 600
+  interval: 0.1
+  deathPenaltyTime: 2
+  experiencePenalty: 25
+  endScreenTime: 20
+  maxLifeCount: 2
   foodsources:
   - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
   FoodPlaceList: []
+  FoodSpawnPointList: []
   BerryPrefab: {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117,
     type: 2}

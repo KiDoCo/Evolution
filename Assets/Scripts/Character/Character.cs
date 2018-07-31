@@ -39,7 +39,6 @@ public abstract class Character : NetworkBehaviour
     protected bool barrelRoll;
     private bool ready;
     protected bool eating;
-    protected bool end;
     protected bool inputEnabled = true;
 
     //timer bools
@@ -123,19 +122,6 @@ public abstract class Character : NetworkBehaviour
         get
         {
             return inputVector;
-        }
-    }
-
-    public bool End
-    {
-        get
-        {
-            return end;
-        }
-
-        set
-        {
-            end = value;
         }
     }
     
@@ -260,8 +246,6 @@ public abstract class Character : NetworkBehaviour
         float z = transform.eulerAngles.z;
         transform.Rotate(0, 0, -z);
     }
-
-    protected abstract void EndGame();
 
     [ServerCallback]
     public void EnablePlayer(bool enabled)

@@ -41,11 +41,11 @@ public class NetworkGameManager : NetworkLobbyManager {
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Instantiate(gameManager);
     }
 
     private void Start()
     {
+        //Instantiate(gameManager);
         SceneManager.LoadSceneAsync("Menu");
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
 
@@ -195,7 +195,7 @@ public class NetworkGameManager : NetworkLobbyManager {
             lobbyUI.SetActive(true);
             UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
-            InGameManager.Instance.FoodPlaceList.Clear();
+            InGameManager.Instance.DestroyLists();
         }
     }
 
