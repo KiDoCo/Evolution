@@ -44,6 +44,7 @@ public class CameraController : MonoBehaviour
     public float smoothTime;
     float duration = 2;
     float startTime;
+    public LayerMask collisionMask; 
 
 #pragma warning restore
     public Transform Target
@@ -72,9 +73,9 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        smoothTime = (Time.time - startTime)/ duration;
+        smoothTime = (Time.time - startTime) / duration;
 
-        if(smoothTime >= 1)
+        if (smoothTime >= 1)
         {
             smoothTime = 0;
         }
@@ -103,18 +104,23 @@ public class CameraController : MonoBehaviour
 
     private void FixPositions()
     {
-        Vector3 desiredPos = new Vector3(cameraOffset.x, cameraOffset.y + 0.2f, cameraOffset.z);
+        //TODO: get rid of shaking during lerping camera
+
+        Vector3 desiredPos = new Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z);
         float actualZ = desiredPos.z;
         float actualX = desiredPos.x;
         float actualY = desiredPos.y;
 
         CameraCollision(ref actualZ, ref actualX, ref actualY);
 
-        Vector3 correctedPos = new Vector3(actualX, actualY - 0.2f, actualZ);
+        Vector3 correctedPos = new Vector3(actualX, actualY, actualZ);
+
         Vector3 targetP = correctedPos;
         targetP.z = Mathf.Lerp(targetP.z, actualZ, Mathf.SmoothStep(0, 1, smoothTime));
-        targetP.x = Mathf.Lerp(targetP.x, actualX, Mathf.SmoothStep(0, 1, smoothTime));
-        targetP.y = Mathf.Lerp(targetP.y, actualY, Mathf.SmoothStep(0, 1, smoothTime));
+        //targetP.x = Mathf.Lerp(targetP.x, actualX, Mathf.SmoothStep(0, 1, smoothTime));
+        //targetP.y = Mathf.Lerp(targetP.y, actualY, Mathf.SmoothStep(0, 1, smoothTime));
+
+        //Vector3 correctedPos = new Vector3(targetP.x, targetP.y, targetP.z);
         cameraOffset = targetP;
     }
 
@@ -129,12 +135,14 @@ public class CameraController : MonoBehaviour
         Vector3 dir = transform.forward;
 
 
-        if (Physics.Linecast(target.position, new Vector3(actualX, actualY, actualZ), out hit))
+        if (Physics.Raycast(target.position, transform.position, out hit, collisionMask))
         {
             actualZ = -Mathf.Clamp((hit.distance * 0.9f), MinDistance, MaxDistance);
+            //float distance = Vector3.Distance(hit.point, target.position);
+            //actualZ = -(distance * 0.5f);
         }
 
-        for (int s = 0; s < stepCount + 1; s++)
+        for (int s = 1; s < stepCount + 1; s++)
         {
             Vector3 secondOrigin = target.position - (dir * s) * stepIncremental;
 
@@ -162,10 +170,10 @@ public class CameraController : MonoBehaviour
 
                 Debug.DrawRay(secondOrigin, direction, Color.red);
 
-                if (Physics.Linecast(secondOrigin, direction, out hit))
+                if (Physics.Raycast(secondOrigin, direction, out hit, 0.3f, collisionMask))
                 {
                     float distance = Vector3.Distance(secondOrigin, target.position);
-                    actualZ = -(distance * 0.5f);
+                    actualZ = -(distance * 0.2f);    
                 }
             }
         }
@@ -174,6 +182,7 @@ public class CameraController : MonoBehaviour
 
     protected void Restrict()
     {
+        //limit up and down rotation        
         if (transform.rotation.x > 15)
         {
             float x = transform.eulerAngles.x;
@@ -185,11 +194,7 @@ public class CameraController : MonoBehaviour
             float x = transform.eulerAngles.x;
             transform.Rotate(-x, 0, 0);
         }
-        if(transform.rotation.y > 75 || transform.rotation.y < -75)
-        {
-            float y = transform.eulerAngles.y;
-            transform.Rotate(0, -y, 0);
-        }
+
     }
 
     /// <summary>
@@ -228,6 +233,7 @@ public class CameraController : MonoBehaviour
     {
         // rotation, same up direction
         transform.LookAt(pivotpoint, target.up);
+
     }
 
 
