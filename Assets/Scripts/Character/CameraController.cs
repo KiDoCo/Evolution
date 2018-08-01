@@ -44,7 +44,7 @@ public class CameraController : MonoBehaviour
     public float smoothTime;
     float duration = 2;
     float startTime;
-    public LayerMask collisionMask; 
+    public LayerMask collisionMask;
 
 #pragma warning restore
     public Transform Target
@@ -71,15 +71,6 @@ public class CameraController : MonoBehaviour
         startTime = Time.time;
     }
 
-    private void Update()
-    {
-        smoothTime = (Time.time - startTime) / duration;
-
-        if (smoothTime >= 1)
-        {
-            smoothTime = 0;
-        }
-    }
 
     void FixedUpdate()
     {
@@ -114,13 +105,8 @@ public class CameraController : MonoBehaviour
         CameraCollision(ref actualZ, ref actualX, ref actualY);
 
         Vector3 correctedPos = new Vector3(actualX, actualY, actualZ);
-
         Vector3 targetP = correctedPos;
-        targetP.z = Mathf.Lerp(targetP.z, actualZ, Mathf.SmoothStep(0, 1, smoothTime));
-        //targetP.x = Mathf.Lerp(targetP.x, actualX, Mathf.SmoothStep(0, 1, smoothTime));
-        //targetP.y = Mathf.Lerp(targetP.y, actualY, Mathf.SmoothStep(0, 1, smoothTime));
-
-        //Vector3 correctedPos = new Vector3(targetP.x, targetP.y, targetP.z);
+        targetP.z = Mathf.Lerp(targetP.z, actualZ, smoothTime);      
         cameraOffset = targetP;
     }
 
@@ -129,7 +115,7 @@ public class CameraController : MonoBehaviour
         Debug.DrawLine(target.position, transform.position, Color.blue);
 
         float step = Vector3.Distance(target.position, transform.position);
-        int stepCount = 2;
+        int stepCount = 3;
         float stepIncremental = step / stepCount;
         RaycastHit hit;
         Vector3 dir = transform.forward;
@@ -139,7 +125,7 @@ public class CameraController : MonoBehaviour
         {
             actualZ = -Mathf.Clamp((hit.distance * 0.9f), MinDistance, MaxDistance);
             //float distance = Vector3.Distance(hit.point, target.position);
-            //actualZ = -(distance * 0.5f);
+            //actualZ = -(distance * 0.3f);
         }
 
         for (int s = 1; s < stepCount + 1; s++)
@@ -163,17 +149,14 @@ public class CameraController : MonoBehaviour
                     case 3:
                         direction = -transform.up;
                         break;
-                    default:
-                        direction = -transform.forward;
-                        break;
                 }
 
                 Debug.DrawRay(secondOrigin, direction, Color.red);
 
-                if (Physics.Raycast(secondOrigin, direction, out hit, 0.3f, collisionMask))
+                if (Physics.Raycast(secondOrigin, direction, out hit, 0.2f, collisionMask))
                 {
                     float distance = Vector3.Distance(secondOrigin, target.position);
-                    actualZ = -(distance * 0.2f);    
+                    actualZ = -(distance * 0.3f);                   
                 }
             }
         }
@@ -194,7 +177,6 @@ public class CameraController : MonoBehaviour
             float x = transform.eulerAngles.x;
             transform.Rotate(-x, 0, 0);
         }
-
     }
 
     /// <summary>
@@ -233,7 +215,6 @@ public class CameraController : MonoBehaviour
     {
         // rotation, same up direction
         transform.LookAt(pivotpoint, target.up);
-
     }
 
 
@@ -266,7 +247,6 @@ public class CameraController : MonoBehaviour
 
         if (FreeCamera)
         {
-
             Quaternion camTurnAngleH = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * rotationSpeed, Vector3.up); //laske horisontaalinen liike
             Quaternion camTurnAngleV = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * rotationSpeed, Vector3.right);// laske vertikaalinen liike
 
@@ -275,7 +255,6 @@ public class CameraController : MonoBehaviour
 
             //lisää summa cameran cameraPos arvoon
             cameraOffset = sum * cameraOffset;
-
         }
         else if (!FreeCamera)
         {
