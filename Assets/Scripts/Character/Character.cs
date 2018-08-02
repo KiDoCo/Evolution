@@ -497,7 +497,6 @@ public abstract class Character : MonoBehaviour
     {
         col = GetComponentInChildren<CapsuleCollider>();
 
-
         musicSource = GetComponentInChildren<AudioSource>();
         //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }

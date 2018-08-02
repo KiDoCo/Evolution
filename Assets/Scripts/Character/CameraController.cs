@@ -106,33 +106,35 @@ public class CameraController : MonoBehaviour
 
         Vector3 correctedPos = new Vector3(actualX, actualY, actualZ);
         Vector3 targetP = correctedPos;
-        targetP.z = Mathf.Lerp(targetP.z, actualZ, smoothTime);      
+        targetP.z = Mathf.Lerp(targetP.z, actualZ, smoothTime * Time.fixedDeltaTime);
         cameraOffset = targetP;
     }
 
     void CameraCollision(ref float actualZ, ref float actualX, ref float actualY)
     {
-        Debug.DrawLine(target.position, transform.position, Color.blue);
+        //Debug.DrawLine(target.position, transform.position, Color.blue);
 
-        float step = Vector3.Distance(target.position, transform.position);
+        float step = Mathf.Abs(actualZ);
+        //float step = Vector3.Distance(target.position, transform.position);
         int stepCount = 3;
         float stepIncremental = step / stepCount;
         RaycastHit hit;
         Vector3 dir = transform.forward;
 
 
-        if (Physics.Raycast(target.position, transform.position, out hit, collisionMask))
-        {
-            actualZ = -Mathf.Clamp((hit.distance * 0.9f), MinDistance, MaxDistance);
-            //float distance = Vector3.Distance(hit.point, target.position);
-            //actualZ = -(distance * 0.3f);
-        }
-
+        //if (Physics.Raycast(target.position, transform.position, out hit, collisionMask))
+        //{
+        //    //actualZ = -Mathf.Clamp((hit.distance * 0.9f), MinDistance, MaxDistance);
+        //    float distance = Vector3.Distance(hit.point, target.position);
+        //    actualZ = -(distance * 0.3f);
+        //}
+        //else
+        //{
         for (int s = 1; s < stepCount + 1; s++)
         {
             Vector3 secondOrigin = target.position - (dir * s) * stepIncremental;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 5; i++)
             {
                 Vector3 direction = Vector3.zero;
                 switch (i)
@@ -149,17 +151,22 @@ public class CameraController : MonoBehaviour
                     case 3:
                         direction = -transform.up;
                         break;
+                    case 4:
+                        direction = -transform.forward;
+                        break;
                 }
 
                 Debug.DrawRay(secondOrigin, direction, Color.red);
 
-                if (Physics.Raycast(secondOrigin, direction, out hit, 0.2f, collisionMask))
+                if (Physics.Raycast(secondOrigin, direction, out hit, 0.5f, collisionMask))
                 {
                     float distance = Vector3.Distance(secondOrigin, target.position);
-                    actualZ = -(distance * 0.3f);                   
+                    actualZ = -(distance * 0.5f);
                 }
             }
         }
+        //}
+
     }
 
 
