@@ -52,7 +52,8 @@ public abstract class Character : NetworkBehaviour
 
     #endregion
 
-    [SerializeField] protected GameObject cameraClone;
+    [SerializeField] protected GameObject cameraPrefab;
+    protected GameObject spawnedCam;
     protected Animator m_animator;
     private AudioSource musicSource;
     protected AudioSource SFXsource;
@@ -106,14 +107,6 @@ public abstract class Character : NetworkBehaviour
         set
         {
             defaultSpeed = value;
-        }
-    }
-
-    public GameObject CameraClone
-    {
-        get
-        {
-            return cameraClone;
         }
     }
 

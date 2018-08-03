@@ -11,7 +11,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     public static NetworkGameManager Instance;
 
     [Space]
-    [SerializeField] private GameObject gameManager = null;
+    [SerializeField] private GameObject[] spawnedNetManagers;
     [SerializeField] private GameObject lobbyUI = null;
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
@@ -45,8 +45,15 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     private void Start()
     {
-        //Instantiate(gameManager);
-        SceneManager.LoadSceneAsync("Menu");
+        if (spawnedNetManagers.Length != 0)
+        {
+            foreach (GameObject g in spawnedNetManagers)
+            {
+                Instantiate(g);
+            }
+        }
+
+        SceneManager.LoadScene(lobbyScene);
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
 
         // Resets UI
@@ -221,8 +228,10 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         Debug.Log("Client " + conn.playerControllers[playerControllerId].unetView.netId + " selected " + player.CharacterSelected.name);
 
-        // Spawns corresponding player prefab from spawnPrefabs
-        GameObject spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
+        // Spawns corresponding player prefab
+        GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelected.name), startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
+        NetworkServer.Spawn(spawnedPlayer);
+
         InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
 
         return spawnedPlayer;

@@ -34,7 +34,7 @@ public class InGameManager : NetworkBehaviour
     public  Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
     public List<GameObject> foodsources;
     public List<GameObject> FoodPlaceList = new List<GameObject>();
-    public List<Transform> FoodSpawnPointList = new List<Transform>();
+    private List<Transform> FoodSpawnPointList = new List<Transform>();
 
     // Strings
     private string gameScene = "DemoScene";
@@ -123,6 +123,7 @@ public class InGameManager : NetworkBehaviour
     {
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
 
+        MatchTimer = startingMatchTimer;
         LifeCount = maxLifeCount;
         yield return SpawnFoodSources();
         EventManager.Broadcast(EVENT.AINodeSpawn);
@@ -296,18 +297,10 @@ public class InGameManager : NetworkBehaviour
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
 
-    private void Start()
-    {
         LoadAssetToDictionaries();
-
-        if (isServer)
-        {
-            MatchTimer = startingMatchTimer;
-            EventManager.ActionAddHandler(EVENT.RoundBegin, StartGame);
-            EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
-        }
+        EventManager.ActionAddHandler(EVENT.RoundBegin, StartGame);
+        EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
     }
 
     #endregion

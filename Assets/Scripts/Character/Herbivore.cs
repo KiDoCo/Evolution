@@ -148,8 +148,8 @@ public class Herbivore : Character
 
     private void ComponentSearch()
     {
-        cameraClone = Instantiate(cameraClone);
-        cameraClone.GetComponent<CameraController>().InstantiateCamera(this);
+        spawnedCam = Instantiate(cameraPrefab);
+        spawnedCam.GetComponent<CameraController>().InstantiateCamera(this);
         visibilityColor = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.color;
         SFXsource = transform.GetChild(2).GetComponent<AudioSource>();
         m_animator = gameObject.GetComponent<Animator>();
@@ -432,10 +432,10 @@ public class Herbivore : Character
 
     protected override void Start()
     {
+        ComponentSearch();
         if (isLocalPlayer)
         {
             base.Start();
-            ComponentSearch();
             UIManager.Instance.InstantiateInGameUI(this);
             canBarrellRoll = true;
             canTurn = true;
@@ -469,7 +469,7 @@ public class Herbivore : Character
         if (isLocalPlayer && inputEnabled)
         {
             base.FixedUpdate();
-            if (!CameraClone.GetComponent<CameraController>().FreeCamera)
+            if (!spawnedCam.GetComponent<CameraController>().FreeCamera)
             {
                 MouseMove();
             }
