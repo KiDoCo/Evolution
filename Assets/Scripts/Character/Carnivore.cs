@@ -78,9 +78,17 @@ public class Carnivore : Character
 
     private void ComponentSearch()
     {
+        m_animator = gameObject.GetComponent<Animator>();
+    }
+
+    protected override void SpawnCamera()
+    {
+        GameObject mapCam = GameObject.FindGameObjectWithTag("MapCamera");
+        if (mapCam != null)
+            Destroy(mapCam);
+
         spawnedCam = Instantiate(cameraPrefab);
         spawnedCam.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
-        m_animator = gameObject.GetComponent<Animator>();
     }
 
     #region EatMethods
@@ -326,7 +334,7 @@ public class Carnivore : Character
         if (isLocalPlayer)
         {
             base.Start();
-            UIManager.Instance.InstantiateInGameUI(this);
+            SpawnCamera();
             defaultFov = spawnedCam.GetComponent<Camera>().fieldOfView;
             slowDown = 1 - slowDown;
             carnivoreMesh.SetActive(false);

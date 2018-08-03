@@ -6,6 +6,7 @@ TagManager:
   tags:
   - FoodSource
   - MusicSource
+  - MapCamera
   layers:
   - Default
   - TransparentFX

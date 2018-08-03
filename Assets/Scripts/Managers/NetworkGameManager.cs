@@ -194,6 +194,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)
         {
+            Instantiate(UIManager.Instance.PauseMenuPrefab);
             lobbyUI.SetActive(false);
             UIManager.Instance.HideCursor(true);
         }
@@ -228,11 +229,18 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         Debug.Log("Client " + conn.playerControllers[playerControllerId].unetView.netId + " selected " + player.CharacterSelected.name);
 
-        // Spawns corresponding player prefab
-        GameObject spawnedPlayer = Instantiate(spawnPrefabs.Find(x => x.name == player.CharacterSelected.name), startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
-        NetworkServer.Spawn(spawnedPlayer);
+        GameObject spawnedPlayer;
 
-        InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+        // Spawns corresponding player prefab
+        if (!spawnPrefabs.Contains(player.CharacterSelected))
+        {
+            spawnedPlayer = Instantiate(gamePlayerPrefab);
+        }
+        else
+        {
+            spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
+            InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+        }
 
         return spawnedPlayer;
     }

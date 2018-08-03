@@ -5,7 +5,6 @@ using UnityEngine.Networking;
 
 public class FishController : NetworkBehaviour
 {
-    public PathManager pathManager;
     public Node node;
     private LayerMask obstacleMask;
     private Vector3 lookDir;
@@ -17,22 +16,20 @@ public class FishController : NetworkBehaviour
 
     private void CheckVisible() //Check monster visiblity with Physics.Linecast and the angle with Vector3.Angle -> chased if visible
     {
-        if (!Physics.Linecast(transform.position, pathManager.enemy.transform.position, obstacleMask) &&
-            Vector3.Angle(pathManager.enemy.transform.position - transform.position, transform.forward) < pathManager.maxVisionAngle)
+        if (!Physics.Linecast(transform.position, PathManager.Instance.enemy.transform.position, obstacleMask) &&
+            Vector3.Angle(PathManager.Instance.enemy.transform.position - transform.position, transform.forward) < PathManager.Instance.maxVisionAngle)
         {
-            transform.LookAt(pathManager.enemy.transform.position);
+            transform.LookAt(PathManager.Instance.enemy.transform.position);
             transform.Rotate(Vector3.up * 180);
             curState = States.chased;
-            Invoke("SetRoam", pathManager.escapeTimer);
+            Invoke("SetRoam", PathManager.Instance.escapeTimer);
         }
     }
 
     [ClientRpc]
     private void RpcMovement(Vector3 pos)
     {
-        if (transform == null) return;
-
-        transform.position = Vector3.MoveTowards(transform.position, pos, Time.deltaTime * pathManager.speed);
+		transform.position = Vector3.MoveTowards(transform.position, pos, Time.deltaTime * PathManager.Instance.speed);
     }
 
     [ClientRpc]
@@ -55,12 +52,12 @@ public class FishController : NetworkBehaviour
 
     private void SetRoam() //Check if monster is within given distance and return to path if it isn't
     {
-        if (Vector3.Distance(transform.position, pathManager.enemy.transform.position) < pathManager.visionRange)
+        if (Vector3.Distance(transform.position, PathManager.Instance.enemy.transform.position) < PathManager.Instance.visionRange)
         {
-            Invoke("SetRoam", pathManager.escapeTimer);
+            Invoke("SetRoam", PathManager.Instance.escapeTimer);
             return;
         }
-        node = pathManager.GetClosestNode(transform.position);
+        node = PathManager.Instance.GetClosestNode(transform.position);
         curState = States.roam;
     }
 
@@ -68,9 +65,8 @@ public class FishController : NetworkBehaviour
 
     void Start()
     {
-        pathManager = FindObjectOfType<PathManager>();
-        node = pathManager.GetClosestNode(transform.position);
-        obstacleMask = pathManager.obstacleLayer;
+        node = PathManager.Instance.GetClosestNode(transform.position);
+        obstacleMask = PathManager.Instance.obstacleLayer;
 
     }
 
@@ -86,14 +82,14 @@ public class FishController : NetworkBehaviour
                 {
                     RpcMovement(node.position);
 
-                    if (Vector3.Distance(transform.position, pathManager.enemy.transform.position) < pathManager.visionRange)
+                    if (Vector3.Distance(transform.position, PathManager.Instance.enemy.transform.position) < PathManager.Instance.visionRange)
                     {
                         CheckVisible();
                     }
                 }
                 else
                 {
-                    node = pathManager.GetNextNode(transform.position, node);
+                    node = PathManager.Instance.GetNextNode(transform.position, node);
                     lookDir = node.position;
                     RpcLook(lookDir);
                 }
@@ -101,7 +97,7 @@ public class FishController : NetworkBehaviour
             else if (curState == States.chased)
             {
                 //Move forward for a given time and avoid obstacles
-                RpcMovement(-pathManager.enemy.transform.position);
+                RpcMovement(-PathManager.Instance.enemy.transform.position);
                 CheckObstacles();
                 Debug.DrawRay(transform.position, transform.forward * 1.5f, Color.green);
 

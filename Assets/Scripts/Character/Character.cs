@@ -240,6 +240,8 @@ public abstract class Character : NetworkBehaviour
         transform.Rotate(0, 0, -z);
     }
 
+    protected abstract void SpawnCamera();
+
     [ServerCallback]
     public void EnablePlayer(bool enabled)
     {
@@ -270,6 +272,7 @@ public abstract class Character : NetworkBehaviour
         if (isLocalPlayer)
         {
             NetworkGameManager.Instance.LocalCharacter = this;
+            UIManager.Instance.InstantiateInGameUI(this);
         }
 
         inputEnabled = true;
