@@ -1048,8 +1048,9 @@ MonoBehaviour:
   m_LobbyScene: Menu
   m_PlayScene: DemoScene
   lobbySlots: []
-  gameManager: {fileID: 1404718516752614, guid: d47b7b8acc8846d41a0677c983e7469b,
-    type: 2}
+  spawnedNetManagers:
+  - {fileID: 1404718516752614, guid: d47b7b8acc8846d41a0677c983e7469b, type: 2}
+  - {fileID: 1976945723199058, guid: 264a6103ffeadaa4e850038557686644, type: 2}
   lobbyUI: {fileID: 1678181856082178}
   mainUI: {fileID: 1115911705310670}
   hostUI: {fileID: 1536484938154256}

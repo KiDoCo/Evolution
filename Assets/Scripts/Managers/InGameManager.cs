@@ -23,7 +23,6 @@ public class InGameManager : NetworkBehaviour
     [SerializeField] private float experiencePenalty = 25.0f;
     [SerializeField] private float endScreenTime = 20f;
     [SerializeField] private int maxLifeCount = 2;
-    private float startMatchTimer;
     [SyncVar] private float matchTimer;
     [SyncVar] private int lifeCount;
     [SyncVar] private bool matchEnd = false;    // BUG: MatchEnd doesn't sync to other players
@@ -35,7 +34,7 @@ public class InGameManager : NetworkBehaviour
     public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
     public List<GameObject> foodsources;
     public List<GameObject> FoodPlaceList = new List<GameObject>();
-    public List<Transform> FoodSpawnPointList = new List<Transform>();
+    private List<Transform> FoodSpawnPointList = new List<Transform>();
 
     // Strings
     private string gameScene = "DemoScene";
@@ -89,7 +88,7 @@ public class InGameManager : NetworkBehaviour
             lifeCount = (int)Mathf.Clamp(value, 0f, Mathf.Infinity);
         }
     }
-
+    
     public bool MatchEnd
     {
         get
@@ -123,7 +122,7 @@ public class InGameManager : NetworkBehaviour
     private IEnumerator StartMatch()
     {
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
-        startMatchTimer = MatchTimer = startingMatchTimer * minutesToSeconds;
+        MatchTimer = startingMatchTimer;
         LifeCount = maxLifeCount;
         yield return SpawnFoodSources();
         EventManager.Broadcast(EVENT.AINodeSpawn);
@@ -305,17 +304,10 @@ public class InGameManager : NetworkBehaviour
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
 
-    private void Start()
-    {
         LoadAssetToDictionaries();
-        if (isServer)
-        {
             EventManager.ActionAddHandler(EVENT.RoundBegin, StartGame);
-            EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
-        }
-    }
+            EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);    }
 
     #endregion
 }
