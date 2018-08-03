@@ -38,7 +38,6 @@ GameObject:
   - component: {fileID: 224598984901360300}
   - component: {fileID: 223207642493976974}
   - component: {fileID: 114943721191846024}
-  - component: {fileID: 114339144936903070}
   - component: {fileID: 114376117110388034}
   - component: {fileID: 114813352629446690}
   m_Layer: 5
@@ -48,22 +47,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114339144936903070
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1721564963840014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!114 &114376117110388034
 MonoBehaviour:
   m_ObjectHideFlags: 1

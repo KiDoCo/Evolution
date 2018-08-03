@@ -14,6 +14,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject pauseMenu = null;
     [SerializeField] private GameObject matchResultScreen;
     [SerializeField] private GameObject helixCamera;
+
+    public GameObject PauseMenuPrefab
+    {
+        get
+        {
+            return pauseMenu;
+        }
+    }
     
     public static void switchGameObject(GameObject[] list, GameObject obj)
     {
@@ -38,7 +46,6 @@ public class UIManager : MonoBehaviour
     public void InstantiateInGameUI(Character source)
     {
         Instantiate(hud);
-        Instantiate(pauseMenu);
 
         if (source.GetType() == typeof(Herbivore))
         {
@@ -113,12 +120,14 @@ public class UIManager : MonoBehaviour
 
                 if (PauseMenu.Instance.UI.activeSelf)
                 {
-                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
+                    if (NetworkGameManager.Instance.LocalCharacter != null)
+                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
                     HideCursor(false);
                 }
                 else
                 {
-                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
+                    if (NetworkGameManager.Instance.LocalCharacter != null)
+                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
                     HideCursor(true);
                 }
             }

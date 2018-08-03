@@ -75,7 +75,6 @@ public class PathManager : NetworkBehaviour
         if (fishAmount >= 1 || timer >= 0) return;
         GameObject clone = Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
         NetworkServer.Spawn(clone);
-        ClientScene.RegisterPrefab(clone);
         fishAmount++;
         timer = spawnInterval;
     }
