@@ -200,7 +200,6 @@ public abstract class Character : MonoBehaviour
     protected virtual void Restrict()
     {
         transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
-
     }
 
     // Clamps angle (different from the normal clamp function)
@@ -220,29 +219,23 @@ public abstract class Character : MonoBehaviour
     {
         isMoving = false;
 
-
         //tarkista peruuttaako
 
         if (Input.GetAxisRaw("Vertical") < 0)
         {
             isReversing = true;
             isMovingForward = false;
-
-
         }
         if (Input.GetAxisRaw("Vertical") > 0)
         {
             isReversing = false;
             isMovingForward = true;
-
         }
         else if (Input.GetAxisRaw("Vertical") == 0)
         {
             isReversing = false;
             isMovingForward = false;
         }
-
-
 
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
         Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
@@ -285,7 +278,6 @@ public abstract class Character : MonoBehaviour
             transform.Rotate(0, rotation, 0);
 
         }
-
     }
 
     protected virtual void BarrellRoll() //if needed 
@@ -370,7 +362,7 @@ public abstract class Character : MonoBehaviour
         else
         {
             smooth = speed;
-            castDistance = 0.5f;
+            castDistance = 0.2f;
         }
 
         //initialize rays
@@ -385,7 +377,7 @@ public abstract class Character : MonoBehaviour
         float distanceToPoints = col.height / 2 - col.radius;
         Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
-        float radius = col.radius * 0.9f;
+        float radius = col.radius * 1.1f;
         Height = col.height;
 
         if (Physics.Raycast(rayDown, out hitInfo, castDistance + HeightPadding))
@@ -408,14 +400,9 @@ public abstract class Character : MonoBehaviour
                 //check distance to 
                 if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
                 {
-                    transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, Time.fixedDeltaTime * smooth);
-                    grounded = true;
+                    transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, Time.fixedDeltaTime * smooth);                  
                 }
             }
-        }
-        else
-        {
-            grounded = false;
         }
 
         if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
@@ -445,13 +432,7 @@ public abstract class Character : MonoBehaviour
                 {
                     curNormal = hitInfo.normal;
                     colPoint = hitInfo.point;
-                }
-
-                if (hits[i].transform.tag == "Player")
-                {
-                    print("collided with other player");
-                    //TODO: add "slide along" the other player
-                }
+                }          
             }
         }
         else
@@ -461,7 +442,7 @@ public abstract class Character : MonoBehaviour
 
         if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
         {
-            transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius), step * Time.fixedDeltaTime);
+            transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * 0.7f, step * Time.fixedDeltaTime);
         }
     }
 

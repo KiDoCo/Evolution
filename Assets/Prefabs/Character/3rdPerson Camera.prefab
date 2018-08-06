@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 81812026616519396}
   - component: {fileID: 114703077202592306}
   - component: {fileID: 114689218469743634}
-  - component: {fileID: 136420828597511264}
+  - component: {fileID: 135056083404550012}
   m_Layer: 0
   m_Name: 3rdPerson Camera
   m_TagString: MainCamera
@@ -114,9 +114,13 @@ MonoBehaviour:
   m_FieldOfView: 60
   lookSmooth: 100
   pivotPos: {x: 0, y: 0.2, z: 0}
-  MinDistance: 0
+  MinDistance: -0.3
   MaxDistance: 2
-  smoothTime: 0
+  smoothTime: 5
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 32768
+  adjustmentDistance: -3
 --- !u!114 &114703077202592306
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -136,8 +140,8 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1953833088195292}
   m_Enabled: 1
---- !u!136 &136420828597511264
-CapsuleCollider:
+--- !u!135 &135056083404550012
+SphereCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -145,7 +149,6 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 0.5
-  m_Direction: 1
+  serializedVersion: 2
+  m_Radius: 0.2
   m_Center: {x: 0, y: 0, z: 0}
