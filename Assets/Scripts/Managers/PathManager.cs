@@ -12,6 +12,7 @@ public class PathManager : NetworkBehaviour
     private List<Node> allNodes = new List<Node>();
     private Node defNode, bestNode;
     private int fishAmount;
+    private const int maxFishAmount = 10;
     private float timer;
     private const float spawnInterval = 4.0f;
     public float speed;
@@ -72,7 +73,7 @@ public class PathManager : NetworkBehaviour
     [ServerCallback]
     public void SpawnFish() 
     {
-        if (fishAmount >= 1 || timer >= 0) return;
+        if (fishAmount >= maxFishAmount || timer >= 0) return;
         GameObject clone = Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
         NetworkServer.Spawn(clone);
         fishAmount++;
