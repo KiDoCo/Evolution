@@ -118,8 +118,6 @@ public class InGameManager : NetworkBehaviour
     private IEnumerator StartMatch()
     {
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
-        MatchTimer = StartingMatchTimer;
-        Debug.Log(MatchTimer);
         MatchTimer = startingMatchTimer;
         LifeCount = maxLifeCount;
         yield return SpawnFoodSources();
@@ -157,7 +155,7 @@ public class InGameManager : NetworkBehaviour
         foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
         {
             p.EnablePlayer(false);
-            // - Get stats for end screen (ShowEndScreen())
+            UIManager.Instance.MatchResultScreen(p);
             // - Fixed camera in scene with end screen
         }
 
@@ -288,7 +286,6 @@ public class InGameManager : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.O)) // for testing purposes
         {
-            Debug.Log("Decrease");
             MatchTimer -= 20;
         }
 

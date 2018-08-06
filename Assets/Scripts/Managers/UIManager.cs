@@ -49,10 +49,10 @@ public class UIManager : MonoBehaviour
 
         if (source.GetType() == typeof(Herbivore))
         {
-            GameObject clone = Instantiate(helix, GameObject.Find("HelixLocation").transform.position, Quaternion.identity);
-            HUDController.Instance.InstantiateHelix(clone);
             GameObject cameraClone = Instantiate(helixCamera, GameObject.Find("CameraLocation").transform.position, Quaternion.identity);
             cameraClone.transform.rotation = Quaternion.Euler(90, 180, 0);
+            GameObject clone = Instantiate(helix, GameObject.Find("HelixLocation").transform.position, Quaternion.identity);
+            HUDController.Instance.InstantiateHelix(clone);
         }
         else if (source.GetType() == typeof(Carnivore))
         {

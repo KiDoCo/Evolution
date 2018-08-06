@@ -43,8 +43,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         // Adds players to dropbox
         if (characterDropdown.options.Count == 0)
         {
-            Debug.Log(characterDropdown);
-            Debug.Log(InGameManager.Instance.gameObject);
             characterDropdown.AddOptions(new List<string>(InGameManager.Instance.PlayerPrefabs.Keys));
             characterDropdown.RefreshShownValue();
         }

@@ -443,8 +443,8 @@ public class Herbivore : Character
         ComponentSearch();
         if (isLocalPlayer)
         {
-            base.Start();
             SpawnCamera();
+            base.Start();
             canBarrellRoll = true;
             canTurn = true;
         }

@@ -175,6 +175,7 @@ public class HUDController : MonoBehaviour
     /// <param name="herbivore"></param>
     public void ResultScreen(float exp, int death, float time,float surtime, bool herbivore)
     {
+        Debug.Log("Endscreen");
         ingameUI.SetActive(false);
         ResScreen.SetActive(true);
 
