@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -17,14 +15,14 @@ public class InGameManager : NetworkBehaviour
 
     // Match variables
     private const float minutesToSeconds = 60.0f;
-    [SerializeField] private float startingMatchTimer = 10.0f * minutesToSeconds;  // Time value in minutes
+    private float startingMatchTimer = 10.0f * minutesToSeconds;  // Time value in minutes
     [SerializeField] private float interval = 0.1f;  // The time in seconds that spawning will happen
     [SerializeField] private float deathPenaltyTime = 2.0f;
     [SerializeField] private float experiencePenalty = 25.0f;
     [SerializeField] private float endScreenTime = 20f;
     [SerializeField] private int maxLifeCount = 2;
-    private float startMatchTimer;
-    [SyncVar] private float matchTimer;
+    [SyncVar (hook =  "Timer")]
+    private float matchTimer;
     [SyncVar] private int lifeCount;
     [SyncVar] private bool matchEnd = false;    // BUG: MatchEnd doesn't sync to other players
     private bool matchStart = true;
@@ -35,7 +33,7 @@ public class InGameManager : NetworkBehaviour
     public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
     public List<GameObject> foodsources;
     public List<GameObject> FoodPlaceList = new List<GameObject>();
-    public List<Transform> FoodSpawnPointList = new List<Transform>();
+    private List<Transform> FoodSpawnPointList = new List<Transform>();
 
     // Strings
     private string gameScene = "DemoScene";
@@ -62,7 +60,6 @@ public class InGameManager : NetworkBehaviour
             matchTimer = Mathf.Clamp(value, 0, Mathf.Infinity);
         }
     }
-
 
     public List<GameObject> HerbivorePrefabs
     {
@@ -106,7 +103,6 @@ public class InGameManager : NetworkBehaviour
         }
     }
 
-
     #endregion
 
     #region match Methods
@@ -119,11 +115,12 @@ public class InGameManager : NetworkBehaviour
     /// <summary>
     /// Starts the match between players. Must be called after loading the game scene
     /// </summary>
-    [ServerCallback]
     private IEnumerator StartMatch()
     {
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
-        startMatchTimer = MatchTimer = startingMatchTimer * minutesToSeconds;
+        MatchTimer = StartingMatchTimer;
+        Debug.Log(MatchTimer);
+        MatchTimer = startingMatchTimer;
         LifeCount = maxLifeCount;
         yield return SpawnFoodSources();
         EventManager.Broadcast(EVENT.AINodeSpawn);
@@ -206,7 +203,6 @@ public class InGameManager : NetworkBehaviour
         yield return 1;
     }
 
-
     /// <summary>
     /// Checks if the player can be spawned
     /// </summary>
@@ -249,18 +245,20 @@ public class InGameManager : NetworkBehaviour
         Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
     }
 
-    // Void to IEnumerable
-    public void StartGame()
-    {
-        ClearBoxes();
 
-        if (isServer)
-        {
-            StartCoroutine(StartMatch());
-        }
+    private void Timer(float time)
+    {
+        MatchTimer = time;
     }
 
-    private void ClearBoxes()
+    // Void to IEnumerable
+    [ServerCallback]
+    public void StartGame()
+    {
+        StartCoroutine(StartMatch());
+    }
+
+    public void ClearBoxes()
     {
         for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
         {
@@ -269,7 +267,7 @@ public class InGameManager : NetworkBehaviour
         FoodSpawnPointList.Clear();
     }
 
-    public void DestroyLists()
+    public void DestroyFoodPlaceLists()
     {
         foreach (GameObject g in FoodPlaceList)
         {
@@ -305,16 +303,10 @@ public class InGameManager : NetworkBehaviour
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
 
-    private void Start()
-    {
         LoadAssetToDictionaries();
-        if (isServer)
-        {
-            EventManager.ActionAddHandler(EVENT.RoundBegin, StartGame);
-            EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
-        }
+        EventManager.ActionAddHandler(EVENT.RoundBegin, StartGame);
+        EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
     }
 
     #endregion

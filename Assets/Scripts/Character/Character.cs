@@ -52,7 +52,8 @@ public abstract class Character : NetworkBehaviour
 
     #endregion
 
-    [SerializeField] protected GameObject cameraClone;
+    [SerializeField] protected GameObject cameraPrefab;
+    protected GameObject spawnedCam;
     protected Animator m_animator;
     private AudioSource musicSource;
     protected AudioSource SFXsource;
@@ -106,14 +107,6 @@ public abstract class Character : NetworkBehaviour
         set
         {
             defaultSpeed = value;
-        }
-    }
-
-    public GameObject CameraClone
-    {
-        get
-        {
-            return cameraClone;
         }
     }
 
@@ -247,6 +240,8 @@ public abstract class Character : NetworkBehaviour
         transform.Rotate(0, 0, -z);
     }
 
+    protected abstract void SpawnCamera();
+
     [ServerCallback]
     public void EnablePlayer(bool enabled)
     {
@@ -277,6 +272,7 @@ public abstract class Character : NetworkBehaviour
         if (isLocalPlayer)
         {
             NetworkGameManager.Instance.LocalCharacter = this;
+            UIManager.Instance.InstantiateInGameUI(this);
         }
 
         inputEnabled = true;

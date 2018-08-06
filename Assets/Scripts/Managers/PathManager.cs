@@ -30,6 +30,7 @@ public class PathManager : NetworkBehaviour
     /// <summary>
     /// Assigns nodes to the locationContainer child positions
     /// </summary>
+    [ServerCallback]
     public void NodeAssign()
     {
         locationContainer = GameObject.Find("LocationContainer");
@@ -68,18 +69,16 @@ public class PathManager : NetworkBehaviour
     /// <summary>
     /// Instantiates a fish to random node
     /// </summary>
+    [ServerCallback]
     public void SpawnFish() 
     {
-        if (isServer)
-        {
-            if (fishAmount >= 1 || timer >= 0) return;
-            GameObject clone = Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
-            NetworkServer.Spawn(clone);
-            ClientScene.RegisterPrefab(clone);
-            fishAmount++;
-            timer = spawnInterval;
-        }
+        if (fishAmount >= 1 || timer >= 0) return;
+        GameObject clone = Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
+        NetworkServer.Spawn(clone);
+        fishAmount++;
+        timer = spawnInterval;
     }
+
     public void DecreaseFishAmount()
     {
         fishAmount--;
@@ -117,6 +116,8 @@ public class PathManager : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         EventManager.ActionAddHandler(EVENT.AINodeSpawn, NodeAssign);
         EventManager.ActionAddHandler(EVENT.Increase, SpawnFish);
     }

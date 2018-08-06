@@ -19,7 +19,6 @@ public class Carnivore : Character
     //Charge
     [SerializeField] private float coolDownTime;
     [SerializeField] private float chargeTime = 4;
-    private Camera playerCam;
     private float defaultFov;
     private bool onCooldown = false;
     private bool hitTarget = false;
@@ -42,11 +41,11 @@ public class Carnivore : Character
     {
         get
         {
-            return playerCam.fieldOfView;
+            return spawnedCam.GetComponent<Camera>().fieldOfView;
         }
         set
         {
-            playerCam.fieldOfView = Mathf.Clamp(value, 60f, 90f);
+            spawnedCam.GetComponent<Camera>().fieldOfView = Mathf.Clamp(value, 60f, 90f);
         }
     }
 
@@ -80,9 +79,16 @@ public class Carnivore : Character
     private void ComponentSearch()
     {
         m_animator = gameObject.GetComponent<Animator>();
-        cameraClone = Instantiate(cameraClone);
-        cameraClone.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
-        playerCam = CameraClone.GetComponent<Camera>();
+    }
+
+    protected override void SpawnCamera()
+    {
+        GameObject mapCam = GameObject.FindGameObjectWithTag("MapCamera");
+        if (mapCam != null)
+            Destroy(mapCam);
+
+        spawnedCam = Instantiate(cameraPrefab);
+        spawnedCam.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
     }
 
     #region EatMethods
@@ -151,6 +157,7 @@ public class Carnivore : Character
         {
             isMoving = true;
         }
+
         m_animator.SetFloat("FloatX", Mathf.Clamp01(h) + InputManager.Instance.GetAxis("Horizontal"));
         m_animator.SetFloat("FloatY", Mathf.Clamp01(v) + InputManager.Instance.GetAxis("Vertical"));
         transform.Rotate(v, h, 0);
@@ -243,7 +250,7 @@ public class Carnivore : Character
         speed = ass;
         while (momentumTimer < chargeTime || hitTarget)
         {
-            Mathf.Lerp(playerCam.fieldOfView, playerCam.fieldOfView + 2 * momentumTimer, 10 * Time.deltaTime);
+            Mathf.Lerp(spawnedCam.GetComponent<Camera>().fieldOfView, spawnedCam.GetComponent<Camera>().fieldOfView + 2 * momentumTimer, 10 * Time.deltaTime);
             FieldOfView += momentumTimer;
             for (int i = 0; i < InGameManager.Instance.HerbivorePrefabs.ToArray().Length; i++)
             {
@@ -263,9 +270,9 @@ public class Carnivore : Character
 
     private IEnumerator RestoreFov()
     {
-        while (playerCam.fieldOfView > defaultFov + 2)
+        while (spawnedCam.GetComponent<Camera>().fieldOfView > defaultFov + 2)
         {
-            FieldOfView = Mathf.Lerp(playerCam.fieldOfView, defaultFov, Time.deltaTime);
+            FieldOfView = Mathf.Lerp(spawnedCam.GetComponent<Camera>().fieldOfView, defaultFov, Time.deltaTime);
             yield return null;
         }
         FieldOfView = defaultFov;
@@ -323,12 +330,12 @@ public class Carnivore : Character
 
     protected override void Start()
     {
+        ComponentSearch();
         if (isLocalPlayer)
         {
             base.Start();
-            ComponentSearch();
-            UIManager.Instance.InstantiateInGameUI(this);
-            defaultFov = playerCam.fieldOfView;
+            SpawnCamera();
+            defaultFov = spawnedCam.GetComponent<Camera>().fieldOfView;
             slowDown = 1 - slowDown;
             carnivoreMesh.SetActive(false);
         }

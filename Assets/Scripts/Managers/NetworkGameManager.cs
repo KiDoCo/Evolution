@@ -11,7 +11,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     public static NetworkGameManager Instance;
 
     [Space]
-    [SerializeField] private GameObject gameManager = null;
+    [SerializeField] private GameObject[] spawnedNetManagers;
     [SerializeField] private GameObject lobbyUI = null;
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
@@ -45,8 +45,15 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     private void Start()
     {
-        //Instantiate(gameManager);
-        SceneManager.LoadSceneAsync("Menu");
+        if (spawnedNetManagers.Length != 0)
+        {
+            foreach (GameObject g in spawnedNetManagers)
+            {
+                Instantiate(g);
+            }
+        }
+
+        SceneManager.LoadScene(lobbyScene);
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
 
         // Resets UI
@@ -187,15 +194,17 @@ public class NetworkGameManager : NetworkLobbyManager {
         // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)
         {
+            Instantiate(UIManager.Instance.PauseMenuPrefab);
             lobbyUI.SetActive(false);
             UIManager.Instance.HideCursor(true);
+            InGameManager.Instance.ClearBoxes();
         }
         else if (SceneManager.GetActiveScene().name == lobbyScene)
         {
             lobbyUI.SetActive(true);
             UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
-            InGameManager.Instance.DestroyLists();
+            InGameManager.Instance.DestroyFoodPlaceLists();
         }
     }
 
@@ -221,9 +230,18 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         Debug.Log("Client " + conn.playerControllers[playerControllerId].unetView.netId + " selected " + player.CharacterSelected.name);
 
-        // Spawns corresponding player prefab from spawnPrefabs
-        GameObject spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
-        InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+        GameObject spawnedPlayer;
+
+        // Spawns corresponding player prefab
+        if (!spawnPrefabs.Contains(player.CharacterSelected))
+        {
+            spawnedPlayer = Instantiate(gamePlayerPrefab);
+        }
+        else
+        {
+            spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
+            InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+        }
 
         return spawnedPlayer;
     }

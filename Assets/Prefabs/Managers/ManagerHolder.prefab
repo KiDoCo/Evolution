@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114645961939973826}
   - component: {fileID: 114040489428283660}
   - component: {fileID: 114888800012075566}
-  - component: {fileID: 114141536841826530}
+  - component: {fileID: 114409533856068308}
   m_Layer: 0
   m_Name: ManagerHolder
   m_TagString: Untagged
@@ -60,7 +60,7 @@ MonoBehaviour:
   matchResultScreen: {fileID: 0}
   helixCamera: {fileID: 1009143415174350, guid: 08c85d6115cdd8b48bd765bc3d098c84,
     type: 2}
---- !u!114 &114141536841826530
+--- !u!114 &114409533856068308
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

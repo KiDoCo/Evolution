@@ -1245,7 +1245,7 @@ MonoBehaviour:
   canStrafe: 0
   canTurn: 0
   canDash: 0
-  cameraClone: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9,
+  cameraPrefab: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9,
     type: 2}
   Rotatingspeed: 0
   playerMesh: {fileID: 137726244424343562}
