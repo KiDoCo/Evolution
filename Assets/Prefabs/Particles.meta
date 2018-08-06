@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream:Assets/Prefabs/Particles.meta
 guid: cb68c77236100b444b1c09598b2d0eb1
+=======
+guid: 10c1f2a508b099049a0c81ddcea48c68
+>>>>>>> Stashed changes:Assets/Projectors/Projectors.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

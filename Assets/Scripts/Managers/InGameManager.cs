@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
-public enum PredatorRanks { ApexPredator,FishersPrey,Pacifish}
+public enum PredatorRanks { ApexPredator, FishersPrey, Pacifish }
 
 public class InGameManager : NetworkBehaviour
 {
@@ -18,11 +18,12 @@ public class InGameManager : NetworkBehaviour
     // Match variables
     private const float minutesToSeconds = 60.0f;
     [SerializeField] private float startingMatchTimer = 10.0f * minutesToSeconds;  // Time value in minutes
-    [SerializeField] private float interval           = 0.1f;  // The time in seconds that spawning will happen
-    [SerializeField] private float deathPenaltyTime   = 2.0f;
-    [SerializeField] private float experiencePenalty  = 25.0f;
-    [SerializeField] private float endScreenTime      = 20f;
+    [SerializeField] private float interval = 0.1f;  // The time in seconds that spawning will happen
+    [SerializeField] private float deathPenaltyTime = 2.0f;
+    [SerializeField] private float experiencePenalty = 25.0f;
+    [SerializeField] private float endScreenTime = 20f;
     [SerializeField] private int maxLifeCount = 2;
+    private float startMatchTimer;
     [SyncVar] private float matchTimer;
     [SyncVar] private int lifeCount;
     [SyncVar] private bool matchEnd = false;    // BUG: MatchEnd doesn't sync to other players
@@ -31,7 +32,7 @@ public class InGameManager : NetworkBehaviour
     // Gamemanager lists
     private List<GameObject> carnivorePrefabs = new List<GameObject>();
     private List<GameObject> herbivorePrefabs = new List<GameObject>();
-    public  Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
     public List<GameObject> foodsources;
     public List<GameObject> FoodPlaceList = new List<GameObject>();
     public List<Transform> FoodSpawnPointList = new List<Transform>();
@@ -46,7 +47,7 @@ public class InGameManager : NetworkBehaviour
     public GameObject BerryPrefab;
 
 #pragma warning restore
-    
+
     #region getters&setters
 
     public float MatchTimer
@@ -88,7 +89,7 @@ public class InGameManager : NetworkBehaviour
             lifeCount = (int)Mathf.Clamp(value, 0f, Mathf.Infinity);
         }
     }
-    
+
     public bool MatchEnd
     {
         get
@@ -122,7 +123,7 @@ public class InGameManager : NetworkBehaviour
     private IEnumerator StartMatch()
     {
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
-
+        startMatchTimer = MatchTimer = startingMatchTimer * minutesToSeconds;
         LifeCount = maxLifeCount;
         yield return SpawnFoodSources();
         EventManager.Broadcast(EVENT.AINodeSpawn);
@@ -251,18 +252,25 @@ public class InGameManager : NetworkBehaviour
     // Void to IEnumerable
     public void StartGame()
     {
-        StartCoroutine(StartMatch());
+        ClearBoxes();
+
+        if (isServer)
+        {
+            StartCoroutine(StartMatch());
+        }
+    }
+
+    private void ClearBoxes()
+    {
+        for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
+        {
+            Destroy(FoodSpawnPointList[a].gameObject);
+        }
+        FoodSpawnPointList.Clear();
     }
 
     public void DestroyLists()
     {
-        foreach (Transform t in FoodSpawnPointList)
-        {
-            if (t != null)
-                Destroy(t.gameObject);
-        }
-        FoodSpawnPointList.Clear();
-
         foreach (GameObject g in FoodPlaceList)
         {
             if (g != null)
@@ -280,12 +288,13 @@ public class InGameManager : NetworkBehaviour
 
         MatchTimer -= Time.deltaTime;
 
-        if(Input.GetKeyDown(KeyCode.O)) // for testing purposes
+        if (Input.GetKeyDown(KeyCode.O)) // for testing purposes
         {
+            Debug.Log("Decrease");
             MatchTimer -= 20;
         }
 
-        if (MatchTimer <= 0 && SceneManager.GetActiveScene().name == gameScene)
+        if (MatchTimer == 0 && SceneManager.GetActiveScene().name == gameScene)
         {
             Debug.Log("Time's up!");
             EventManager.Broadcast(EVENT.RoundEnd);
@@ -301,10 +310,8 @@ public class InGameManager : NetworkBehaviour
     private void Start()
     {
         LoadAssetToDictionaries();
-
         if (isServer)
         {
-            MatchTimer = startingMatchTimer;
             EventManager.ActionAddHandler(EVENT.RoundBegin, StartGame);
             EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         }
