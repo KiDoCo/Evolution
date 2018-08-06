@@ -203,8 +203,8 @@ public class HUDController : MonoBehaviour
         if (herbivore)
         {
             int xTemp = (int)surtime;
-            int yTime = (int)xTemp / 60;
-            int zTime = (int)xTemp % 60;
+            int yTime = xTemp / 60;
+            int zTime = xTemp % 60;
             HresultScreen.SetActive(true);
             deathCount.text = death.ToString();
             SurTime.text = yTime + " : " + zTime.ToString("00");

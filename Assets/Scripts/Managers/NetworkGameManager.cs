@@ -197,13 +197,14 @@ public class NetworkGameManager : NetworkLobbyManager {
             Instantiate(UIManager.Instance.PauseMenuPrefab);
             lobbyUI.SetActive(false);
             UIManager.Instance.HideCursor(true);
+            InGameManager.Instance.ClearBoxes();
         }
         else if (SceneManager.GetActiveScene().name == lobbyScene)
         {
             lobbyUI.SetActive(true);
             UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
-            InGameManager.Instance.DestroyLists();
+            InGameManager.Instance.DestroyFoodPlaceLists();
         }
     }
 
