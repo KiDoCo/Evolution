@@ -29,8 +29,7 @@ public class FishController : NetworkBehaviour
     [ClientRpc]
     private void RpcMovement(Vector3 pos)
     {
-		transform.position = Vector3.MoveTowards(transform.position, pos, Time.deltaTime * PathManager.Instance.speed);
-    }
+        		transform.position = Vector3.MoveTowards(transform.position, pos, Time.deltaTime * PathManager.Instance.speed);    }
 
     [ClientRpc]
     private void RpcLook(Vector3 pos)

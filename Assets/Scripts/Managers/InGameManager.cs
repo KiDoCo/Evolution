@@ -120,6 +120,7 @@ public class InGameManager : NetworkBehaviour
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
         MatchTimer = StartingMatchTimer;
         Debug.Log(MatchTimer);
+        MatchTimer = startingMatchTimer;
         LifeCount = maxLifeCount;
         yield return SpawnFoodSources();
         EventManager.Broadcast(EVENT.AINodeSpawn);
