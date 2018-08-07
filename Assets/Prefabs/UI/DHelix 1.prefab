@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4121217877272720}
   - component: {fileID: 137513976720039116}
   - component: {fileID: 95771614020106814}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: DHelix 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

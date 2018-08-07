@@ -17,6 +17,7 @@ public class TextureAnimation : MonoBehaviour
     void Start()
     {
         AnimRenderer = GetComponent(typeof(Renderer)) as Renderer;
+
         if (AnimRenderer == null)
         {
             Debug.LogWarning("TextureAnimation: No Renderer found on this gameObject", this);

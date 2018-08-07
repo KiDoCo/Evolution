@@ -45,7 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: b1858494a1f99124ebaa65d056a53162, type: 3}
-        m_Scale: {x: 5, y: 5}
+        m_Scale: {x: 10, y: 10}
         m_Offset: {x: 0, y: 0}
     - _MainTex2:
         m_Texture: {fileID: 2800000, guid: c75d8997aa5cd73478624488929eca97, type: 3}
@@ -125,7 +125,7 @@ Material:
     - _GSteepness: {r: 0.01, g: 0.01, b: 0.05, a: 0.01}
     - _HorizonColor: {r: 0.172, g: 0.463, b: 0.435, a: 1}
     - _InvFadeParemeter: {r: 0.4, g: 0.4, b: 0.5, a: 0.4}
-    - _MyColor: {r: 1, g: 1, b: 0, a: 1}
+    - _MyColor: {r: 0.8141772, g: 1, b: 0.2216981, a: 1}
     - _ReflectionColor: {r: 0.4764151, g: 0.7069063, b: 1, a: 0.5882353}
     - _RefrColor: {r: 0.34, g: 0.85, b: 0.92, a: 1}
     - _SpecColor: {r: 0.8235295, g: 1, b: 0, a: 1}
