@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4941421836307756}
   - component: {fileID: 20244270888026954}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35,7 +35,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4362396165883664}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_sharkfp_lower_jaw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,7 +50,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4517426322696150}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: FP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65,7 +65,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4309566847660352}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_sharkfp_upper_jaw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,7 +81,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4195332673606764}
   - component: {fileID: 137219174146172226}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: UpperJaw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4339928802301002}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: bn_sharkfp_main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -112,7 +112,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4923917555445432}
   - component: {fileID: 95724112462895010}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Shark_FP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -240,7 +240,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 256
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

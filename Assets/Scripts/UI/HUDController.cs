@@ -32,7 +32,8 @@ public class HUDController : MonoBehaviour
     [SerializeField] private GameObject HresultScreen;
     [SerializeField] private GameObject CresultScreen;
     [SerializeField] private GameObject ResScreen;
-    private Animator anim;
+    private Animator helixAnim;
+    private Animator predatorMouthAnim;
     private AnimationClip clip;
     private PredatorRanks rank;
     [SerializeField] private int maxHealth;
@@ -110,16 +111,29 @@ public class HUDController : MonoBehaviour
         }
     }
 
-    public Animator Anim
+    public Animator HelixAnim
     {
         get
         {
-            return anim;
+            return helixAnim;
         }
 
         set
         {
-            anim = value;
+            helixAnim = value;
+        }
+    }
+
+    public Animator PredatorMouthAnim
+    {
+        get
+        {
+            return predatorMouthAnim;
+        }
+
+        set
+        {
+            predatorMouthAnim = value;
         }
     }
 
@@ -131,7 +145,12 @@ public class HUDController : MonoBehaviour
     /// <param name="obj"></param>
     public void InstantiateHelix(GameObject obj)
     {
-        Anim = obj.GetComponent<Animator>();
+        HelixAnim = obj.GetComponent<Animator>();
+    }
+
+    public void InstantiateTeeth(GameObject obj)
+    {
+        PredatorMouthAnim = obj.transform.GetChild(1).GetComponent<Animator>();
     }
 
     /// <summary>
@@ -151,8 +170,8 @@ public class HUDController : MonoBehaviour
     /// </summary>
     public void AnimationChanger()
     {
-        if (Anim != null)
-            Anim.Play("Take", 0, (1.0f / 99) * curProgress);
+        if (HelixAnim != null)
+            HelixAnim.Play("Take", 0, (1.0f / 99) * curProgress);
     }
 
     /// <summary>
@@ -191,6 +210,10 @@ public class HUDController : MonoBehaviour
             else if (GameObject.Find("Herbivore") == null)
             {
                 rank = PredatorRanks.ApexPredator;
+            }
+            else
+            {
+                rank = PredatorRanks.Predator;
             }
         }
 

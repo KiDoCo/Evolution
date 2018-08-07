@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject pauseMenu = null;
     [SerializeField] private GameObject matchResultScreen;
     [SerializeField] private GameObject helixCamera;
+    [SerializeField] private GameObject carnivoreJaw;
 
     public GameObject PauseMenuPrefab
     {
@@ -56,6 +57,8 @@ public class UIManager : MonoBehaviour
         }
         else if (source.GetType() == typeof(Carnivore))
         {
+            GameObject clone = Instantiate(carnivoreJaw, GameObject.Find("JawLocation").transform.position, Quaternion.identity);
+            HUDController.Instance.InstantiateTeeth(clone);
             HUDController.Instance.CurHealthText.gameObject.SetActive(false);
         }
     }

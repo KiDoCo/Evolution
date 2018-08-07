@@ -989,6 +989,7 @@ GameObject:
   - component: {fileID: 136348791138209274}
   - component: {fileID: 54169861388344904}
   - component: {fileID: 114999154596939894}
+  - component: {fileID: 114855412725242688}
   m_Layer: 0
   m_Name: Herbivore
   m_TagString: Untagged
@@ -2648,7 +2649,6 @@ MonoBehaviour:
   cameraPrefab: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426,
     type: 2}
   Rotatingspeed: 0
-  playerMesh: {fileID: 137034344792635862}
   defaultMat: {fileID: 2100000, guid: 718a14c009f75f949a65a0b38e61047c, type: 2}
   glassMat: {fileID: 2100000, guid: 5ed14ae7f9ded7940ad6421097df27d6, type: 2}
   mouseInput: 0
@@ -2656,6 +2656,25 @@ MonoBehaviour:
   dashTime: 2
   coolTime: 6
   dashSpeed: 2
+--- !u!114 &114855412725242688
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1802541810096366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1590678366, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Animator: {fileID: 95377941995328236}
+  m_ParameterSendBits: 0
+  param0: 
+  param1: 
+  param2: 
+  param3: 
+  param4: 
+  param5: 
 --- !u!114 &114999154596939894
 MonoBehaviour:
   m_ObjectHideFlags: 1

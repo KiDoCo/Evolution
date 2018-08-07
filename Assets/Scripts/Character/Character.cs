@@ -41,6 +41,7 @@ public abstract class Character : NetworkBehaviour
     public bool hasjustRolled;
     protected bool barrelRoll;
     private bool ready;
+    [SyncVar(hook = "AnimEatChecker")]
     protected bool eating;
     protected bool inputEnabled = true;
 
@@ -146,6 +147,11 @@ public abstract class Character : NetworkBehaviour
     protected abstract void ApplyMovement();
 
     protected abstract void AnimationChanger();
+
+    protected virtual void AnimEatChecker(bool temp)
+    {
+        eating = temp;
+    }
 
     /// <summary>
     /// Avoid control jerkiness with restricting x rotation

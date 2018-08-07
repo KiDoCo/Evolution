@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
-public enum PredatorRanks { ApexPredator, FishersPrey, Pacifish }
+public enum PredatorRanks { ApexPredator, FishersPrey, Pacifish, Predator }
 
 public class InGameManager : NetworkBehaviour
 {

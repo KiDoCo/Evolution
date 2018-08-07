@@ -9,6 +9,13 @@ public class Carnivore : Character
     [SerializeField] protected bool canMouseMove = true;
     [SerializeField] private GameObject carnivoreMesh;
 
+    [SyncVar]
+    private Vector3 lastposition;
+    [SyncVar]
+    private Vector3 curPos;
+    [SyncVar(hook = "PosCheck")]
+    private Vector3 pos;
+
     //character stats
     public float stamina;
     private bool isEating;
@@ -22,6 +29,7 @@ public class Carnivore : Character
     private float defaultFov;
     private bool onCooldown = false;
     private bool hitTarget = false;
+    [SyncVar(hook ="ChargeChecker")]
     private bool charging = false;
     private float momentumTimer = 0;
     private float speed;
@@ -63,12 +71,21 @@ public class Carnivore : Character
     }
 
     //methods
-
     protected override void AnimationChanger()
     {
+
+        Debug.Log(curPos - lastposition);
         m_animator.SetBool("IsMoving", isMoving);
         m_animator.SetBool("IsEating", isEating);
         m_animator.SetBool("IsCharging", charging);
+        HUDController.Instance.PredatorMouthAnim.SetBool("isMoving", isMoving);
+        HUDController.Instance.PredatorMouthAnim.SetBool("isCharging", charging);
+        HUDController.Instance.PredatorMouthAnim.SetBool("isEating", eating);
+    }
+
+    private void ChargeChecker(bool temp)
+    {
+        charging = temp;
     }
 
     public void RestoreSpeed()
@@ -79,6 +96,12 @@ public class Carnivore : Character
     private void ComponentSearch()
     {
         m_animator = gameObject.GetComponent<Animator>();
+    }
+
+    private void PosCheck(Vector3 vector)
+    {
+        pos = vector;
+        isMoving = pos.normalized.magnitude != 0 ? true : false;
     }
 
     protected override void SpawnCamera()
@@ -92,19 +115,26 @@ public class Carnivore : Character
     }
 
     #region EatMethods
-
     [ServerCallback]
     private void EatChecker()
     {
-        foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
+        if (InputManager.Instance.GetButton("Eat"))
         {
-            if (GetComponent<Collider>().bounds.Intersects(p.GetComponent<Collider>().bounds))
+            eating = true;
+            foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
             {
-                if (col.GetType() == typeof(Herbivore))
+                if (GetComponent<Collider>().bounds.Intersects(p.GetComponent<Collider>().bounds))
                 {
-                    Eat(p);
+                    if (col.GetType() == typeof(Herbivore))
+                    {
+                        Eat(p);
+                    }
                 }
             }
+        }
+        else
+        {
+            eating = false;
         }
     }
 
@@ -114,14 +144,11 @@ public class Carnivore : Character
     /// <param name="col"></param>
     private void Eat(Character col)
     {
-        if (InputManager.Instance.GetButton("Eat"))
-        {
-            Herbivore vor = col as Herbivore;
-            Debug.Log("mums, mums....");
-            StartCoroutine(EatCoolDown());
-            EatHerbivore(slowDown, vor.Health);
-            vor.GetEaten(damage);
-        }
+        Herbivore vor = col as Herbivore;
+        Debug.Log("mums, mums....");
+        StartCoroutine(EatCoolDown());
+        EatHerbivore(slowDown, vor.Health);
+        vor.GetEaten(damage);
     }
 
     public void EatHerbivore(float slow, float hp)
@@ -198,10 +225,12 @@ public class Carnivore : Character
     protected override void ApplyMovement()
     {
         inputVector = X + Y + Z;
-        isMoving = InputVector.normalized.magnitude != 0 ? true : false;
         if (!hitTarget || CollisionCheck())
         {
             transform.Translate(inputVector);
+            lastposition = curPos;
+            curPos = transform.position;
+            pos = curPos - lastposition;
         }
     }
 
@@ -352,15 +381,6 @@ public class Carnivore : Character
             {
                 EatChecker();
             }
-
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                isEating = true;
-            }
-            else
-            {
-                isEating = false;
-            }
         }
     }
 
@@ -373,9 +393,6 @@ public class Carnivore : Character
                 base.FixedUpdate();
                 MouseMove();
                 ApplyMovement();
-            }
-            else
-            {
                 AnimationChanger();
             }
         }

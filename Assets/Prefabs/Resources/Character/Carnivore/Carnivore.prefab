@@ -222,6 +222,7 @@ GameObject:
   - component: {fileID: 114213708722299978}
   - component: {fileID: 114089988995669340}
   - component: {fileID: 54280091110362696}
+  - component: {fileID: 114686996628757176}
   m_Layer: 8
   m_Name: Carnivore
   m_TagString: Player
@@ -1248,7 +1249,6 @@ MonoBehaviour:
   cameraPrefab: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9,
     type: 2}
   Rotatingspeed: 0
-  playerMesh: {fileID: 137726244424343562}
   canMouseMove: 1
   carnivoreMesh: {fileID: 1175654593334706}
   stamina: 0
@@ -1258,6 +1258,25 @@ MonoBehaviour:
   xpReward: 0
   damage: 1
   slowDown: 0
+--- !u!114 &114686996628757176
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1590678366, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Animator: {fileID: 95662106521183134}
+  m_ParameterSendBits: 0
+  param0: 
+  param1: 
+  param2: 
+  param3: 
+  param4: 
+  param5: 
 --- !u!136 &136574025905355464
 CapsuleCollider:
   m_ObjectHideFlags: 1

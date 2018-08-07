@@ -283,6 +283,12 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114040489428283660, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d,
+        type: 2}
+      propertyPath: carnivoreJaw
+      value: 
+      objectReference: {fileID: 1372279811924136, guid: a008af549df00d04fbaa2181aa089d0b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
   m_IsPrefabParent: 0
