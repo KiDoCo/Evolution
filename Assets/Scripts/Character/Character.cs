@@ -362,7 +362,7 @@ public abstract class Character : MonoBehaviour
         else
         {
             smooth = speed;
-            castDistance = 0.2f;
+            castDistance = 0.5f;
         }
 
         //initialize rays
@@ -416,7 +416,7 @@ public abstract class Character : MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
         }
 
-        hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, castDistance + 0.05f, ground, QueryTriggerInteraction.Ignore);
+        hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, castDistance + 0.02f, ground, QueryTriggerInteraction.Ignore);
 
         if (hitCount > 0)
         {
