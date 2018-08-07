@@ -235,6 +235,12 @@ Prefab:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114353092562216092, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_SpawnPrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 1802541810096366, guid: 06bf027a69f0af745b6d986b549cb541,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 83c16fa1a9daede469d5f5a36209aed2, type: 2}
   m_IsPrefabParent: 0

@@ -27,6 +27,7 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
     private Vector3 originalPos;
 
     #region Getters&setters
+
     //interface properties
     public int MaxAmountFood
     {

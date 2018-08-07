@@ -16,8 +16,8 @@ public class CameraController : MonoBehaviour
     public bool reset;
 
     //values
-    Vector3 velocity = Vector3.one;
-    [SerializeField] Vector3 offset = new Vector3(0f, 2f, -10f);
+    private Vector3 velocity = Vector3.one;
+    private Vector3 offset = new Vector3(0f, 0.5f, -2f);
     [SerializeField] float distanceDamp = 10f;
     [SerializeField] float distanceDampValue = 0.4f;
     [SerializeField] float distanceDampValueB = 0.02f; //used in reverse movement
@@ -46,7 +46,7 @@ public class CameraController : MonoBehaviour
 
 
     //Followrot2(); values
-    Vector3 targetPos = Vector3.zero;
+    private Vector3 targetPos = Vector3.zero;
     public float lookSmooth = 100f;
     public Vector3 targetPosOffset = new Vector3(0, 1, 0);
 

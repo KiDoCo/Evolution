@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+/// <summary>
+/// Class which all playable characters inherit
+/// </summary>
 [System.Serializable]
 public abstract class Character : NetworkBehaviour
 {
@@ -78,7 +81,7 @@ public abstract class Character : NetworkBehaviour
 
     #endregion
 
-    [SerializeField] protected Renderer playerMesh = null;
+    protected SkinnedMeshRenderer playerMesh = null;
 
     //End variables
 
@@ -164,7 +167,6 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void BarrelRoll() //if needed 
     {
-
         if (canBarrellRoll)
         {
             Vector3 inputRotationZ = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Rotation") * rotateSpeed);
@@ -181,7 +183,6 @@ public abstract class Character : NetworkBehaviour
             }
 
         }
-
     }
 
     #endregion
@@ -272,6 +273,7 @@ public abstract class Character : NetworkBehaviour
         if (isLocalPlayer)
         {
             NetworkGameManager.Instance.LocalCharacter = this;
+            playerMesh = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
             UIManager.Instance.InstantiateInGameUI(this);
         }
 
