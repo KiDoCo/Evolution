@@ -205,9 +205,9 @@ public abstract class Character : MonoBehaviour
     // Clamps angle (different from the normal clamp function)
     private float strangeAxisClamp(float value, float limit1, float limit2)
     {
-        if (value > limit1 && value < 180f)
+        if (value > limit1 && value < 160f)
             value = limit1;
-        else if (value > 180f && value < limit2)
+        else if (value > 160f && value < limit2)
             value = limit2;
         return value;
     }
@@ -405,12 +405,17 @@ public abstract class Character : MonoBehaviour
             }
         }
 
-        if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
+        if(Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+        {
+            print("both sides collided");
+           
+        }
+        else if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
         {
             Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), step);
         }
-        if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+        else if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
         {
             Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);

@@ -53,6 +53,7 @@ public class CameraController : MonoBehaviour
     private Vector3 point1, point2;
     private float colRadius;
     private CapsuleCollider targetCol;
+    float unobstructed;
 
 #pragma warning restore
     public Transform Target
@@ -92,11 +93,10 @@ public class CameraController : MonoBehaviour
 
         if (pivotpoint == null) Debug.LogError("Camera needs a pivotpoint to look at");
 
-        distance = Vector3.Distance(transform.position, target.position);
+        //distance = Vector3.Distance(transform.position, target.position);
         CameraClipPlanePoints(GetAdjustedDistance(target.position), ref adjustedClipPoints);
         CheckColliding(target.position);
 
-        FixPositions();
         SetDampening();
         ControlCamera();
         SmoothFollow();
@@ -125,6 +125,10 @@ public class CameraController : MonoBehaviour
         public Vector3 UpperRight;
         public Vector3 LowerLeft;
         public Vector3 LowerRight;
+        public Vector3 MiddleRight;
+        public Vector3 MiddleLeft;
+        public Vector3 MiddleUp;
+        public Vector3 MiddleDown;
     }
 
     //find clippoints and save them to arrays
@@ -139,8 +143,9 @@ public class CameraController : MonoBehaviour
         float halfFOV = (colCamera.fieldOfView * 0.5f) * Mathf.Deg2Rad;
         float aspect = colCamera.aspect;
 
-        float height = Mathf.Tan(halfFOV) * (distance * 1.2f);
-        float width = (height * aspect) * 1.2f;
+        float height = Mathf.Tan(halfFOV) * (distance);
+        float width = (height * aspect);
+        float tmp = colCamera.nearClipPlane;
 
         //LowerRight point
         clipPlanePoints.LowerRight = pos + transform.forward * distance;
@@ -158,16 +163,13 @@ public class CameraController : MonoBehaviour
         clipPlanePoints.UpperRight = pos + transform.forward * distance;
         clipPlanePoints.UpperRight += transform.right * width;
         clipPlanePoints.UpperRight += transform.up * height;
-        intoArray[2] = clipPlanePoints.UpperRight;    
+        intoArray[2] = clipPlanePoints.UpperRight;
 
         //UpperLeft point
         clipPlanePoints.UpperLeft = pos + transform.forward * distance;
         clipPlanePoints.UpperLeft -= transform.right * width;
         clipPlanePoints.UpperLeft += transform.up * height;
         intoArray[3] = clipPlanePoints.UpperLeft;
-
-        //Camera position point
-        intoArray[4] = transform.position;
 
         return clipPlanePoints;
     }
@@ -184,7 +186,7 @@ public class CameraController : MonoBehaviour
             float Distance = Vector3.Distance(clipPoints[i], fromPosition);
 
 
-            if (Physics.Raycast(ray, out hit, Distance, CollisionMask))            
+            if (Physics.Raycast(ray, out hit, Distance * 0.9f, CollisionMask))
             {
                 print("collided");
                 return true;
@@ -197,27 +199,26 @@ public class CameraController : MonoBehaviour
     //adjust the distance to closest position where camera collides
     private float GetAdjustedDistance(Vector3 from)
     {
-        for (int i = 0; i < desiredClipPoints.Length; i++)
+        for (int i = 0; i < adjustedClipPoints.Length; i++)
         {
-            Ray ray = new Ray(from, desiredClipPoints[i] - from);
             RaycastHit hit;
-
-            //if (Physics.CapsuleCast(point1, point2, colRadius, desiredClipPoints[i], out hit, distance + 0.05f, CollisionMask, QueryTriggerInteraction.Ignore))
-            if (Physics.Raycast(ray, out hit, distance + 0.2f, CollisionMask))
+            if (Physics.Linecast(from, adjustedClipPoints[i] - from, out hit, CollisionMask))
             {
+
                 if (distance == -1)
-                    distance = hit.distance;
+                {
+                    distance = hit.distance * 0.3f;
+                }
+
                 else
                 {
                     if (hit.distance < distance)
                     {
-                        distance = hit.distance;                       
+                        distance = hit.distance * 0.3f;
                     }
                 }
             }
         }
-
-        distance = Mathf.Clamp(distance, MinDistance, MaxDistance);
 
         if (distance == -1)
         {
@@ -239,104 +240,6 @@ public class CameraController : MonoBehaviour
             colliding = false;
         }
     }
-
-    private void FixPositions()
-    {
-        RaycastHit hitInfo;
-        Vector3 surfaceNormal = transform.up;
-        //TODO: get rid of shaking during lerping camera
-        if (Physics.Raycast(transform.position, -transform.up,  out hitInfo))
-        {
-            Vector3 colPoint = hitInfo.point;
-            print("ground");
-            //check if ground angle allows movement
-           
-                if (Physics.Raycast(transform.position, -transform.up, out hitInfo))
-                {
-                   surfaceNormal = Vector3.Lerp(surfaceNormal, hitInfo.normal, 4 * Time.deltaTime);
-                }
-
-                //Rotate character according to ground angle
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), Time.deltaTime * 3);
-
-                //check distance to 
-                if (Vector3.Distance(transform.position, colPoint) < 0.7f)
-                {
-                    cameraOffset.y = Mathf.Lerp(cameraOffset.y, transform.position.y + surfaceNormal.y * 0.5f, Time.fixedDeltaTime * 3);
-                }
-            }
-        //}
-        //Vector3 desiredPos = new Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z);
-        //float actualZ = desiredPos.z;
-        //float actualX = desiredPos.x;
-        //float actualY = desiredPos.y;
-
-        //CameraCollision(ref actualZ, ref actualX, ref actualY);
-
-        //Vector3 correctedPos = new Vector3(actualX, actualY, actualZ);
-        //cameraOffset = correctedPos;
-    }
-
-    void CameraCollision(ref float actualZ, ref float actualX, ref float actualY)
-    {
-        //Debug.DrawLine(target.position, transform.position, Color.blue);
-
-        //float step = Mathf.Abs(actualZ);
-        float step = Vector3.Distance(target.position, transform.position);
-        int stepCount = 3;
-        float stepIncremental = step / stepCount;
-        RaycastHit hit;
-        Vector3 dir = transform.forward;
-
-
-        if (Physics.Linecast(target.position, -target.forward, out hit, CollisionMask))
-        {
-            actualZ = -Mathf.Clamp((hit.distance * 0.9f), MinDistance, MaxDistance);
-            //float distance = Vector3.Distance(hit.point, target.position);
-            //actualZ = -(distance * 0.3f);
-        }
-        else
-        {
-            for (int s = 1; s < stepCount + 1; s++)
-            {
-                Vector3 secondOrigin = target.position - (dir * s) * stepIncremental;
-
-                for (int i = 0; i < 5; i++)
-                {
-                    Vector3 direction = Vector3.zero;
-                    switch (i)
-                    {
-                        case 0:
-                            direction = transform.right;
-                            break;
-                        case 1:
-                            direction = -transform.right;
-                            break;
-                        case 2:
-                            direction = transform.up;
-                            break;
-                        case 3:
-                            direction = -transform.up;
-                            break;
-                    }
-
-                    Debug.DrawRay(secondOrigin, direction, Color.red);
-
-                    if (Physics.Raycast(secondOrigin, direction, out hit, CollisionMask))
-                    {
-
-                        float distance = Vector3.Distance(secondOrigin, target.position);
-                        actualZ = -(distance * 0.3f);
-
-                        //actualX = -(hit.point.x + hit.normal.x * 0.5f);
-                        //actualZ = -(hit.point.z + hit.normal.z * 0.5f);                       
-
-                    }
-                }
-            }
-        }
-    }
-
 
     protected void Restrict()
     {
@@ -387,21 +290,21 @@ public class CameraController : MonoBehaviour
         if (colliding)
         {
             //TODO: move camera away from collision
-            cameraOffset.z = Mathf.Lerp(cameraOffset.z, distance, Time.fixedDeltaTime * 2);
+            cameraOffset.z = Mathf.Lerp(cameraOffset.z, distance, Time.deltaTime * 1.5f);
             toPos = target.position + (target.rotation * cameraOffset);
         }
         else
         {
-            cameraOffset.z = Mathf.Lerp(cameraOffset.z, resetPos.z, Time.fixedDeltaTime * 2);
+            cameraOffset.z = Mathf.Lerp(cameraOffset.z, resetPos.z, Time.deltaTime * 1.5f);
+            //cameraOffset = resetPos; 
             toPos = target.position + (target.rotation * cameraOffset);
         }
 
-
-     
         Vector3 curPos = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
 
         transform.position = curPos;
     }
+
     void SmoothRotate()
     {
         // rotation, same up direction
