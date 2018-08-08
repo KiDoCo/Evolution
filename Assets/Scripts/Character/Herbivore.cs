@@ -21,7 +21,9 @@ public class Herbivore : Character
     public float defSmooth = 0;
 
     //Animation variables
+    [SyncVar]
     private float horizontalMovement;
+    [SyncVar]
     private float verticalMovement;
 
     //timer values
@@ -94,11 +96,12 @@ public class Herbivore : Character
 
     //methods
 
+
     public void MouseMove()
     {
-        float v = verticalSpeed * Input.GetAxis("Mouse Y");
-        float h = horizontalSpeed * Input.GetAxis("Mouse X");
-        transform.Rotate(v, h, 0);
+        mouseV = verticalSpeed * Input.GetAxis("Mouse Y");
+        mouseH = horizontalSpeed * Input.GetAxis("Mouse X");
+        transform.Rotate(mouseV, mouseH, 0);
 
         if (Input.GetAxisRaw("Mouse Y") != 0 || Input.GetAxisRaw("Mouse X") != 0)
         {
@@ -123,7 +126,7 @@ public class Herbivore : Character
         }
     }
 
-    protected override void AnimationChanger()
+    protected override void CmdAnimationChanger()
     {
         playerMesh.SetBlendShapeWeight(0, Mathf.Clamp(Experience, 25, 100));
         m_animator.SetBool("isEating", eating);
@@ -337,6 +340,9 @@ public class Herbivore : Character
         {
             transform.Translate((X + Z) * defaultSpeed);
             transform.Rotate(Y * defaultSpeed);
+            lastposition = curPos;
+            curPos = transform.position;
+            pos = curPos - lastposition;
         }
     }
 
@@ -486,8 +492,8 @@ public class Herbivore : Character
                 MouseMove();
             }
             ApplyMovement();
+            CmdAnimationChanger();
         }
-        AnimationChanger();
     }
 
     #endregion

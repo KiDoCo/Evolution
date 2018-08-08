@@ -16,6 +16,7 @@ public class InputManager : MonoBehaviour
     private int playstationController = 0;
     private bool waitingForKey;
     private bool coroutinerunning;
+    private bool pressed;
     private StoredInformation storage;
     private string gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
 
@@ -152,6 +153,7 @@ public class InputManager : MonoBehaviour
         }
         return v;
     }
+
     /// <summary>
     /// Used to get the users input when button is held down
     /// </summary>
@@ -170,6 +172,30 @@ public class InputManager : MonoBehaviour
         }
         return retVal;
     }
+
+    public bool GetButtonDown(string name, bool pressedDown)
+    {
+        bool retval = false;
+        if (pressedDown)
+        {
+            if (pressed) return retval;
+            pressed = true;
+            for (int i = 0; i < inputAxes.Count; i++)
+            {
+                if (inputAxes[i].AxisName == name)
+                {
+                    retval = inputAxes[i].positive;
+                }
+            }
+        }
+        else
+        {
+            pressed = false;
+        }
+
+        return retval;
+    }
+
     #endregion Input getters
 
     #region UnityMethdods
@@ -242,53 +268,53 @@ public class InputManager : MonoBehaviour
 
 }
 
-    #region Serialized Classes
-    //No touchie boios
+#region Serialized Classes
+//No touchie boios
 
-    [System.Serializable]
-    public class StoredInformation
+[System.Serializable]
+public class StoredInformation
+{
+    public List<AxisBase> configurations = new List<AxisBase>();
+    public string SaveToString()
     {
-        public List<AxisBase> configurations = new List<AxisBase>();
-        public string SaveToString()
+        return JsonUtility.ToJson(this);
+    }
+}
+
+[System.Serializable]
+public class AxisBase
+{
+    public string AxisName;
+
+    public KeyCode Pkey;
+    public KeyCode Nkey;
+    [HideInInspector]
+    public bool positive;
+    [HideInInspector]
+    public bool negative;
+    [HideInInspector]
+    public float Axis;
+    private float targetAxis;
+    public float Sensitivity = 3;
+    public string PkeyDescription;
+    public string NkeyDescription;
+    [HideInInspector]
+    public AxisButton NUIButton;
+    [HideInInspector]
+    public AxisButton PUIButton;
+
+    public float TargetAxis
+    {
+        get
         {
-            return JsonUtility.ToJson(this);
+            return targetAxis;
+        }
+
+        set
+        {
+            targetAxis = Mathf.Clamp(value, -1, 1);
         }
     }
 
-    [System.Serializable]
-    public class AxisBase
-    {
-        public string AxisName;
-
-        public KeyCode Pkey;
-        public KeyCode Nkey;
-        [HideInInspector]
-        public bool positive;
-        [HideInInspector]
-        public bool negative;
-        [HideInInspector]
-        public float Axis;
-        private float targetAxis;
-        public float Sensitivity = 3;
-        public string PkeyDescription;
-        public string NkeyDescription;
-        [HideInInspector]
-        public AxisButton NUIButton;
-        [HideInInspector]
-        public AxisButton PUIButton;
-
-        public float TargetAxis
-        {
-            get
-            {
-                return targetAxis;
-            }
-
-            set
-            {
-                targetAxis = Mathf.Clamp(value, -1, 1);
-            }
-        }
-
-    }
-    #endregion
+}
+#endregion

@@ -36,14 +36,30 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
     public bool isDashing;
-    public bool isStrafing; //1st person kamera käyttää näitä
+    public bool isStrafing; 
     protected bool isMoving;
     public bool hasjustRolled;
     protected bool barrelRoll;
     private bool ready;
-    [SyncVar(hook = "AnimEatChecker")]
+
+    [SyncVar]
     protected bool eating;
     protected bool inputEnabled = true;
+    [SyncVar]
+    protected Vector3 curPos;
+    [SyncVar(hook = "PosCheck")]
+    protected Vector3 pos;
+
+    [SyncVar(hook = "MouseInputV")]
+    protected float mouseV;
+    [SyncVar(hook = "MouseInputH")]
+    protected float mouseH;
+
+    protected float mouseIV;
+    protected float mouseIH;
+
+    [SyncVar]
+    protected Vector3 lastposition;
 
     //timer bools
     [SerializeField] protected bool coolTimer;
@@ -138,6 +154,16 @@ public abstract class Character : NetworkBehaviour
 
     #region Movement methods
 
+    protected virtual void MouseInputV(float temp)
+    {
+        mouseV = temp;
+    }
+
+    protected virtual void MouseInputH(float temp)
+    {
+        mouseH = temp;
+    }
+
     protected abstract void ForwardMovement();
 
     protected abstract void SidewayMovement();
@@ -146,12 +172,14 @@ public abstract class Character : NetworkBehaviour
 
     protected abstract void ApplyMovement();
 
-    protected abstract void AnimationChanger();
+    protected abstract void CmdAnimationChanger();
 
-    protected virtual void AnimEatChecker(bool temp)
+    protected virtual void PosCheck(Vector3 vector)
     {
-        eating = temp;
+        pos = vector;
+        isMoving = pos.normalized.magnitude != 0  ? true : false;
     }
+
 
     /// <summary>
     /// Avoid control jerkiness with restricting x rotation
@@ -187,7 +215,6 @@ public abstract class Character : NetworkBehaviour
             {
                 rolling = false;
             }
-
         }
     }
 

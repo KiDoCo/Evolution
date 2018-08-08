@@ -1252,12 +1252,10 @@ MonoBehaviour:
   canMouseMove: 1
   carnivoreMesh: {fileID: 1175654593334706}
   stamina: 0
-  coolDownTime: 0
+  coolDownTime: 2
   chargeTime: 2
-  eatCooldown: 0
-  xpReward: 0
-  damage: 1
-  slowDown: 0
+  eatCooldown: 2
+  slowDown: 0.4
 --- !u!114 &114686996628757176
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1270,7 +1268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 95662106521183134}
-  m_ParameterSendBits: 0
+  m_ParameterSendBits: 31
   param0: 
   param1: 
   param2: 
