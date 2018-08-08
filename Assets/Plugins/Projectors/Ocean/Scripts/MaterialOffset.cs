@@ -32,6 +32,7 @@ public class MaterialOffset : MonoBehaviour
 
         //transform.position += amplitude * (Mathf.Sin(2 * Mathf.PI * frequency * Time.time) - Mathf.Sin(2 * Mathf.PI * frequency * (Time.time - Time.deltaTime))) * transform.forward;
 
+        /*
         if (MaterialRenderer.enabled)
         {
             if (moveTexture)
@@ -44,5 +45,6 @@ public class MaterialOffset : MonoBehaviour
             }
 
         }
+        */
     }
 }

@@ -34,6 +34,7 @@ public class PathManager : NetworkBehaviour
     [ServerCallback]
     public void NodeAssign()
     {
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MapFinal") return;
         locationContainer = GameObject.Find("LocationContainer");
         Transform[] array = locationContainer.GetComponentsInChildren<Transform>();
 
@@ -73,6 +74,8 @@ public class PathManager : NetworkBehaviour
     [ServerCallback]
     public void SpawnFish() 
     {
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MapFinal") return;
+
         if (fishAmount >= maxFishAmount || timer >= 0) return;
         GameObject clone = Instantiate(fishPrefab, allNodes[Random.Range(0, allNodes.Count)].position, Quaternion.identity);
         NetworkServer.Spawn(clone);

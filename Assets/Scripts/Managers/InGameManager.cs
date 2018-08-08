@@ -36,7 +36,7 @@ public class InGameManager : NetworkBehaviour
     private List<Transform> FoodSpawnPointList = new List<Transform>();
 
     // Strings
-    private string gameScene = "DemoScene";
+    private string gameScene = "MapFinal";
     private string foodSourceName = "FoodSource";
     private string playerSpawnName = "player";
     private string menuScene = "Menu";

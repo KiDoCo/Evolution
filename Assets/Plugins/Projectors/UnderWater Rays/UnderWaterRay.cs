@@ -28,8 +28,8 @@ public class UnderWaterRay : MonoBehaviour
     
     [Range(0, 0.1f)]
     public float minTransparency = 0.001f;
-    [Range(0, 0.2f)]
-    public float maxTransparency = 0.05f;
+    [Range(0, 0.5f)]
+    public float maxTransparency = 0.5f;
     private float transparency; //  Current Transparency
 
     [Range(0, 0.001f)]
