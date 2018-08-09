@@ -981,6 +981,7 @@ MonoBehaviour:
   m_SpawnPrefabs:
   - {fileID: 1445834569832970, guid: af4694095343c2e49bc8dc8e7ca7270a, type: 2}
   - {fileID: 1063323722126642, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
+  - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
   - {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117, type: 2}
   - {fileID: 1896606498718602, guid: 5f872a3ae431cd347966da54bb339f9d, type: 2}
   m_CustomConfig: 0
@@ -1049,9 +1050,6 @@ MonoBehaviour:
   m_LobbyScene: Menu
   m_PlayScene: DemoScene
   lobbySlots: []
-  spawnedNetManagers:
-  - {fileID: 1404718516752614, guid: d47b7b8acc8846d41a0677c983e7469b, type: 2}
-  - {fileID: 1976945723199058, guid: 264a6103ffeadaa4e850038557686644, type: 2}
   lobbyUI: {fileID: 1678181856082178}
   mainUI: {fileID: 1115911705310670}
   hostUI: {fileID: 1536484938154256}

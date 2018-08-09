@@ -112,26 +112,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene && !InGameManager.Instance.MatchEnd)
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
-
-                if (PauseMenu.Instance.UI.activeSelf)
-                {
-                    if (NetworkGameManager.Instance.LocalCharacter != null)
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
-                    HideCursor(false);
-                }
-                else
-                {
-                    if (NetworkGameManager.Instance.LocalCharacter != null)
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
-                    HideCursor(true);
-                }
-            }
-        }
+        
     }
 
     public void HideCursor(bool hide)

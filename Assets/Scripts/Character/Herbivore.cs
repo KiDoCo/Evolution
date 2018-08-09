@@ -108,10 +108,12 @@ public class Herbivore : Character
     {
         for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
         {
-            if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+            if (InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>() != null)
             {
-
-                Eat(InGameManager.Instance.FoodPlaceList[i]);
+                if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+                {
+                    Eat(InGameManager.Instance.FoodPlaceList[i]);
+                }
             }
         }
     }
@@ -155,10 +157,6 @@ public class Herbivore : Character
 
     protected override void SpawnCamera()
     {
-        GameObject mapCam = GameObject.FindGameObjectWithTag("MapCamera");
-        if (mapCam != null)
-            Destroy(mapCam);
-
         spawnedCam = Instantiate(cameraPrefab);
         spawnedCam.GetComponent<CameraController>().InstantiateCamera(this);
     }
@@ -212,7 +210,6 @@ public class Herbivore : Character
     [ClientRpc]
     private void RpcEat(GameObject go)
     {
-        Debug.Log(go);
         if (go != null)
         {
             FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
@@ -235,7 +232,6 @@ public class Herbivore : Character
     [Command]
     private void CmdEat(GameObject go)
     {
-        Debug.Log(go);
         if (go != null)
         {
             FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
@@ -441,10 +437,9 @@ public class Herbivore : Character
     protected override void Start()
     {
         ComponentSearch();
+        base.Start();
         if (isLocalPlayer)
         {
-            SpawnCamera();
-            base.Start();
             canBarrellRoll = true;
             canTurn = true;
         }

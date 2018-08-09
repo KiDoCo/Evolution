@@ -20,7 +20,7 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     {
         get
         {
-            return InGameManager.Instance.PlayerPrefabs[characterDropdown.options[playerType].text];
+            return NetworkGameManager.Instance.PlayerPrefabs[characterDropdown.options[playerType].text];
         }
     }
 
@@ -36,14 +36,12 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     // OnClientEnterLobby() is called also when client goes back from in-game to lobby
     public override void OnClientEnterLobby()
     {
-        base.OnClientEnterLobby();
-
         Debug.Log("Client " + netId + " entered lobby");
 
         // Adds players to dropbox
         if (characterDropdown.options.Count == 0)
         {
-            characterDropdown.AddOptions(new List<string>(InGameManager.Instance.PlayerPrefabs.Keys));
+            characterDropdown.AddOptions(new List<string>(NetworkGameManager.Instance.PlayerPrefabs.Keys));
             characterDropdown.RefreshShownValue();
         }
 

@@ -139,11 +139,14 @@ public class HUDController : MonoBehaviour
     /// </summary>
     public void UpdateHUD()
     {
-        int Atime = (int)InGameManager.Instance.MatchTimer / 60;
-        int Btime = (int)InGameManager.Instance.MatchTimer % 60;
-        curHealthText.text = "" + curHealth;
-        maxHealthText.text = "/" + maxHealth;
-        inGameMatchTime.text = Atime + " : " + Btime.ToString("00");
+        if (InGameManager.Instance != null)
+        {
+            int Atime = (int)InGameManager.Instance.MatchTimer / 60;
+            int Btime = (int)InGameManager.Instance.MatchTimer % 60;
+            curHealthText.text = "" + curHealth;
+            maxHealthText.text = "/" + maxHealth;
+            inGameMatchTime.text = Atime + " : " + Btime.ToString("00");
+        }
     }
 
     /// <summary>

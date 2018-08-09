@@ -11,7 +11,6 @@ public class NetworkGameManager : NetworkLobbyManager {
     public static NetworkGameManager Instance;
 
     [Space]
-    [SerializeField] private GameObject[] spawnedNetManagers;
     [SerializeField] private GameObject lobbyUI = null;
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
@@ -25,17 +24,21 @@ public class NetworkGameManager : NetworkLobbyManager {
     [SerializeField] private GameObject playerListContent = null;
     [SerializeField] private InputField playerName = null;
 
-    public GameObject PlayerListContent { get { return playerListContent; } }
-    public string PlayerName { get { return playerName.text; } }
-    public bool Hosting { get { return thisIsHosting; } }
-    public List<Character> InGamePlayerList { get { return inGamePlayerList; } }
-    public Character LocalCharacter { get { return localCharacter; } set { localCharacter = value; } }
-
     private GameObject[] UIWindows;
     private List<Character> inGamePlayerList = new List<Character>();
     private Character localCharacter = null;
     private bool thisIsHosting = false;
     private string externalIP = "";
+    private List<GameObject> carnivorePrefabs = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs = new List<GameObject>();
+    public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
+
+    public GameObject PlayerListContent { get { return playerListContent; } }
+    public string PlayerName { get { return playerName.text; } }
+    public bool Hosting { get { return thisIsHosting; } }
+    public List<Character> InGamePlayerList { get { return inGamePlayerList; } }
+    public Character LocalCharacter { get { return localCharacter; } set { localCharacter = value; } }
+    public List<GameObject> HerbivorePrefabs { get { return herbivorePrefabs; } set { herbivorePrefabs = value; } }
 
     private void Awake ()
     {
@@ -45,13 +48,7 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     private void Start()
     {
-        if (spawnedNetManagers.Length != 0)
-        {
-            foreach (GameObject g in spawnedNetManagers)
-            {
-                Instantiate(g);
-            }
-        }
+        LoadAssetToDictionaries();
 
         SceneManager.LoadScene(lobbyScene);
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
@@ -131,8 +128,6 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyStartHost()
     {
-        base.OnLobbyStartHost();
-
         thisIsHosting = true;
         StartCoroutine(GetPublicIP());
         hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;  // Temp message before public IP is updated
@@ -142,19 +137,14 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyStopHost()
     {
-        base.OnLobbyStopHost();
-
         thisIsHosting = false;
         UIManager.switchGameObject(UIWindows, mainUI);
         insertNameError.SetActive(false);
         Debug.Log("Hosting stopped");
-
     }
 
     public override void OnLobbyClientEnter()
     {
-        base.OnLobbyClientEnter();
-
         if (!thisIsHosting)
         {
             clientAddressText.text = networkAddress + ":" + networkPort;
@@ -165,8 +155,6 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyClientExit()
     {
-        base.OnLobbyClientExit();
-
         if (!thisIsHosting)
         {
             UIManager.switchGameObject(UIWindows, mainUI);
@@ -177,34 +165,26 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyServerSceneChanged(string sceneName)
     {
-        base.OnLobbyServerSceneChanged(sceneName);
-
-        Debug.Log("Scene changed");
-
         if (sceneName == playScene)
         {
             EventManager.Broadcast(EVENT.RoundBegin);
         }
+        Debug.Log("Scene changed");
     }
 
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
     {
-        base.OnLobbyClientSceneChanged(conn);
-
         // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)
         {
             Instantiate(UIManager.Instance.PauseMenuPrefab);
             lobbyUI.SetActive(false);
-            UIManager.Instance.HideCursor(true);
-            InGameManager.Instance.ClearBoxes();
         }
         else if (SceneManager.GetActiveScene().name == lobbyScene)
         {
             lobbyUI.SetActive(true);
             UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
-            InGameManager.Instance.DestroyFoodPlaceLists();
         }
     }
 
@@ -247,6 +227,29 @@ public class NetworkGameManager : NetworkLobbyManager {
     }
 
     // --- Other private methods
+
+    /// <summary>
+    /// Populates the asset dictionaries
+    /// </summary>
+    private void LoadAssetToDictionaries()
+    {
+        //Search the file with WWW class and loads them to cache
+        carnivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Carnivore"));
+        herbivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Herbivore"));
+
+        foreach (GameObject prefab in carnivorePrefabs)
+        {
+            PlayerPrefabs.Add(prefab.name, prefab);
+        }
+
+        foreach (GameObject prefab in herbivorePrefabs)
+        {
+            PlayerPrefabs.Add(prefab.name, prefab);
+        }
+
+        Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
+        Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
+    }
 
     private IEnumerator GetPublicIP()
     {

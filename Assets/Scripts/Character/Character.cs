@@ -129,6 +129,14 @@ public abstract class Character : NetworkBehaviour
             inputEnabled = value;
         }
     }
+
+    public GameObject PlayerCamera
+    {
+        get
+        {
+            return spawnedCam;
+        }
+    }
     
     #endregion
 
@@ -231,6 +239,30 @@ public abstract class Character : NetworkBehaviour
         return true;
     }
 
+    private void PauseMenuUpdate()
+    {
+        if (InGameManager.Instance.InMatch)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
+
+                if (PauseMenu.Instance.UI.activeSelf)
+                {
+                    if (NetworkGameManager.Instance.LocalCharacter != null)
+                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
+                    UIManager.Instance.HideCursor(false);
+                }
+                else
+                {
+                    if (NetworkGameManager.Instance.LocalCharacter != null)
+                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
+                    UIManager.Instance.HideCursor(true);
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
@@ -259,6 +291,22 @@ public abstract class Character : NetworkBehaviour
         inputEnabled = enabled;
     }
 
+    [ServerCallback]
+    public void EnablePlayerCamera(bool enabled)
+    {
+        spawnedCam.SetActive(enabled);
+        InGameManager.Instance.MapCamera.SetActive(!enabled);
+
+        RpcEnablePlayerCamera(enabled);
+    }
+
+    [ClientRpc]
+    private void RpcEnablePlayerCamera(bool enabled)
+    {
+        spawnedCam.SetActive(enabled);
+        InGameManager.Instance.MapCamera.SetActive(!enabled);
+    }
+
     #region Unity Methods
 
     protected virtual void Awake()
@@ -269,10 +317,13 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void Start()
     {
+        Debug.Log("Character activated");
         if (isLocalPlayer)
         {
             NetworkGameManager.Instance.LocalCharacter = this;
             UIManager.Instance.InstantiateInGameUI(this);
+            SpawnCamera();
+            EnablePlayerCamera(true);
         }
 
         inputEnabled = true;
@@ -286,6 +337,7 @@ public abstract class Character : NetworkBehaviour
         ForwardMovement();
         UpwardsMovement();
         SidewayMovement();
+        PauseMenuUpdate();
     }
 
     protected virtual void FixedUpdate()

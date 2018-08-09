@@ -83,10 +83,6 @@ public class Carnivore : Character
 
     protected override void SpawnCamera()
     {
-        GameObject mapCam = GameObject.FindGameObjectWithTag("MapCamera");
-        if (mapCam != null)
-            Destroy(mapCam);
-
         spawnedCam = Instantiate(cameraPrefab);
         spawnedCam.GetComponent<CameraController_1stPerson>().InstantiateCamera(this);
     }
@@ -252,11 +248,11 @@ public class Carnivore : Character
         {
             Mathf.Lerp(spawnedCam.GetComponent<Camera>().fieldOfView, spawnedCam.GetComponent<Camera>().fieldOfView + 2 * momentumTimer, 10 * Time.deltaTime);
             FieldOfView += momentumTimer;
-            for (int i = 0; i < InGameManager.Instance.HerbivorePrefabs.ToArray().Length; i++)
+            for (int i = 0; i < NetworkGameManager.Instance.HerbivorePrefabs.ToArray().Length; i++)
             {
-                if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
+                if (GetComponent<Collider>().bounds.Intersects(NetworkGameManager.Instance.HerbivorePrefabs[i].GetComponent<Collider>().bounds))
                 {
-                    HitCheck(InGameManager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
+                    HitCheck(NetworkGameManager.Instance.HerbivorePrefabs[i].GetComponent<Herbivore>());
 
                 }
             }
@@ -331,10 +327,9 @@ public class Carnivore : Character
     protected override void Start()
     {
         ComponentSearch();
+        base.Start();
         if (isLocalPlayer)
         {
-            base.Start();
-            SpawnCamera();
             defaultFov = spawnedCam.GetComponent<Camera>().fieldOfView;
             slowDown = 1 - slowDown;
             carnivoreMesh.SetActive(false);
