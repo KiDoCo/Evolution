@@ -250,13 +250,19 @@ Prefab:
         type: 2}
       propertyPath: m_SpawnPrefabs.Array.data[4]
       value: 
-      objectReference: {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e,
+      objectReference: {fileID: 1896606498718602, guid: 5f872a3ae431cd347966da54bb339f9d,
         type: 2}
     - target: {fileID: 114353092562216092, guid: 83c16fa1a9daede469d5f5a36209aed2,
         type: 2}
       propertyPath: m_UseWebSockets
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114353092562216092, guid: 83c16fa1a9daede469d5f5a36209aed2,
+        type: 2}
+      propertyPath: m_SpawnPrefabs.Array.data[3]
+      value: 
+      objectReference: {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 83c16fa1a9daede469d5f5a36209aed2, type: 2}
   m_IsPrefabParent: 0
@@ -299,12 +305,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 114040489428283660, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d,
-        type: 2}
-      propertyPath: carnivoreJaw
-      value: 
-      objectReference: {fileID: 1372279811924136, guid: a008af549df00d04fbaa2181aa089d0b,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2c4342cf5470c2c40bb8f69f84b8ab5d, type: 2}
   m_IsPrefabParent: 0

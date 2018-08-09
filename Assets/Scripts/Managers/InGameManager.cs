@@ -9,7 +9,7 @@ public enum PredatorRanks { ApexPredator, FishersPrey, Pacifish, Predator }
 public class InGameManager : NetworkBehaviour
 {
     //Ingnore pragmas for unnecessary warnings
-#pragma warning disable
+
 
     public static InGameManager Instance;
 
@@ -44,7 +44,7 @@ public class InGameManager : NetworkBehaviour
     // Prefabs
     public GameObject BerryPrefab;
 
-#pragma warning restore
+
 
     #region getters&setters
 
@@ -243,7 +243,6 @@ public class InGameManager : NetworkBehaviour
         Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
     }
 
-
     private void Timer(float time)
     {
         MatchTimer = time;
@@ -253,6 +252,8 @@ public class InGameManager : NetworkBehaviour
     [ServerCallback]
     public void StartGame()
     {
+        Debug.Log("Here");
+
         StartCoroutine(StartMatch());
     }
 

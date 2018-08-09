@@ -70,19 +70,17 @@ public class Carnivore : Character
         m_animator.SetBool("IsMoving", isMoving);
         HUDController.Instance.PredatorMouthAnim.SetBool("isMoving", isMoving);
 
-        if (!eatIsplaying)
-        {
-            //Eating animation
-            m_animator.SetBool("IsEating", eating);
-            HUDController.Instance.PredatorMouthAnim.SetBool("isEating", eating);
-            eatIsplaying = true;
-        }
+        //Eating animation
+        m_animator.SetBool("IsEating", eatIsplaying);
+        HUDController.Instance.PredatorMouthAnim.SetBool("isEating", eatIsplaying);
+
+
 
         //Charge animation
         m_animator.SetBool("IsCharging", charging);
         HUDController.Instance.PredatorMouthAnim.SetBool("isCharging", charging);
 
-        //Turn animation
+        //Turn animatio
         m_animator.SetFloat("FloatX", Mathf.Clamp(InputManager.Instance.GetAxis("Horizontal"), -1, 1));
     }
 
@@ -164,9 +162,10 @@ public class Carnivore : Character
 
     private void EatInput()
     {
-        if (InputManager.Instance.GetButtonDown("Eat", InputManager.Instance.GetButton("Eat")) && !eating)
+        if (InputManager.Instance.GetButtonDown("Eat") && !eating)
         {
             eating = true;
+            eatIsplaying = true;
             StartCoroutine(EatCoolDown());
         }
     }
@@ -183,9 +182,10 @@ public class Carnivore : Character
     private IEnumerator EatCoolDown()
     {
         defaultSpeed *= slowDown;
+        yield return new WaitForSeconds(eatCooldown / 20);
+        eatIsplaying = false;
         yield return new WaitForSeconds(eatCooldown);
         eating = false;
-        eatIsplaying = false;
         Debug.Log("Restoring");
         RestoreSpeed();
     }
@@ -262,7 +262,7 @@ public class Carnivore : Character
             if (momentumTimer != 0)
                 momentumTimer = 0;
         }
-        Z += (Vector3.forward * momentumTimer * speed) * Time.deltaTime;
+        Z += (Vector3.forward * momentumTimer * speed ) * Time.deltaTime;
     }
 
     public void Charge(float speed)
@@ -296,6 +296,7 @@ public class Carnivore : Character
             }
             yield return null;
         }
+
         charging = false;
         hitTarget = false;
         yield return RestoreFov();

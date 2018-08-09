@@ -988,8 +988,9 @@ GameObject:
   - component: {fileID: 82204358288295608}
   - component: {fileID: 136348791138209274}
   - component: {fileID: 54169861388344904}
-  - component: {fileID: 114999154596939894}
   - component: {fileID: 114855412725242688}
+  - component: {fileID: 114344586632853690}
+  - component: {fileID: 114411738086542230}
   m_Layer: 0
   m_Name: Herbivore
   m_TagString: Untagged
@@ -2585,6 +2586,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114344586632853690
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1802541810096366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a94a5cba31321f54e8d88a157ab68042, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lerpRate: 4
+  normalLerpRate: 8
+  fasterLerpRate: 16
+  sendRate: 9
+  threshold: 0.1
+  closeEnough: 0.05
 --- !u!114 &114354592189847234
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2617,6 +2635,23 @@ MonoBehaviour:
     i15: 65
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114411738086542230
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1802541810096366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98ed777037877fb47bfe70c2bd863e27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lerpRate: 4
+  normalLerpRate: 8
+  fasterLerpRate: 16
+  sendRate: 9
+  threshold: 0.1
+  closeEnough: 0.05
 --- !u!114 &114756214885399454
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2638,24 +2673,15 @@ MonoBehaviour:
   turnSpeed: 2
   turning: 0
   rolling: 0
-  isDashing: 0
-  isStrafing: 0
-  hasjustRolled: 0
   coolTimer: 0
-  canBarrellRoll: 0
-  canStrafe: 0
-  canTurn: 0
-  canDash: 0
   cameraPrefab: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426,
     type: 2}
   Rotatingspeed: 0
   defaultMat: {fileID: 2100000, guid: 718a14c009f75f949a65a0b38e61047c, type: 2}
   glassMat: {fileID: 2100000, guid: 5ed14ae7f9ded7940ad6421097df27d6, type: 2}
-  mouseInput: 0
   defSmooth: 1
   dashTime: 2
   coolTime: 6
-  dashSpeed: 2
 --- !u!114 &114855412725242688
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2668,34 +2694,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 95377941995328236}
-  m_ParameterSendBits: 0
+  m_ParameterSendBits: 31
   param0: 
   param1: 
   param2: 
   param3: 
   param4: 
   param5: 
---- !u!114 &114999154596939894
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1802541810096366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 1
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 7
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_VelocityThreshold: 0.0001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!136 &136348791138209274
 CapsuleCollider:
   m_ObjectHideFlags: 1

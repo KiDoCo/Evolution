@@ -5,7 +5,6 @@ using UnityEngine.Networking;
 
 public class Herbivore : Character
 {
-    //rest of the variables can be found from character
 
     //Component search
     private Quaternion originZ;
@@ -14,22 +13,21 @@ public class Herbivore : Character
     public Material defaultMat;
     public Material glassMat;
 
-    private bool HasRespawned;
-    private float surTime;
-    public bool mouseInput;
-    private bool cloaked = false;
-    public float defSmooth = 0;
+    private Vector3 lastPos;
 
-    //Animation variables
+    private bool HasRespawned;
+    private bool cloaked = false;
+    private bool canDash = true;
+    private bool dashing;
+    private float surTime;
+    public float defSmooth = 0;
     [SyncVar]
-    private float horizontalMovement;
-    [SyncVar]
-    private float verticalMovement;
+    private float horMov;
 
     //timer values
-    [SerializeField] protected float dashTime = 2f;
+    [SerializeField] private float dashTime = 2f;
     [SerializeField] protected float coolTime = 6f;
-    [SerializeField] private float dashSpeed = 2.0f;
+    private float dashSpeed = 2.0f;
 
     #region Character stats
 
@@ -37,6 +35,8 @@ public class Herbivore : Character
     private const float healthMax = 2;
     private const float waitTime = 1.0f;
     private const float deathpenaltytime = 2.0f;
+
+    [SyncVar]
     protected float experience = 0;
     private int deathcount;
 
@@ -92,23 +92,28 @@ public class Herbivore : Character
         }
     }
 
+    protected float DashTime
+    {
+        get
+        {
+            return dashTime;
+        }
+
+        set
+        {
+            dashTime = Mathf.Clamp(value, 0, Mathf.Infinity);
+        }
+    }
+
     #endregion
 
     //methods
-
 
     public void MouseMove()
     {
         mouseV = verticalSpeed * Input.GetAxis("Mouse Y");
         mouseH = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(mouseV, mouseH, 0);
-
-        if (Input.GetAxisRaw("Mouse Y") != 0 || Input.GetAxisRaw("Mouse X") != 0)
-        {
-            mouseInput = true;
-        }
-        else
-            mouseInput = false;
     }
 
     /// <summary>
@@ -120,20 +125,19 @@ public class Herbivore : Character
         {
             if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
             {
-
                 Eat(InGameManager.Instance.FoodPlaceList[i]);
             }
         }
     }
 
+    [Command]
     protected override void CmdAnimationChanger()
     {
         playerMesh.SetBlendShapeWeight(0, Mathf.Clamp(Experience, 25, 100));
-        m_animator.SetBool("isEating", eating);
+        m_animator.SetBool("isEating", eating && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
         m_animator.SetBool("isMoving", isMoving);
-        m_animator.SetFloat("Horizontal", horizontalMovement);
-        m_animator.SetFloat("Vertical", verticalMovement);
         m_animator.SetFloat("Evolution", Experience);
+        m_animator.SetFloat("Horizontal", horMov);
     }
 
     protected void Death()
@@ -261,27 +265,20 @@ public class Herbivore : Character
 
     protected void Dash() // sprint for herbivores
     {
-        if (canDash)
+        if (InputManager.Instance.GetButtonDown("Ability"))
         {
-            Vector3 inputVectorZ = InputManager.Instance.GetButton("Ability") ? Vector3.forward * dashSpeed * Time.deltaTime : Vector3.zero;
-
-            if (inputVectorZ.magnitude != 0)
+            if (canDash)
             {
-                isDashing = true;
-
                 StartCoroutine(DashTimer());
             }
-            else
-            {
-                isDashing = false;
-            }
-            Z += inputVectorZ;
         }
     }
 
     protected IEnumerator DashTimer()
     {
+        defaultSpeed = 3;
         yield return new WaitForSeconds(dashTime);
+        defaultSpeed = 1;
         canDash = false;
         yield return StartCoroutine(CoolTimer());
     }
@@ -320,6 +317,7 @@ public class Herbivore : Character
 
     protected override void SidewayMovement()
     {
+        horMov = Mathf.Clamp(InputManager.Instance.GetAxis("Horizontal"), -1, 1);
         Y = InputManager.Instance.GetAxis("Horizontal") * Vector3.down * turnSpeed;
     }
 
@@ -332,21 +330,15 @@ public class Herbivore : Character
     {
         if (eating) return;
         inputVector = X + Y + Z;
-        verticalMovement = InputManager.Instance.GetAxis("Vertical");
-        horizontalMovement = InputManager.Instance.GetAxis("Horizontal");
+
         isMoving = inputVector.normalized.magnitude != 0 ? true : false;
 
         if (CollisionCheck())
         {
             transform.Translate((X + Z) * defaultSpeed);
             transform.Rotate(Y * defaultSpeed);
-            lastposition = curPos;
-            curPos = transform.position;
-            pos = curPos - lastposition;
         }
     }
-
-
 
     #endregion
 
@@ -371,12 +363,12 @@ public class Herbivore : Character
 
     private void SetNormal() //Change material
     {
-        RpcMaterialChange(false);
+        MaterialChange(false);
     }
 
     private void SetGlass() //Change material
     {
-        RpcMaterialChange(true);
+        MaterialChange(true);
         StartCoroutine(SetBump());
     }
 
@@ -387,11 +379,12 @@ public class Herbivore : Character
         while (Mathf.Abs(playerMesh.material.color.a - goal.a) > 0.05f && backUpTimer < 2)
         {
             backUpTimer += Time.deltaTime;
-            RpcColorChange(Color.Lerp(playerMesh.material.color, goal, 15 * Time.deltaTime));
+            ColorChange(Color.Lerp(playerMesh.material.color, goal, 15 * Time.deltaTime));
             yield return null;
 
         }
-        RpcColorChange(goal);
+
+        ColorChange(goal);
         if (cloaked) { SetGlass(); }
         else { playerMesh.material.SetFloat("_Glossiness", defSmooth); }
     }
@@ -408,6 +401,7 @@ public class Herbivore : Character
             yield return null;
         }
     }
+
     private IEnumerator RemoveGlass() //Decrease distortion for glass
     {
         float backUpTimer = 0;
@@ -426,16 +420,31 @@ public class Herbivore : Character
         StartCoroutine(SwapColor(visibilityColor));
     }
 
-    [ClientRpc]
-    private void RpcMaterialChange(bool glass)
+    private void MaterialChange(bool glass)
     {
+        Material mat = glass ? glassMat : defaultMat;
+        playerMesh.material = mat;
+        CmdMaterialChange(glass);
+    }
+
+    private void ColorChange(Color col)
+    {
+        playerMesh.material.color = col;
+        CmdColorChange(col);
+    }
+
+    [Command]
+    private void CmdMaterialChange(bool glass)
+    {
+        Debug.Log("glass " + glass);
         Material mat = glass ? glassMat : defaultMat;
         playerMesh.material = mat;
     }
 
-    [ClientRpc]
-    private void RpcColorChange(Color col)
+    [Command]
+    private void CmdColorChange(Color col)
     {
+        Debug.Log("Colorcmd");
         playerMesh.material.color = col;
     }
 
@@ -451,13 +460,11 @@ public class Herbivore : Character
 
     protected override void Start()
     {
-        ComponentSearch();
         if (isLocalPlayer)
         {
+            ComponentSearch();
             base.Start();
             SpawnCamera();
-            canBarrellRoll = true;
-            canTurn = true;
         }
 
     }

@@ -173,10 +173,10 @@ public class InputManager : MonoBehaviour
         return retVal;
     }
 
-    public bool GetButtonDown(string name, bool pressedDown)
+    public bool GetButtonDown(string name)
     {
         bool retval = false;
-        if (pressedDown)
+        if (GetButton(name))
         {
             if (pressed) return retval;
             pressed = true;

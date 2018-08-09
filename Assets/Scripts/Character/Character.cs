@@ -31,52 +31,45 @@ public abstract class Character : NetworkBehaviour
 
     #endregion
 
-
     #region Booleans
+
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
-    public bool isDashing;
-    public bool isStrafing; 
+    [SyncVar]
     protected bool isMoving;
-    public bool hasjustRolled;
-    protected bool barrelRoll;
     private bool ready;
 
     [SyncVar]
     protected bool eating;
     protected bool inputEnabled = true;
-    [SyncVar]
-    protected Vector3 curPos;
-    [SyncVar(hook = "PosCheck")]
-    protected Vector3 pos;
+    //timer bools
+    [SerializeField] protected bool coolTimer;
 
-    [SyncVar(hook = "MouseInputV")]
-    protected float mouseV;
-    [SyncVar(hook = "MouseInputH")]
-    protected float mouseH;
+    #endregion
 
-    protected float mouseIV;
-    protected float mouseIH;
 
     [SyncVar]
     protected Vector3 lastposition;
 
-    //timer bools
-    [SerializeField] protected bool coolTimer;
+    [SyncVar]
+    protected Vector3 curPos;
 
-    //ability unlock bools used in editor
-    [SerializeField] protected bool canBarrellRoll;
-    [SerializeField] protected bool canStrafe;
-    [SerializeField] protected bool canTurn;
-    [SerializeField] protected bool canDash;
+    [SyncVar(hook = "PosCheck")]
+    protected Vector3 pos;
 
-    #endregion
+    protected float mouseV;
+    protected float mouseH;
+
+    #region components
 
     [SerializeField] protected GameObject cameraPrefab;
     protected GameObject spawnedCam;
     protected Animator m_animator;
     private AudioSource musicSource;
     protected AudioSource SFXsource;
+    protected SkinnedMeshRenderer playerMesh = null;
+
+    #endregion
 
     //Movement vectors
     protected Vector3 Y;
@@ -97,10 +90,6 @@ public abstract class Character : NetworkBehaviour
     protected bool collided = false;
 
     #endregion
-
-    protected SkinnedMeshRenderer playerMesh = null;
-
-    //End variables
 
     #region Getter&Setter
 
@@ -137,7 +126,7 @@ public abstract class Character : NetworkBehaviour
             return inputVector;
         }
     }
-    
+
     public bool InputEnabled
     {
         get
@@ -149,20 +138,11 @@ public abstract class Character : NetworkBehaviour
             inputEnabled = value;
         }
     }
-    
+
     #endregion
 
     #region Movement methods
 
-    protected virtual void MouseInputV(float temp)
-    {
-        mouseV = temp;
-    }
-
-    protected virtual void MouseInputH(float temp)
-    {
-        mouseH = temp;
-    }
 
     protected abstract void ForwardMovement();
 
@@ -177,7 +157,7 @@ public abstract class Character : NetworkBehaviour
     protected virtual void PosCheck(Vector3 vector)
     {
         pos = vector;
-        isMoving = pos.normalized.magnitude != 0  ? true : false;
+        isMoving = pos.normalized.magnitude != 0 ? true : false;
     }
 
 
@@ -201,24 +181,23 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void BarrelRoll() //if needed 
     {
-        if (canBarrellRoll)
-        {
-            Vector3 inputRotationZ = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Rotation") * rotateSpeed);
-            transform.Rotate(inputRotationZ);
-            if (inputRotationZ.magnitude != 0)
-            {
-                rolling = true;
-                isMoving = true;
 
-            }
-            else
-            {
-                rolling = false;
-            }
+        Vector3 inputRotationZ = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Rotation") * rotateSpeed);
+        transform.Rotate(inputRotationZ);
+        if (inputRotationZ.magnitude != 0)
+        {
+            rolling = true;
+            isMoving = true;
+
+        }
+        else
+        {
+            rolling = false;
         }
     }
 
     #endregion
+
 
     public bool CollisionCheck()
     {
@@ -305,15 +284,14 @@ public abstract class Character : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            NetworkGameManager.Instance.LocalCharacter = this;
             playerMesh = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
+            inputEnabled = true;
+            accPerSec = maxSpeed / accTimeToMax;
+            decPerSec = -maxSpeed / decTimeToMin;
+            NetworkGameManager.Instance.LocalCharacter = this;
             UIManager.Instance.InstantiateInGameUI(this);
+            EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
         }
-
-        inputEnabled = true;
-        accPerSec = maxSpeed / accTimeToMax;
-        decPerSec = -maxSpeed / decTimeToMin;
-        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
