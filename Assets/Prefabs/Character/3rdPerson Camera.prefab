@@ -39,7 +39,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1953833088195292}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 191.395, y: 10.55, z: 251.85}
+  m_LocalPosition: {x: 0, y: 0.2, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -103,7 +103,7 @@ MonoBehaviour:
   pivotpoint: {fileID: 0}
   Camera3rd: {fileID: 20080875289540046}
   FreeCamera: 0
-  cameraOffset: {x: 0, y: 0.2, z: -2}
+  cameraOffset: {x: 0, y: 0.2, z: -1.5}
   distanceDampValue: 0.08
   reverseDistanceDamp: 0.02
   verticalDistanceDamp: 0.02
@@ -114,13 +114,12 @@ MonoBehaviour:
   m_FieldOfView: 60
   lookSmooth: 100
   pivotPos: {x: 0, y: 0.2, z: 0}
-  MinDistance: -0.3
-  MaxDistance: 2
+  MinDistance: 0.5
+  MaxDistance: 3
   smoothTime: 5
-  collisionMask:
+  CollisionMask:
     serializedVersion: 2
     m_Bits: 32768
-  adjustmentDistance: -3
 --- !u!114 &114703077202592306
 MonoBehaviour:
   m_ObjectHideFlags: 1

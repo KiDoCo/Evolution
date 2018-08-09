@@ -8153,20 +8153,6 @@ GameObject:
   m_PrefabParentObject: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426,
     type: 2}
   m_PrefabInternal: {fileID: 1502169210}
---- !u!114 &523931254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 523931246}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40483e12615fce04ca7ec4274a798c46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MinDistance: 0.5
-  MaxDistance: 2
-  smoothTime: 5
 --- !u!1 &529037443
 GameObject:
   m_ObjectHideFlags: 0
@@ -14845,6 +14831,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &910752313 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1347726166354868, guid: 0247f83a354ed3044b8def18bfc70964,
+    type: 2}
+  m_PrefabInternal: {fileID: 759500137}
 --- !u!1 &922486583
 GameObject:
   m_ObjectHideFlags: 0
@@ -28163,41 +28154,36 @@ Prefab:
       propertyPath: pivotpoint
       value: 
       objectReference: {fileID: 1735347126}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
+    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
         type: 2}
-      propertyPath: CollisionMask.m_Bits
-      value: 32768
-      objectReference: {fileID: 0}
-    - target: {fileID: 20080875289540046, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: near clip plane
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 20080875289540046, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: field of view
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: cameraOffset.z
-      value: -1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: MinDistance
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: MaxDistance
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 910752313}
+    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
         type: 2}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: CamOcclusion.m_Bits
+      value: 32768
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: pivot
+      value: 
+      objectReference: {fileID: 1735347126}
+    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: character
+      value: 
+      objectReference: {fileID: 2023802326}
     - target: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
       propertyPath: m_IsActive
       value: 1
