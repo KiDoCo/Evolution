@@ -164,7 +164,6 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
         AmountOfFood = food;
     }
 
-
     /// <summary>
     /// Increases food to source
     /// </summary>

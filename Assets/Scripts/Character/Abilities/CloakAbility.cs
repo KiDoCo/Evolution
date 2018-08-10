@@ -13,10 +13,12 @@ public class CloakAbility : MonoBehaviour
     public Material defaultMat;
     public Material glassMat;
     public float defSmooth = 0;
+    private SkinnedMeshRenderer skin;
 
     private void Start()
     {
-        visibilityColor = gameObject.GetComponent<MeshRenderer>().material.color;
+        skin = gameObject.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
+        visibilityColor = skin.material.color;
     }
 
 
@@ -49,12 +51,12 @@ public class CloakAbility : MonoBehaviour
 
     private void SetNormal() //Change material
     {
-        gameObject.GetComponent<MeshRenderer>().material = defaultMat;
+        skin.material = defaultMat;
 
     }
     private void SetGlass() //Change material
     {
-        gameObject.GetComponent<MeshRenderer>().material = glassMat;
+        skin.material = glassMat;
 
         StartCoroutine(SetBump());
     }
@@ -62,19 +64,19 @@ public class CloakAbility : MonoBehaviour
 
     private IEnumerator SwapColor(Color goal) //Change visiblity of normal material
     {
-        gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", 0);
+       skin.material.SetFloat("_Glossiness", 0);
         float backUpTimer = 0;
-        while (Mathf.Abs(gameObject.GetComponent<MeshRenderer>().material.color.a - goal.a) > 0.05f && backUpTimer < 2)
+        while (Mathf.Abs(skin.material.color.a - goal.a) > 0.05f && backUpTimer < 2)
         {
 
             backUpTimer += Time.deltaTime;
-            gameObject.GetComponent<MeshRenderer>().material.color = Color.Lerp(gameObject.GetComponent<MeshRenderer>().material.color, goal, 15 * Time.deltaTime);
+           skin.material.color = Color.Lerp(skin.material.color, goal, 15 * Time.deltaTime);
             yield return null;
 
         }
-        gameObject.GetComponent<MeshRenderer>().material.color = goal;
+       skin.material.color = goal;
         if (cloaked) { SetGlass(); }
-        else { gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", defSmooth); }
+        else {skin.material.SetFloat("_Glossiness", defSmooth); }
     }
 
     private IEnumerator SetBump() //Increase distorion for glass
@@ -85,7 +87,7 @@ public class CloakAbility : MonoBehaviour
         {
             i = Mathf.Lerp(i, 60, Time.deltaTime * 5);
             backUpTimer += Time.deltaTime;
-            gameObject.GetComponent<MeshRenderer>().material.SetFloat("_BumpAmt", i);
+           skin.material.SetFloat("_BumpAmt", i);
             yield return null;
 
         }
@@ -100,12 +102,12 @@ public class CloakAbility : MonoBehaviour
         {
             i = Mathf.Lerp(i, 0, Time.deltaTime * 5);
             backUpTimer += Time.deltaTime;
-            gameObject.GetComponent<MeshRenderer>().material.SetFloat("_BumpAmt", i);
+           skin.material.SetFloat("_BumpAmt", i);
             yield return null;
 
         }
         SetNormal();
-        gameObject.GetComponent<MeshRenderer>().material.color = visibilityColor;
+       skin.material.color = visibilityColor;
         visibilityColor.a = 1;
         StartCoroutine(SwapColor(visibilityColor));
     }

@@ -14,7 +14,7 @@ namespace Polybrush
 			if(addlVertexStreamsMesh == null)
 				return;
 
-			MeshRenderer mr = addlVertexStreamsMesh.gameObject.GetComponent<MeshRenderer>();
+			MeshRenderer mr = addlVertexStreamsMesh.GetComponent<MeshRenderer>();
 
 			GUILayout.Label("Additional Vertex Streams");
 

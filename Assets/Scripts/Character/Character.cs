@@ -35,13 +35,14 @@ public abstract class Character : NetworkBehaviour
 
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
+
     [SyncVar]
     protected bool isMoving;
     private bool ready;
 
     [SyncVar]
     protected bool eating;
-    protected bool inputEnabled = true;
+    private bool inputEnabled = true;
     //timer bools
     [SerializeField] protected bool coolTimer;
 
@@ -133,6 +134,7 @@ public abstract class Character : NetworkBehaviour
         {
             return inputEnabled;
         }
+
         set
         {
             inputEnabled = value;
@@ -151,8 +153,6 @@ public abstract class Character : NetworkBehaviour
     protected abstract void UpwardsMovement();
 
     protected abstract void ApplyMovement();
-
-    protected abstract void CmdAnimationChanger();
 
     protected virtual void PosCheck(Vector3 vector)
     {
@@ -197,7 +197,6 @@ public abstract class Character : NetworkBehaviour
     }
 
     #endregion
-
 
     public bool CollisionCheck()
     {
@@ -259,7 +258,7 @@ public abstract class Character : NetworkBehaviour
     public void EnablePlayer(bool enabled)
     {
         playerMesh.enabled = enabled;
-        inputEnabled = enabled;
+        InputEnabled = enabled;
         col.enabled = enabled;
         RpcEnablePlayer(enabled);
     }
@@ -269,7 +268,7 @@ public abstract class Character : NetworkBehaviour
     {
         playerMesh.enabled = enabled;
         col.enabled = enabled;
-        inputEnabled = enabled;
+        InputEnabled = enabled;
     }
 
     #region Unity Methods
@@ -278,14 +277,16 @@ public abstract class Character : NetworkBehaviour
     {
         col = GetComponentInChildren<CapsuleCollider>();
         musicSource = GetComponent<AudioSource>();
+        playerMesh = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
+        m_animator = GetComponent<Animator>();
     }
 
     protected virtual void Start()
     {
         if (isLocalPlayer)
         {
-            playerMesh = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
-            inputEnabled = true;
+            
+            InputEnabled = true;
             accPerSec = maxSpeed / accTimeToMax;
             decPerSec = -maxSpeed / decTimeToMin;
             NetworkGameManager.Instance.LocalCharacter = this;

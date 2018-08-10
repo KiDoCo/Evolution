@@ -988,9 +988,9 @@ GameObject:
   - component: {fileID: 82204358288295608}
   - component: {fileID: 136348791138209274}
   - component: {fileID: 54169861388344904}
-  - component: {fileID: 114855412725242688}
   - component: {fileID: 114344586632853690}
   - component: {fileID: 114411738086542230}
+  - component: {fileID: 114855412725242688}
   m_Layer: 0
   m_Name: Herbivore
   m_TagString: Untagged
@@ -2678,8 +2678,8 @@ MonoBehaviour:
     type: 2}
   Rotatingspeed: 0
   defaultMat: {fileID: 2100000, guid: 718a14c009f75f949a65a0b38e61047c, type: 2}
-  glassMat: {fileID: 2100000, guid: 5ed14ae7f9ded7940ad6421097df27d6, type: 2}
-  defSmooth: 1
+  glassMat: {fileID: 2100000, guid: 84815e64a25fa8d498db7196cb531486, type: 2}
+  defSmooth: 0.1
   dashTime: 2
   coolTime: 6
 --- !u!114 &114855412725242688
@@ -2694,7 +2694,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 95377941995328236}
-  m_ParameterSendBits: 31
+  m_ParameterSendBits: 0
   param0: 
   param1: 
   param2: 
@@ -2751,7 +2751,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 4300000, guid: d7d39a377433fc2478611eb7ddae3f0a, type: 3}
   m_Bones:

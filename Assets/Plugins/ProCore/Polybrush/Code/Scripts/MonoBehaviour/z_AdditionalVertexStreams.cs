@@ -26,7 +26,7 @@ namespace Polybrush
 		{
 			get {
 				if(_meshRenderer == null)
-					_meshRenderer = gameObject.GetComponent<MeshRenderer>();
+					_meshRenderer = GetComponent<MeshRenderer>();
 				return _meshRenderer;
 			}
 		}

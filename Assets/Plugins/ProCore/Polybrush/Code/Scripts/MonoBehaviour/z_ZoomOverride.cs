@@ -45,7 +45,7 @@ namespace Polybrush
 					return _meshFilter.sharedMesh;
 
 				if(_skinnedMeshRenderer == null)
-					_skinnedMeshRenderer = gameObject.GetComponent<SkinnedMeshRenderer>();
+					_skinnedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
 
 				if(_skinnedMeshRenderer != null && _skinnedMeshRenderer.sharedMesh != null)
 					return _skinnedMeshRenderer.sharedMesh;

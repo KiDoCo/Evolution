@@ -12,6 +12,8 @@ public class InputManager : MonoBehaviour
 {
 
     public static InputManager Instance;
+    public bool EnableInput;
+
     private int xboxController = 0;
     private int playstationController = 0;
     private bool waitingForKey;
@@ -151,6 +153,10 @@ public class InputManager : MonoBehaviour
                 v = inputAxes[i].Axis;
             }
         }
+
+        if (!EnableInput)
+            v = 0;
+
         return v;
     }
 
@@ -170,6 +176,10 @@ public class InputManager : MonoBehaviour
                 retVal = inputAxes[i].positive;
             }
         }
+
+        if (!EnableInput)
+            retVal = false;
+
         return retVal;
     }
 
@@ -192,6 +202,9 @@ public class InputManager : MonoBehaviour
         {
             pressed = false;
         }
+
+        if (!EnableInput)
+            retval = false;
 
         return retval;
     }

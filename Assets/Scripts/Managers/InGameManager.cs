@@ -21,7 +21,7 @@ public class InGameManager : NetworkBehaviour
     [SerializeField] private float experiencePenalty = 25.0f;
     [SerializeField] private float endScreenTime = 20f;
     [SerializeField] private int maxLifeCount = 2;
-    [SyncVar (hook =  "Timer")]
+    [SyncVar(hook = "Timer")]
     private float matchTimer;
     [SyncVar] private int lifeCount;
     [SyncVar] private bool matchEnd = false;    // BUG: MatchEnd doesn't sync to other players
@@ -43,8 +43,6 @@ public class InGameManager : NetworkBehaviour
 
     // Prefabs
     public GameObject BerryPrefab;
-
-
 
     #region getters&setters
 
@@ -255,6 +253,28 @@ public class InGameManager : NetworkBehaviour
         Debug.Log("Here");
 
         StartCoroutine(StartMatch());
+    }
+
+    [ServerCallback]
+    public void EatChecker(Carnivore vor)
+    {
+        foreach (Character p in (NetworkGameManager.Instance.InGamePlayerList.FindAll(x => x.GetType() != typeof(Carnivore)).ToArray()))
+        {
+            if (vor.GetComponent<Collider>().bounds.Intersects(p.GetComponent<Collider>().bounds))
+            {
+                if (!vor.Charging)
+                {
+                    Herbivore a = p as Herbivore;
+                    vor.Eat(a);
+                    
+                }
+                else
+                {
+                    Herbivore a = p as Herbivore;
+                    vor.CmdHitCheck(a);
+                }
+            }
+        }
     }
 
     public void ClearBoxes()
