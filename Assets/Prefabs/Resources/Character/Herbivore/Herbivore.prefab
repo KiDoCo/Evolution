@@ -991,7 +991,7 @@ GameObject:
   - component: {fileID: 114999154596939894}
   m_Layer: 0
   m_Name: Herbivore
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2648,7 +2648,6 @@ MonoBehaviour:
   cameraPrefab: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426,
     type: 2}
   Rotatingspeed: 0
-  playerMesh: {fileID: 137034344792635862}
   defaultMat: {fileID: 2100000, guid: 718a14c009f75f949a65a0b38e61047c, type: 2}
   glassMat: {fileID: 2100000, guid: 5ed14ae7f9ded7940ad6421097df27d6, type: 2}
   mouseInput: 0
