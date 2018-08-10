@@ -13770,6 +13770,10 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4936352485961292, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 136278782656728658, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
@@ -28167,7 +28171,7 @@ Prefab:
     - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
         type: 2}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
         type: 2}
@@ -28188,7 +28192,23 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 135056083404550012, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 20080875289540046, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: near clip plane
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: cameraOffset.z
+      value: -2
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 135056083404550012, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
   m_IsPrefabParent: 0
 --- !u!43 &1518189164

@@ -4,71 +4,71 @@ using UnityEngine;
 
 public class CameraCollisionChecker : MonoBehaviour
 {
-    public float CameraSpeed = 120;
-    public GameObject Pivot;
-    Vector3 followPos;
-    public float ClampAngle = 80.0f;
-    public float InputSensitivity = 150f;
-    public GameObject Cam;
-    public GameObject Player;
-    public GameObject CameraBase;
-    public float CamDistanceXToTarget;
-    public float CamDistanceYToTarget;
-    public float CamDistanceZToTarget;
-    public float mouseX;
-    public float mouseY;
-    public float finalInputX;
-    public float finalInputZ;
-    public float smoothX;
-    public float smoothY;
-    private float rotX = 0.0f;
-    private float rotY = 0.0f;
+    //public float CameraSpeed = 120;
+    //public GameObject Pivot;
+    //Vector3 followPos;
+    //public float ClampAngle = 80.0f;
+    //public float InputSensitivity = 150f;
+    //public GameObject Cam;
+    //public GameObject Player;
+    //public GameObject CameraBase;
+    //public float CamDistanceXToTarget;
+    //public float CamDistanceYToTarget;
+    //public float CamDistanceZToTarget;
+    //public float mouseX;
+    //public float mouseY;
+    //public float finalInputX;
+    //public float finalInputZ;
+    //public float smoothX;
+    //public float smoothY;
+    //private float rotX = 0.0f;
+    //private float rotY = 0.0f;
 
-    private void Awake()
-    {
-        transform.parent = CameraBase.transform;
-    }
+    //private void Awake()
+    //{
+    //    transform.parent = CameraBase.transform;
+    //}
 
-    private void Start()
-    {
-        Vector3 rot = transform.localRotation.eulerAngles;
-        rotX = rot.x;
-        rotY = rot.y;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
+    //private void Start()
+    //{
+    //    Vector3 rot = transform.localRotation.eulerAngles;
+    //    rotX = rot.x;
+    //    rotY = rot.y;
+    //    Cursor.lockState = CursorLockMode.Locked;
+    //    Cursor.visible = false;
+    //}
 
-    private void Update()
-    {
-        float inputX = Input.GetAxisRaw("RightStickHorizontal");
-        float inputZ = Input.GetAxisRaw("RightStickVertical");
-        mouseX = Input.GetAxisRaw("Mouse X");
-        mouseY = Input.GetAxisRaw("Mouse Y");
-        finalInputX = inputX + mouseX;
-        finalInputZ = inputZ + mouseY;
+    //private void Update()
+    //{
+    //    float inputX = Input.GetAxisRaw("RightStickHorizontal");
+    //    float inputZ = Input.GetAxisRaw("RightStickVertical");
+    //    mouseX = Input.GetAxisRaw("Mouse X");
+    //    mouseY = Input.GetAxisRaw("Mouse Y");
+    //    finalInputX = inputX + mouseX;
+    //    finalInputZ = inputZ + mouseY;
 
-        rotX += finalInputZ * InputSensitivity * Time.deltaTime;
-        rotY += finalInputX * InputSensitivity * Time.deltaTime;
+    //    rotX += finalInputZ * InputSensitivity * Time.deltaTime;
+    //    rotY += finalInputX * InputSensitivity * Time.deltaTime;
 
-        rotX = Mathf.Clamp(rotX, -ClampAngle, ClampAngle);
+    //    rotX = Mathf.Clamp(rotX, -ClampAngle, ClampAngle);
 
-        Quaternion localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
+    //    Quaternion localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
 
-        transform.rotation = localRotation;
-    }
+    //    transform.rotation = localRotation;
+    //}
 
-    private void LateUpdate()
-    {
-        CameraUpdater();
-    }
+    //private void LateUpdate()
+    //{
+    //    CameraUpdater();
+    //}
 
-    private void CameraUpdater()
-    {
-        Transform target = Pivot.transform;
+    //private void CameraUpdater()
+    //{
+    //    Transform target = Pivot.transform;
 
-        float step = CameraSpeed * Time.deltaTime;
-        transform.position = Vector3.MoveTowards(transform.position, target.position, step);
-    }
+    //    float step = CameraSpeed * Time.deltaTime;
+    //    transform.position = Vector3.MoveTowards(transform.position, target.position, step);
+    //}
 
     //    public GameObject target;
     //    public float damping = 1;
