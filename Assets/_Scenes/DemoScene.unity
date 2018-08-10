@@ -692,14 +692,13 @@ GameObject:
   - component: {fileID: 124850660}
   - component: {fileID: 124850659}
   - component: {fileID: 124850663}
-  - component: {fileID: 124850664}
   m_Layer: 0
   m_Name: MapCamera
   m_TagString: MapCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &124850659
 AudioListener:
   m_ObjectHideFlags: 0
@@ -775,17 +774,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 982aae529381c164ca28fdce0f2120b7, type: 2}
---- !u!114 &124850664
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 124850658}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 212910f397603ef469c1d1db70d6ae31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &127591707
 GameObject:
   m_ObjectHideFlags: 0

@@ -25,6 +25,7 @@ public class InGameManager : NetworkBehaviour
     [SyncVar] private int lifeCount;
     [SyncVar] private bool inMatch = false;
     private GameObject mapCamera = null;
+    private int herbivoresWon = 0;
 
     // Gamemanager lists
     [SerializeField] private List<GameObject> foodSources;
@@ -101,9 +102,11 @@ public class InGameManager : NetworkBehaviour
 
     #region match Methods
 
-    private void IncreaseFoodOnSources()
+    // Void to IEnumerable
+    [ServerCallback]
+    public void StartGame()
     {
-        EventManager.Broadcast(EVENT.Increase);
+        StartCoroutine(StartMatch());
     }
 
     /// <summary>
@@ -118,24 +121,6 @@ public class InGameManager : NetworkBehaviour
         EventManager.Broadcast(EVENT.AINodeSpawn);
         inMatch = true;
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
-    }
-
-    /// <summary>
-    /// Respawns the player 
-    /// </summary>
-    /// <param name="player"></param>
-    /// <returns></returns>
-    private IEnumerator Respawn(Herbivore player)
-    {
-        player.EnablePlayer(false);
-        player.EnablePlayerCamera(false);
-        yield return new WaitForSeconds(deathPenaltyTime);
-        // - Reset values
-        player.Experience -= experiencePenalty;
-        player.EnablePlayer(true);
-        player.EnablePlayerCamera(true);
-        player.gameObject.SetActive(true);
-        yield return null;
     }
 
     /// <summary>
@@ -164,12 +149,60 @@ public class InGameManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// Ends the match for a single player, kills it
+    /// Checks if the player can be spawned
     /// </summary>
-    public void KillPlayer(Character player)
+    /// <param name="player"></param>
+    [ServerCallback]
+    public void RespawnPlayer(Herbivore player)
+    {
+        LifeCount--;
+        StartCoroutine(Respawn(player));
+    }
+
+    [ServerCallback]
+    public void KillPlayer(Herbivore player)
     {
         player.EnablePlayer(false);
-        // - Fixed camera in scene. Spectate others?
+        player.EnablePlayerCamera(false);
+    }
+
+    /// <summary>
+    /// Respawns the player 
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    [ServerCallback]
+    private IEnumerator Respawn(Herbivore player)
+    {
+        player.EnablePlayer(false);
+        player.EnablePlayerCamera(false);
+        yield return new WaitForSeconds(deathPenaltyTime);
+        // - Reset values
+        player.Experience -= experiencePenalty;
+        player.EnablePlayer(true);
+        player.EnablePlayerCamera(true);
+        player.gameObject.SetActive(true);
+        yield return null;
+    }
+
+    /// <summary>
+    /// Ends the match for a single player
+    /// </summary>
+    [ServerCallback]
+    public void EndMatchForPlayer(Herbivore player)
+    {
+        herbivoresWon += 1;
+        player.EnablePlayer(false);
+        player.EnablePlayerCamera(false);
+        if (herbivoresWon == NetworkGameManager.Instance.InGamePlayerList.Count - 1)
+        {
+            EndMatch();
+        }
+    }
+
+    private void IncreaseFoodOnSources()
+    {
+        EventManager.Broadcast(EVENT.Increase);
     }
 
     /// <summary>
@@ -194,31 +227,7 @@ public class InGameManager : NetworkBehaviour
         yield return 1;
     }
 
-    /// <summary>
-    /// Checks if the player can be spawned
-    /// </summary>
-    /// <param name="player"></param>
-    public void RespawnPlayer(Herbivore player)
-    {
-        if (LifeCount > 0)
-        {
-            LifeCount--;
-            StartCoroutine(Respawn(player));
-        }
-        else
-        {
-            KillPlayer(player);
-        }
-    }
-
     #endregion
-
-    // Void to IEnumerable
-    [ServerCallback]
-    public void StartGame()
-    {
-        StartCoroutine(StartMatch());
-    }
 
     public void HideBoxes()
     {
@@ -275,17 +284,13 @@ public class InGameManager : NetworkBehaviour
     {
         FoodSpawnPointList = new List<GameObject>(GameObject.FindGameObjectsWithTag(foodSourceName));
         HideBoxes();
+        mapCamera = GameObject.FindGameObjectWithTag("MapCamera");
     }
 
     private void OnDestroy()
     {
         EventManager.ActionDeleteHandler(EVENT.RoundBegin);
         EventManager.ActionDeleteHandler(EVENT.RoundEnd);
-    }
-
-    public override void PreStartClient()
-    {
-        Debug.Log("InGameManager, PreStartClient");
     }
 
     #endregion

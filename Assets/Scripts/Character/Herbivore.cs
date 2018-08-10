@@ -47,7 +47,7 @@ public class Herbivore : Character
             health = value;
             if (health <= 0)
             {
-                Death();
+                CmdDeath();
                 health = Maxhealth;
             }
         }
@@ -106,13 +106,16 @@ public class Herbivore : Character
     /// </summary>
     protected virtual void InteractionChecker()
     {
-        for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
+        if (InGameManager.Instance != null)
         {
-            if (InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>() != null)
+            for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
             {
-                if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+                if (InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>() != null)
                 {
-                    Eat(InGameManager.Instance.FoodPlaceList[i]);
+                    if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+                    {
+                        Eat(InGameManager.Instance.FoodPlaceList[i]);
+                    }
                 }
             }
         }
@@ -124,7 +127,8 @@ public class Herbivore : Character
         m_animator.SetBool("IsMoving", isMoving);
     }
 
-    protected void Death()
+    [Command]
+    protected void CmdDeath()
     {
         if (InGameManager.Instance.LifeCount > 0)
         {

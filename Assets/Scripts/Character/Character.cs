@@ -117,7 +117,7 @@ public abstract class Character : NetworkBehaviour
             return inputVector;
         }
     }
-    
+
     public bool InputEnabled
     {
         get
@@ -137,7 +137,7 @@ public abstract class Character : NetworkBehaviour
             return spawnedCam;
         }
     }
-    
+
     #endregion
 
     #region Movement methods
@@ -241,24 +241,18 @@ public abstract class Character : NetworkBehaviour
 
     private void PauseMenuUpdate()
     {
-        if (InGameManager.Instance.InMatch)
+        if (InGameManager.Instance != null)
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) && InGameManager.Instance.InMatch)
             {
                 PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
 
-                if (PauseMenu.Instance.UI.activeSelf)
+                if (NetworkGameManager.Instance.LocalCharacter != null)
                 {
-                    if (NetworkGameManager.Instance.LocalCharacter != null)
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
-                    UIManager.Instance.HideCursor(false);
+                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = !PauseMenu.Instance.UI.activeSelf;
                 }
-                else
-                {
-                    if (NetworkGameManager.Instance.LocalCharacter != null)
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
-                    UIManager.Instance.HideCursor(true);
-                }
+
+                UIManager.Instance.HideCursor(!PauseMenu.Instance.UI.activeSelf);
             }
         }
     }
@@ -295,7 +289,8 @@ public abstract class Character : NetworkBehaviour
     public void EnablePlayerCamera(bool enabled)
     {
         spawnedCam.SetActive(enabled);
-        InGameManager.Instance.MapCamera.SetActive(!enabled);
+        if (InGameManager.Instance != null)
+            InGameManager.Instance.MapCamera.SetActive(!enabled);
 
         RpcEnablePlayerCamera(enabled);
     }
@@ -304,7 +299,8 @@ public abstract class Character : NetworkBehaviour
     private void RpcEnablePlayerCamera(bool enabled)
     {
         spawnedCam.SetActive(enabled);
-        InGameManager.Instance.MapCamera.SetActive(!enabled);
+        if (InGameManager.Instance != null)
+            InGameManager.Instance.MapCamera.SetActive(!enabled);
     }
 
     #region Unity Methods

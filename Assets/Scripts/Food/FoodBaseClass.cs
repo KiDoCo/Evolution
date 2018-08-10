@@ -218,11 +218,11 @@ public class FoodBaseClass : NetworkBehaviour, IEatable
     {
         coralCollider = GetComponent<Collider>();
         source = GetComponent<AudioSource>();
-        InGameManager.Instance.FoodPlaceList.Add(gameObject);
     }
 
     public void Start()
     {
+        InGameManager.Instance.FoodPlaceList.Add(gameObject);
         EventManager.ActionAddHandler(EVENT.Increase, IncreaseFood);
         originalPos = transform.GetChild(0).localPosition;
     }

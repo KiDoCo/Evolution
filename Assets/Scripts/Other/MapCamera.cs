@@ -7,7 +7,7 @@ public class MapCamera : MonoBehaviour {
 	void Start ()
     {
         Debug.Log("MapCamera spawned");
-        InGameManager.Instance.MapCamera = this.gameObject;
+        InGameManager.Instance.MapCamera = gameObject;
 	}
 
 }
