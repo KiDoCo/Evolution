@@ -403,7 +403,23 @@ public abstract class Character : MonoBehaviour
                     transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, Time.fixedDeltaTime * smooth);                  
                 }
             }
-        }      
+        }
+
+        //if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+        //{
+        //    print("both sides collided");
+        //    transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+        //}
+        //if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
+        //{
+        //    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+        //    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), smooth);
+        //}
+        //if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+        //{
+        //    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+        //    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), smooth);
+        //}
 
         hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, castDistance + 0.02f, ground, QueryTriggerInteraction.Ignore);
 
@@ -421,23 +437,7 @@ public abstract class Character : MonoBehaviour
                 {
                     curNormal = hitInfo.normal;
                     colPoint = hitInfo.point;
-                }
-
-                if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
-                {
-                    print("both sides collided");
-                    transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
-                }
-                else if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
-                {
-                    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), smooth);
-                }
-                else if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
-                {
-                    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), smooth);
-                }
+                }             
             }
         }
         else

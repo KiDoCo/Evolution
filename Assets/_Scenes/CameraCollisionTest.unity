@@ -13726,7 +13726,7 @@ Prefab:
     - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
         type: 2}
       propertyPath: HeightPadding
-      value: 0.7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
         type: 2}
@@ -14835,11 +14835,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &910752313 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1347726166354868, guid: 0247f83a354ed3044b8def18bfc70964,
-    type: 2}
-  m_PrefabInternal: {fileID: 759500137}
 --- !u!1 &922486583
 GameObject:
   m_ObjectHideFlags: 0
@@ -28148,6 +28143,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 114715499504959704, guid: 536744b968ea00b4aaa27528762ce426,
+        type: 2}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 2023802326}
     - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
         type: 2}
       propertyPath: target
@@ -28158,57 +28158,13 @@ Prefab:
       propertyPath: pivotpoint
       value: 
       objectReference: {fileID: 1735347126}
-    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 910752313}
-    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: CamOcclusion.m_Bits
-      value: 32768
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: pivot
-      value: 
-      objectReference: {fileID: 1735347126}
-    - target: {fileID: 114000011640180876, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: character
-      value: 
-      objectReference: {fileID: 2023802326}
-    - target: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 135056083404550012, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 20080875289540046, guid: 536744b968ea00b4aaa27528762ce426,
-        type: 2}
-      propertyPath: near clip plane
-      value: 0.01
-      objectReference: {fileID: 0}
     - target: {fileID: 114689218469743634, guid: 536744b968ea00b4aaa27528762ce426,
         type: 2}
       propertyPath: cameraOffset.z
       value: -2
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 135056083404550012, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
+    - {fileID: 114715499504959704, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
   m_IsPrefabParent: 0
 --- !u!43 &1518189164
