@@ -36,6 +36,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4427702200729718}
+  - component: {fileID: 205289671692648920}
   m_Layer: 0
   m_Name: CRL_cactus-holes2
   m_TagString: Untagged
@@ -62,8 +63,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1654579018520558}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 326.25, y: 215.14, z: 4.56}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 158.68002, y: -1.6600037, z: -293.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4188602054226946}
@@ -112,3 +113,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1586358736891418}
   m_Mesh: {fileID: 4300000, guid: 976a92d4b434f2c428c95155d2a2f3c1, type: 3}
+--- !u!205 &205289671692648920
+LODGroup:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1654579018520558}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -6.4700003, y: 6.2306614, z: 2.8900373}
+  m_Size: 7.3413734
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LODs:
+  - screenRelativeHeight: 0.18552384
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 0}
+  m_Enabled: 1

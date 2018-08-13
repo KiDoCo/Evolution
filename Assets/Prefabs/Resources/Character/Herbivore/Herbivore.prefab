@@ -2631,7 +2631,7 @@ MonoBehaviour:
   horizontalSpeed: 2
   rotateSpeed: 2
   strafeSpeed: 2
-  maxSpeed: 10
+  maxSpeed: 15
   accTimeToMax: 1.5
   decTimeToMin: 1
   turnSpeed: 2

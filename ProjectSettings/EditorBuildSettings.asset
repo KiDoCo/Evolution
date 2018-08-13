@@ -9,12 +9,12 @@ EditorBuildSettings:
     path: Assets/_Scenes/Preload.unity
     guid: 58eeff6f82ab0b549ae8e33db317bf6b
   - enabled: 1
+    path: Assets/_Scenes/MapFinal.unity
+    guid: 19fbe1c3a357a2048aa57e7da59d04bf
+  - enabled: 1
     path: Assets/_Scenes/Menu.unity
     guid: 336afd0adc738bf448ff7853028afcc5
   - enabled: 0
     path: Assets/_Scenes/DemoScene.unity
     guid: c47b7b2accf818543b7c1a97f3b909ee
-  - enabled: 1
-    path: Assets/_Scenes/DevMaps/MapFinal.unity
-    guid: 19fbe1c3a357a2048aa57e7da59d04bf
   m_configObjects: {}
