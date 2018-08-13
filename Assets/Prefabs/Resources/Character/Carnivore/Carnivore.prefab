@@ -49,6 +49,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4689268266797434}
+  - component: {fileID: 65338057287859844}
   m_Layer: 8
   m_Name: Bn_Predator1_Root
   m_TagString: Untagged
@@ -1052,6 +1053,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &65338057287859844
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1132793477886634}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.18, y: 2.43, z: 0.8}
+  m_Center: {x: 0.05, y: -0.4, z: 0}
 --- !u!82 &82769841182586898
 AudioSource:
   m_ObjectHideFlags: 1
@@ -1310,7 +1323,7 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: d7bf1ea4ca713a94393d48d544c2d885, type: 2}
+  - {fileID: 2100000, guid: 4c368421ba9c16641a4ecf09c8157673, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

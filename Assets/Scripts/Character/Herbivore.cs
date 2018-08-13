@@ -32,10 +32,11 @@ public class Herbivore : Character
     [SyncVar]
     private float horMov;
 
+    private ParticleSystem blood;
+
     //timer values
     [SerializeField] private float dashTime = 2f;
     [SerializeField] protected float coolTime = 6f;
-    private float dashSpeed = 2.0f;
 
     #region Character stats
 
@@ -133,6 +134,7 @@ public class Herbivore : Character
     private void CmdTakeDamage(float amount)
     {
         Debug.Log("Takedamage");
+        blood.Play();
         EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         InvincibleTimer = 1.0f;
         Health -= amount;
@@ -141,6 +143,7 @@ public class Herbivore : Character
     public void GetEaten(float dmg)
     {
         Debug.Log("Geteatem");
+        Debug.Log(dmg);
         if (InvincibleTimer <= 0)
             CmdTakeDamage(dmg);
     }
@@ -180,7 +183,8 @@ public class Herbivore : Character
     [ClientRpc]
     protected void RpcAnimationChanger(bool move, float hor, bool eat, float exp)
     {
-
+        Debug.Log("Move :" + move);
+        Debug.Log("Horizontal movement : " + hor);
         playerMesh.SetBlendShapeWeight(0, Mathf.Clamp(exp, 25, 100));
         m_animator.SetBool("isEating", eat && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
         m_animator.SetBool("isMoving", move);
@@ -532,6 +536,7 @@ public class Herbivore : Character
     {
         visibilityColor = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.color;
         SFXsource = transform.GetChild(2).GetComponent<AudioSource>();
+        blood = transform.GetChild(4).GetComponent<ParticleSystem>();
     }
 
     #region Unitymethods
@@ -561,10 +566,6 @@ public class Herbivore : Character
         {
             InputManager.Instance.EnableInput = InputEnabled;
             ApplyCloak();
-            if (Input.GetKey(KeyCode.B))
-            {
-                Experience++;
-            }
             base.Update();
             Dash();
             InteractionChecker();

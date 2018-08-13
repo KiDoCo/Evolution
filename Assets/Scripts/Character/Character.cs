@@ -49,15 +49,6 @@ public abstract class Character : NetworkBehaviour
     #endregion
 
 
-    [SyncVar]
-    protected Vector3 lastposition;
-
-    [SyncVar]
-    protected Vector3 curPos;
-
-    [SyncVar(hook = "PosCheck")]
-    protected Vector3 pos;
-
     protected float mouseV;
     protected float mouseH;
 
@@ -153,12 +144,6 @@ public abstract class Character : NetworkBehaviour
     protected abstract void UpwardsMovement();
 
     protected abstract void ApplyMovement();
-
-    protected virtual void PosCheck(Vector3 vector)
-    {
-        pos = vector;
-        isMoving = pos.normalized.magnitude != 0 ? true : false;
-    }
 
 
     /// <summary>
@@ -285,7 +270,7 @@ public abstract class Character : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            
+
             InputEnabled = true;
             accPerSec = maxSpeed / accTimeToMax;
             decPerSec = -maxSpeed / decTimeToMin;

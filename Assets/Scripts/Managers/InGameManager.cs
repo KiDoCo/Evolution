@@ -264,14 +264,16 @@ public class InGameManager : NetworkBehaviour
             {
                 if (!vor.Charging)
                 {
+                    Debug.Log("No charge check");
                     Herbivore a = p as Herbivore;
                     vor.Eat(a);
                     
                 }
                 else
                 {
+                    Debug.Log("Charge check");
                     Herbivore a = p as Herbivore;
-                    vor.CmdHitCheck(a);
+                    vor.HitCheck(a);
                 }
             }
         }

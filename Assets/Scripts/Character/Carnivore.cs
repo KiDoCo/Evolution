@@ -17,21 +17,19 @@ public class Carnivore : Character
     private float damage = 1;
 
     #region Charge Variables
-
+    
     //Charge
     [SerializeField] private float coolDownTime;
     [SerializeField] private float chargeTime = 4;
     private float defaultFov;
     private bool onCooldown = false;
     private bool hitTarget = false;
-    private bool eatIsplaying = false;
     [SyncVar]
     private bool charging = false;
     private float momentumTimer = 0;
     private float speed;
-
+    
     #endregion
-
     //Eat
     [SerializeField] private float eatCooldown;
     [SerializeField] [Range(0, 1)] private float slowDown;
@@ -80,14 +78,14 @@ public class Carnivore : Character
     protected void AnimationChanger()
     {
         HUDController.Instance.PredatorMouthAnim.SetBool("isMoving", isMoving);
-        HUDController.Instance.PredatorMouthAnim.SetBool("isEating", eatIsplaying);
+        HUDController.Instance.PredatorMouthAnim.SetBool("isEating", eating && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
         HUDController.Instance.PredatorMouthAnim.SetBool("isCharging", Charging);
 
 
         if (!isServer)
-            CmdAnimationChanger(isMoving, eatIsplaying, Charging, Mathf.Clamp(InputManager.Instance.GetAxis("Horizontal"), -1, 1));
+            CmdAnimationChanger(isMoving, eating, Charging, Mathf.Clamp(InputManager.Instance.GetAxis("Horizontal"), -1, 1));
         else
-            RpcAnimationChanger(isMoving, eatIsplaying, Charging, Mathf.Clamp(InputManager.Instance.GetAxis("Horizontal"), -1, 1));
+            RpcAnimationChanger(isMoving, eating, Charging, Mathf.Clamp(InputManager.Instance.GetAxis("Horizontal"), -1, 1));
     }
 
     [Command]
@@ -97,7 +95,7 @@ public class Carnivore : Character
         m_animator.SetBool("IsMoving", move);
 
         //Eating animation
-        m_animator.SetBool("IsEating", eat);
+        m_animator.SetBool("IsEating", eat && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
 
         //Charge animation
         m_animator.SetBool("IsCharging", charge);
@@ -113,7 +111,7 @@ public class Carnivore : Character
         m_animator.SetBool("IsMoving", move);
 
         //Eating animation
-        m_animator.SetBool("IsEating", eat);
+        m_animator.SetBool("IsEating", eat && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
 
         //Charge animation
         m_animator.SetBool("IsCharging", charge);
@@ -121,7 +119,7 @@ public class Carnivore : Character
         //Turn animatio
         m_animator.SetFloat("FloatX", hormov);
     }
-
+    
     public void RestoreSpeed()
     {
         defaultSpeed = 1.0f;
@@ -158,8 +156,7 @@ public class Carnivore : Character
         }
         else
         {
-            Debug.Log("osu");
-            hitTarget = CollisionCheck();
+            hitTarget = !CollisionCheck();
         }
     }
 
@@ -170,6 +167,7 @@ public class Carnivore : Character
         {
             Debug.Log(vor + "  has been hit");
             vor.GetEaten(damage);
+            eating = false;
         }
     }
 
@@ -178,7 +176,6 @@ public class Carnivore : Character
         if (InputManager.Instance.GetButtonDown("Eat") && !eating)
         {
             eating = true;
-            eatIsplaying = true;
             StartCoroutine(EatCoolDown());
         }
     }
@@ -195,8 +192,6 @@ public class Carnivore : Character
     private IEnumerator EatCoolDown()
     {
         defaultSpeed *= slowDown;
-        yield return new WaitForSeconds(eatCooldown / 20);
-        eatIsplaying = false;
         yield return new WaitForSeconds(eatCooldown);
         eating = false;
         Debug.Log("Restoring");
@@ -254,12 +249,11 @@ public class Carnivore : Character
     protected override void ApplyMovement()
     {
         inputVector = X + Y + Z;
-        if (!hitTarget || CollisionCheck())
+        isMoving = InputVector.normalized.magnitude != 0 ? true : false;
+        
+        if (CollisionCheck())
         {
             transform.Translate(inputVector * defaultSpeed);
-            lastposition = curPos;
-            curPos = transform.position;
-            pos = curPos - lastposition;
         }
     }
 
@@ -286,7 +280,6 @@ public class Carnivore : Character
             if (momentumTimer != 0)
                 momentumTimer = 0;
         }
-        Z += (Vector3.forward * momentumTimer * speed) * Time.deltaTime;
     }
 
     private void ChargeChecker(bool temp)
@@ -311,7 +304,8 @@ public class Carnivore : Character
     private IEnumerator ChargeForward(float ass)
     {
         speed = ass;
-        while (momentumTimer < chargeTime || hitTarget)
+
+        while (momentumTimer < chargeTime)
         {
             Mathf.Lerp(spawnedCam.GetComponent<Camera>().fieldOfView, spawnedCam.GetComponent<Camera>().fieldOfView + 2 * momentumTimer, 10 * Time.deltaTime);
             FieldOfView += momentumTimer;
@@ -320,14 +314,11 @@ public class Carnivore : Character
                 if (jawCollider.bounds.Intersects(NetworkGameManager.Instance.InGamePlayerList.FindAll(x => x.GetType() == typeof(Herbivore))[i].GetComponent<Collider>().bounds))
                 {
                     InGameManager.Instance.EatChecker(this);
-                    yield break;
                 }
             }
+            Z += InputManager.Instance.enabled ? (Vector3.forward * momentumTimer * speed) * Time.deltaTime : Vector3.zero;
             yield return null;
         }
-
-        Charging = false;
-        hitTarget = false;
         yield return RestoreFov();
     }
 
@@ -344,18 +335,17 @@ public class Carnivore : Character
     private IEnumerator ChargeCooldown()
     {
         onCooldown = true;
-        Charging = true;
         yield return new WaitForSeconds(coolDownTime);
+        Charging = false;
         hitTarget = false;
         onCooldown = false;
     }
 
-    [Command]
     /// <summary>
     /// Checks if we hit herbivore during charge
     /// </summary>
     /// <param name="herb"></param>
-    public void CmdHitCheck(Herbivore herb)
+    public void HitCheck(Herbivore herb)
     {
         if ((momentumTimer / chargeTime) >= 0.4f)
         {
@@ -369,6 +359,7 @@ public class Carnivore : Character
             herb.GetEaten(damage);
         }
         hitTarget = true;
+        charging = false;
     }
 
     #endregion
@@ -377,9 +368,9 @@ public class Carnivore : Character
 
     protected override void Awake()
     {
-        gameObject.name = "Carnivore";
         base.Awake();
-        jawCollider = transform.GetChild(1).GetComponent<Collider>();
+        gameObject.name = "Carnivore";
+        jawCollider = transform.GetChild(0).GetComponent<Collider>();
     }
 
     protected override void Start()
@@ -402,7 +393,6 @@ public class Carnivore : Character
             EatInput();
             base.Update();
             Charge();
-
             CmdEatChecker(Charging);
 
         }
