@@ -83,8 +83,7 @@ public abstract class Character : MonoBehaviour
     private float smooth;
     int hitCount;
     RaycastHit[] hits = new RaycastHit[12];
-    float minMoveDistance = 0.001f;
-    float maxBounces = 2;
+    private CapsuleCollider ownCollider;
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -351,7 +350,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     private void CheckCollision()
     {
-        Vector3 direction = dir.normalized;        
+        Vector3 direction = dir.normalized;
         float castDistance;
         if (isDashing)
         {
@@ -380,7 +379,7 @@ public abstract class Character : MonoBehaviour
         float radius = col.radius * 1.1f;
         Height = col.height;
 
-        if (Physics.Raycast(rayDown, out hitInfo, castDistance + HeightPadding))
+        if (Physics.Raycast(rayDown, out hitInfo, castDistance + (HeightPadding + 0.5f)))
         {
             grounded = true;
             colPoint = hitInfo.point;
@@ -400,26 +399,10 @@ public abstract class Character : MonoBehaviour
                 //check distance to 
                 if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
                 {
-                    transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, Time.fixedDeltaTime * smooth);                  
+                    transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * (radius), step);
                 }
             }
         }
-
-        //if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
-        //{
-        //    print("both sides collided");
-        //    transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
-        //}
-        //if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
-        //{
-        //    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
-        //    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), smooth);
-        //}
-        //if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
-        //{
-        //    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
-        //    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), smooth);
-        //}
 
         hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, castDistance + 0.02f, ground, QueryTriggerInteraction.Ignore);
 
@@ -437,7 +420,22 @@ public abstract class Character : MonoBehaviour
                 {
                     curNormal = hitInfo.normal;
                     colPoint = hitInfo.point;
-                }             
+                }
+
+                if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+                {
+                    transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+                }
+                else if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
+                {
+                    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), step);
+                }
+                else if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+                {
+                    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
+                }
             }
         }
         else
@@ -445,10 +443,11 @@ public abstract class Character : MonoBehaviour
             collided = false;
         }
 
-        if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
+        if (Vector3.Distance(transform.position, colPoint) < radius + 0.3f)
         {
-            transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * 0.7f, step * Time.fixedDeltaTime);
+            transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius + 0.2f), step);
         }
+
     }
 
     /// <summary>
@@ -499,7 +498,6 @@ public abstract class Character : MonoBehaviour
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
 
-
         //UIManager.Instance.InstantiateMatchUI(this);
         // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
@@ -510,6 +508,8 @@ public abstract class Character : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
         }
+
+
     }
 
     protected virtual void FixedUpdate()
