@@ -39,7 +39,6 @@ public abstract class Character : NetworkBehaviour
     protected bool barrelRoll;
     private bool ready;
     protected bool eating;
-    protected bool inputEnabled = true;
 
     //timer bools
     [SerializeField] protected bool coolTimer;
@@ -115,18 +114,6 @@ public abstract class Character : NetworkBehaviour
         get
         {
             return inputVector;
-        }
-    }
-
-    public bool InputEnabled
-    {
-        get
-        {
-            return inputEnabled;
-        }
-        set
-        {
-            inputEnabled = value;
         }
     }
 
@@ -249,7 +236,7 @@ public abstract class Character : NetworkBehaviour
 
                 if (NetworkGameManager.Instance.LocalCharacter != null)
                 {
-                    NetworkGameManager.Instance.LocalCharacter.InputEnabled = !PauseMenu.Instance.UI.activeSelf;
+                    InputManager.Instance.EnableInput = !PauseMenu.Instance.UI.activeSelf;
                 }
 
                 UIManager.Instance.HideCursor(!PauseMenu.Instance.UI.activeSelf);
@@ -272,7 +259,7 @@ public abstract class Character : NetworkBehaviour
     public void EnablePlayer(bool enabled)
     {
         playerMesh.enabled = enabled;
-        inputEnabled = enabled;
+        InputManager.Instance.EnableInput = enabled;
         col.enabled = enabled;
         RpcEnablePlayer(enabled);
     }
@@ -282,13 +269,14 @@ public abstract class Character : NetworkBehaviour
     {
         playerMesh.enabled = enabled;
         col.enabled = enabled;
-        inputEnabled = enabled;
+        InputManager.Instance.EnableInput = enabled;
     }
 
     [ServerCallback]
     public void EnablePlayerCamera(bool enabled)
     {
-        spawnedCam.SetActive(enabled);
+        if (isLocalPlayer)
+            spawnedCam.SetActive(enabled);
         if (InGameManager.Instance != null)
             InGameManager.Instance.MapCamera.SetActive(!enabled);
 
@@ -298,7 +286,8 @@ public abstract class Character : NetworkBehaviour
     [ClientRpc]
     private void RpcEnablePlayerCamera(bool enabled)
     {
-        spawnedCam.SetActive(enabled);
+        if (isLocalPlayer)
+            spawnedCam.SetActive(enabled);
         if (InGameManager.Instance != null)
             InGameManager.Instance.MapCamera.SetActive(!enabled);
     }
@@ -322,7 +311,7 @@ public abstract class Character : NetworkBehaviour
             EnablePlayerCamera(true);
         }
 
-        inputEnabled = true;
+        InputManager.Instance.EnableInput = true;
         accPerSec = maxSpeed / accTimeToMax;
         decPerSec = -maxSpeed / decTimeToMin;
         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);

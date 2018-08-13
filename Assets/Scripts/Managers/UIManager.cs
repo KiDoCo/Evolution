@@ -70,21 +70,17 @@ public class UIManager : MonoBehaviour
             HUDController.Instance.CurProgress = h.Experience;
             HUDController.Instance.CurHealth = (int)h.Health;
         }
-        /*else if (source.GetType() == typeof(Carnivore))
-        {
-            Carnivore c = source.GetComponent<Carnivore>();
-
-            // HUD updates?
-        }*/
     }
 
     /// <summary>
     /// Calls the hudcontroller to print the desired screen
     /// </summary>
     /// <param name="source"></param>
-    public void MatchResultScreen(Character source)
+    public void MatchResultScreen()
     {
-        if(source.GetType() == typeof(Herbivore))
+        Character source = NetworkGameManager.Instance.LocalCharacter;
+
+        if (source.GetType() == typeof(Herbivore))
         {
             Herbivore a = source.GetComponent<Herbivore>();
             HUDController.Instance.ResultScreen(a.Experience, a.Deathcount, InGameManager.Instance.MatchTimer, a.SurTime, true);

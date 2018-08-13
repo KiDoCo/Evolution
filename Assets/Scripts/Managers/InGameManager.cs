@@ -131,15 +131,25 @@ public class InGameManager : NetworkBehaviour
     {
         inMatch = false;
         CancelInvoke();
+
         // Get stats and stop/end match for in game players
         foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
         {
             p.EnablePlayerCamera(false);
             p.EnablePlayer(false);
-            UIManager.Instance.MatchResultScreen(p);
         }
 
+        // Show match screen
+        UIManager.Instance.MatchResultScreen();
+        RpcShowResultScreen();
+
         StartCoroutine(ReturnToLobby(endScreenTime));
+    }
+
+    [ClientRpc]
+    private void RpcShowResultScreen()
+    {
+        UIManager.Instance.MatchResultScreen();
     }
 
     private IEnumerator ReturnToLobby(float time)
@@ -229,6 +239,9 @@ public class InGameManager : NetworkBehaviour
 
     #endregion
 
+    /// <summary>
+    /// Hides scene food spawnpoint boxes
+    /// </summary>
     public void HideBoxes()
     {
         foreach (GameObject g in FoodSpawnPointList)

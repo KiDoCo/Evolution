@@ -144,7 +144,7 @@ public class Carnivore : Character
     /// </summary>
     public void MouseMove()
     {
-        if (!canMouseMove) return;
+        if (!canMouseMove || !InputManager.Instance.EnableInput) return;
 
         float v = charging ? verticalSpeed / 10 * Input.GetAxis("Mouse Y") : verticalSpeed * Input.GetAxis("Mouse Y");
         float h = charging ? horizontalSpeed / 10 * Input.GetAxis("Mouse X") : horizontalSpeed * Input.GetAxis("Mouse X");
@@ -161,7 +161,7 @@ public class Carnivore : Character
 
     protected override void SidewayMovement()
     {
-        X = new Vector3(1, 0, 0) * (Input.GetAxisRaw("Horizontal") * strafeSpeed) * Time.deltaTime;
+        X = new Vector3(1, 0, 0) * (-InputManager.Instance.GetAxis("Horizontal") * strafeSpeed) * Time.deltaTime;
     }
 
     protected override void UpwardsMovement()
@@ -338,7 +338,7 @@ public class Carnivore : Character
 
     protected override void Update()
     {
-        if (isLocalPlayer && inputEnabled)
+        if (isLocalPlayer)
         {
             base.Update();
             Charge();
@@ -347,32 +347,20 @@ public class Carnivore : Character
             {
                 EatChecker();
             }
-
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                isEating = true;
-            }
-            else
-            {
-                isEating = false;
-            }
         }
     }
 
     protected override void FixedUpdate()
     {
-        if (inputEnabled)
+        if (isLocalPlayer)
         {
-            if (isLocalPlayer)
-            {
-                base.FixedUpdate();
-                MouseMove();
-                ApplyMovement();
-            }
-            else
-            {
-                AnimationChanger();
-            }
+            base.FixedUpdate();
+            MouseMove();
+            ApplyMovement();
+        }
+        else
+        {
+            AnimationChanger();
         }
     }
 

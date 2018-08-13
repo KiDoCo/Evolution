@@ -29,7 +29,7 @@ public class Herbivore : Character
     private const float waitTime = 1.0f;
     private const float deathpenaltytime = 2.0f;
     protected float experience = 0;
-    private int deathcount;
+    private int deathcount = 0;
 
     #endregion
 
@@ -89,6 +89,8 @@ public class Herbivore : Character
 
     public void MouseMove()
     {
+        if (!InputManager.Instance.EnableInput) return;
+
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
@@ -453,7 +455,7 @@ public class Herbivore : Character
 
     protected override void Update()
     {
-        if (isLocalPlayer && inputEnabled)
+        if (isLocalPlayer)
         {
             if (Input.GetKeyDown(KeyCode.Space)) //debug
                 TakeDamage(1);
@@ -461,7 +463,6 @@ public class Herbivore : Character
             if (Input.GetKeyDown(KeyCode.Q)) //also debug
             {
                 ToggleCloak();
-
             }
 
             base.Update();
@@ -473,7 +474,7 @@ public class Herbivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer && inputEnabled)
+        if (isLocalPlayer)
         {
             base.FixedUpdate();
             if (!spawnedCam.GetComponent<CameraController>().FreeCamera)

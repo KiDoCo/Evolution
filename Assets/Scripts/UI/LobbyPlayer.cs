@@ -42,7 +42,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         if (characterDropdown.options.Count == 0)
         {
             characterDropdown.AddOptions(new List<string>(NetworkGameManager.Instance.PlayerPrefabs.Keys));
-            characterDropdown.RefreshShownValue();
         }
 
         // Puts client in the player list
@@ -50,8 +49,9 @@ public class LobbyPlayer : NetworkLobbyPlayer {
 
         // Resets player UI
         readyText.SetActive(false);
-        characterDropdown.value = 0;
-        characterSelectedText.text = characterDropdown.options[0].text;
+        characterDropdown.value = playerType;
+        characterSelectedText.text = characterDropdown.options[playerType].text;
+        characterDropdown.RefreshShownValue();
 
         if (!isServer)
         {
