@@ -14,7 +14,8 @@ public class Carnivore2 : Character
     [SerializeField] protected bool canMouseMove = true;
     [SerializeField] protected float chargeTime = 2f;
     [SerializeField] protected float chargeCoolTime = 6f;
-    
+    public bool CanStrafe;
+
     //objects 
     [SerializeField] GameObject Camera1;
 
@@ -42,7 +43,7 @@ public class Carnivore2 : Character
         GameObject cam = Instantiate(Camera1); // Instantioi cameran ja pistää cam muuttujaksi
 
         cam.GetComponent<CameraController_1stPerson>().target = this.transform; //pääsee käsiksi koodiin ja kohteeseen
-        
+
     }
 
 
@@ -87,8 +88,6 @@ public class Carnivore2 : Character
             {
                 isStrafing = false;
             }
-
-
         }
     }
 

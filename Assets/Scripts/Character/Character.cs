@@ -35,7 +35,6 @@ public abstract class Character : MonoBehaviour
 
     //ability unlock bools used in editor
     [SerializeField] protected bool canBarrellRoll;
-    [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
 
@@ -64,6 +63,9 @@ public abstract class Character : MonoBehaviour
     private AudioSource SFXsource;
     protected GameObject cameraClone;
 
+    Carnivore carnivore;
+
+    [Header("Collision Variables")]
     private CapsuleCollider col;
     private bool collided = false;
     private bool grounded = false;
@@ -83,6 +85,8 @@ public abstract class Character : MonoBehaviour
     int hitCount;
     RaycastHit[] hits = new RaycastHit[12];
     private CapsuleCollider ownCollider;
+    public float CastDistance, SideColDistance;
+    private float normCastDist;
 
     public float Maxhealth { get { return healthMax; } }
     public float Health
@@ -348,17 +352,6 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     private void CheckCollision()
     {
-        Vector3 direction = dir.normalized;
-        float castDistance;
-        if (isDashing)
-        {
-            castDistance = (MovementInputVector * dashSpeed).magnitude;
-            print("castdistance when dashing: " + castDistance);
-        }
-        else
-        {
-            castDistance = 0.5f;
-        }
 
         //initialize rays
         Ray rayForward = new Ray(transform.position, transform.forward);
@@ -375,33 +368,22 @@ public abstract class Character : MonoBehaviour
         float radius = col.radius * 1.1f;
         Height = col.height;
 
-        if (Physics.Raycast(rayDown, out hitInfo, castDistance + (HeightPadding + 0.5f)))
+        Vector3 direction = dir.normalized;
+
+        if (isDashing)
         {
-            grounded = true;
-            colPoint = hitInfo.point;
-            print("ground");
-            //check if ground angle allows movement
-            if (groundAngle < MaxGroundAngle)
-            {
-                if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
-                {
-                    print(groundAngle);
-                    surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
-                }
-
-                //Rotate character according to ground angle
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), step);
-
-                //check distance to 
-                if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
-                {
-                    transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * (radius), step);
-                }
-            }
+            CastDistance = (MovementInputVector * dashSpeed).magnitude;
+            print("castdistance when dashing: " + CastDistance);
+        }
+        else
+        {
+            CastDistance = normCastDist;
         }
 
+
+
         //cast CapsuleCastNonAlloc to collect ala colliders within casting distance
-        hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, castDistance, CollisionMask, QueryTriggerInteraction.Ignore);
+        hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, CastDistance, CollisionMask, QueryTriggerInteraction.Ignore);
 
         if (hitCount > 0)
         {
@@ -418,21 +400,46 @@ public abstract class Character : MonoBehaviour
                     curNormal = hitInfo.normal;
                     colPoint = hitInfo.point;
                 }
+            }
 
-                if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding) && Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
+            if (Physics.Raycast(rayDown, out hitInfo, CastDistance + (HeightPadding + 0.5f)))
+            {
+                grounded = true;
+                colPoint = hitInfo.point;
+                print("ground");
+                //check if ground angle allows movement
+                if (groundAngle < MaxGroundAngle)
                 {
-                    transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+                    if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
+                    {
+                        print(groundAngle);
+                        surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
+                    }
+
+                    //Rotate character according to ground angle              
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), step);
+
+                    //check distance to ground and stay above it
+                    if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
+                    {
+                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, step);
+                    }
                 }
-                else if (Physics.Raycast(rayRight, out hitInfo, radius + HeightPadding))
-                {
-                    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), step);
-                }
-                else if (Physics.Raycast(rayLeft, out hitInfo, radius + HeightPadding))
-                {
-                    Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
-                }
+            }
+
+            if (Physics.Raycast(rayRight, out hitInfo, SideColDistance) && Physics.Raycast(rayLeft, out hitInfo, SideColDistance))
+            {
+                transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+            }
+            else if (Physics.Raycast(rayRight, out hitInfo, SideColDistance))
+            {
+                Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), step);
+            }
+            else if (Physics.Raycast(rayLeft, out hitInfo, SideColDistance))
+            {
+                Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
             }
         }
         else
@@ -440,11 +447,11 @@ public abstract class Character : MonoBehaviour
             collided = false;
         }
 
-        if (Vector3.Distance(transform.position, colPoint) < radius + 0.3f)
-        {
-            transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius + 0.2f), step);
-        }
 
+        if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
+        {
+            transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius * 1.1f), step);
+        }
     }
 
     /// <summary>
@@ -459,6 +466,7 @@ public abstract class Character : MonoBehaviour
         }
         groundAngle = Vector3.Angle(dir, hitDown.normal);
     }
+
 
     /// <summary>
     /// Reset z rotation to 0 every frame
@@ -478,6 +486,7 @@ public abstract class Character : MonoBehaviour
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
+        normCastDist = CastDistance;
 
         musicSource = GetComponentInChildren<AudioSource>();
         //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
@@ -497,10 +506,13 @@ public abstract class Character : MonoBehaviour
 
         //UIManager.Instance.InstantiateMatchUI(this);
         // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+
+        carnivore = FindObjectOfType<Carnivore>();
     }
 
     protected virtual void Update()
     {
+        step = speed * Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Cursor.lockState = CursorLockMode.None;
@@ -509,7 +521,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        step = speed * Time.deltaTime;
+
         //Stabilize();
 
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;

@@ -50,6 +50,7 @@ public class CameraController : MonoBehaviour
     private float minCollisionDistance;
     Vector3 lookAtTarget;
     private float desiredDist;
+    
 
 #pragma warning restore
     public Transform Target
@@ -209,7 +210,7 @@ public class CameraController : MonoBehaviour
         for (int i = 0; i < adjustedClipPoints.Length; i++)
         {
             RaycastHit hit;
-            if (Physics.Raycast(from, adjustedClipPoints[i] - from, out hit, distance, CollisionMask))
+            if (Physics.Raycast(from, adjustedClipPoints[i] - from, out hit, distance, CollisionMask))         
             {
 
                 if (distance == -1)

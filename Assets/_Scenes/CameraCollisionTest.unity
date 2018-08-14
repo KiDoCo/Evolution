@@ -7620,44 +7620,14 @@ Prefab:
       propertyPath: target
       value: 
       objectReference: {fileID: 1384825942}
-    - target: {fileID: 114373055260791972, guid: 63a97eadac062624fa5bbd367cf0b5c9,
+    - target: {fileID: 20095017839008228, guid: 63a97eadac062624fa5bbd367cf0b5c9,
         type: 2}
-      propertyPath: distanceDampValue
-      value: 0.005
-      objectReference: {fileID: 0}
-    - target: {fileID: 114373055260791972, guid: 63a97eadac062624fa5bbd367cf0b5c9,
-        type: 2}
-      propertyPath: FOVValue
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 114373055260791972, guid: 63a97eadac062624fa5bbd367cf0b5c9,
-        type: 2}
-      propertyPath: rotationalDampValue
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 114373055260791972, guid: 63a97eadac062624fa5bbd367cf0b5c9,
-        type: 2}
-      propertyPath: rotationalDamp
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 114373055260791972, guid: 63a97eadac062624fa5bbd367cf0b5c9,
-        type: 2}
-      propertyPath: strafeDamp
-      value: 0.005
+      propertyPath: near clip plane
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9, type: 2}
       propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 81066850414348996, guid: 63a97eadac062624fa5bbd367cf0b5c9,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114373055260791972, guid: 63a97eadac062624fa5bbd367cf0b5c9,
-        type: 2}
-      propertyPath: CollisionMask.m_Bits
-      value: 32768
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 63a97eadac062624fa5bbd367cf0b5c9, type: 2}
@@ -13756,7 +13726,7 @@ Prefab:
     - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
         type: 2}
       propertyPath: MaxGroundAngle
-      value: 160
+      value: 140
       objectReference: {fileID: 0}
     - target: {fileID: 4936352485961292, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
       propertyPath: m_LocalScale.z
@@ -13773,7 +13743,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1347726166354868, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4936352485961292, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
       propertyPath: m_LocalPosition.z
@@ -13811,6 +13781,31 @@ Prefab:
         type: 2}
       propertyPath: CollisionMask.m_Bits
       value: 33024
+      objectReference: {fileID: 0}
+    - target: {fileID: 137155801365668716, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 90415d694b02ae341879d646bcfd1d2d, type: 2}
+    - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+      propertyPath: castDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+      propertyPath: CastDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+      propertyPath: SideColDistance
+      value: 0.17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114159009988325836, guid: 0247f83a354ed3044b8def18bfc70964,
+        type: 2}
+      propertyPath: DownCastDist
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 136278782656728658, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
@@ -15830,16 +15825,46 @@ Prefab:
       objectReference: {fileID: 1924471185}
     - target: {fileID: 1714542320776172, guid: 522bb04e0dd71ab48a4244e294c362bb, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114322189595923178, guid: 522bb04e0dd71ab48a4244e294c362bb,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114262112809787954, guid: 522bb04e0dd71ab48a4244e294c362bb,
         type: 2}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114262112809787954, guid: 522bb04e0dd71ab48a4244e294c362bb,
         type: 2}
-      propertyPath: m_Enabled
+      propertyPath: castDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114262112809787954, guid: 522bb04e0dd71ab48a4244e294c362bb,
+        type: 2}
+      propertyPath: HeightPadding
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114262112809787954, guid: 522bb04e0dd71ab48a4244e294c362bb,
+        type: 2}
+      propertyPath: CastDistance
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114262112809787954, guid: 522bb04e0dd71ab48a4244e294c362bb,
+        type: 2}
+      propertyPath: SideColDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114262112809787954, guid: 522bb04e0dd71ab48a4244e294c362bb,
+        type: 2}
+      propertyPath: DownCastDist
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114262112809787954, guid: 522bb04e0dd71ab48a4244e294c362bb,
+        type: 2}
+      propertyPath: canStrafe
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -28114,6 +28139,10 @@ Prefab:
       propertyPath: pivotpoint
       value: 
       objectReference: {fileID: 1735347126}
+    - target: {fileID: 1953833088195292, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 536744b968ea00b4aaa27528762ce426, type: 2}
   m_IsPrefabParent: 0
