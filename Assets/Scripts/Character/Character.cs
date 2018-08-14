@@ -37,6 +37,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected bool canBarrellRoll;
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
+    [SerializeField] protected bool canStrafe;
 
     //timer bools
     [SerializeField] protected bool timerStart;
@@ -85,7 +86,7 @@ public abstract class Character : MonoBehaviour
     int hitCount;
     RaycastHit[] hits = new RaycastHit[12];
     private CapsuleCollider ownCollider;
-    public float CastDistance, SideColDistance;
+    public float CastDistance, SideColDistance, Buffer;
     private float normCastDist;
 
     public float Maxhealth { get { return healthMax; } }
@@ -380,7 +381,31 @@ public abstract class Character : MonoBehaviour
             CastDistance = normCastDist;
         }
 
+        if (Physics.Raycast(rayDown, out hitInfo, CastDistance + (HeightPadding)))
+        {
+            grounded = true;
+            colPoint = hitInfo.point;
+            print("ground");
+            //check if ground angle allows movement
+            if (groundAngle < MaxGroundAngle)
+            {
+                if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
+                {
+                    print(groundAngle);
+                    surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
+                }
 
+                //Rotate character according to ground angle              
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), 1);
+                //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), 0.01f * Time.deltaTime);
+
+                //check distance to ground and stay above it
+                //if (Vector3.Distance(transform.position, colPoint) < Buffer + HeightPadding)
+                //{
+                //    transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Buffer, step);
+                //}
+            }
+        }
 
         //cast CapsuleCastNonAlloc to collect ala colliders within casting distance
         hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, CastDistance, CollisionMask, QueryTriggerInteraction.Ignore);
@@ -402,30 +427,7 @@ public abstract class Character : MonoBehaviour
                 }
             }
 
-            if (Physics.Raycast(rayDown, out hitInfo, CastDistance + (HeightPadding + 0.5f)))
-            {
-                grounded = true;
-                colPoint = hitInfo.point;
-                print("ground");
-                //check if ground angle allows movement
-                if (groundAngle < MaxGroundAngle)
-                {
-                    if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
-                    {
-                        print(groundAngle);
-                        surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
-                    }
-
-                    //Rotate character according to ground angle              
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), step);
-
-                    //check distance to ground and stay above it
-                    if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
-                    {
-                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * radius, step);
-                    }
-                }
-            }
+       
 
             if (Physics.Raycast(rayRight, out hitInfo, SideColDistance) && Physics.Raycast(rayLeft, out hitInfo, SideColDistance))
             {
@@ -441,17 +443,20 @@ public abstract class Character : MonoBehaviour
                 Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
             }
+
+
+            if (Vector3.Distance(transform.position, colPoint) < Buffer + HeightPadding)
+            {
+                //transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * Buffer, step);              
+            }
         }
         else
         {
             collided = false;
         }
+        
 
-
-        if (Vector3.Distance(transform.position, colPoint) < radius + HeightPadding)
-        {
-            transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius * 1.1f), step);
-        }
+     
     }
 
     /// <summary>
@@ -512,7 +517,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Update()
     {
-        step = speed * Time.deltaTime;
+       
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Cursor.lockState = CursorLockMode.None;
@@ -521,7 +526,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-
+        step = speed * Time.deltaTime;
         //Stabilize();
 
         Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
@@ -534,11 +539,13 @@ public abstract class Character : MonoBehaviour
 
         if (collided)
         {
+            canStrafe = false;
             canDash = false;
             return;
         }
         else
         {
+            canStrafe = true;
             canDash = true;
             Move();
             BarrellRoll();

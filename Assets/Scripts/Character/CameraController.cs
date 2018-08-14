@@ -119,14 +119,14 @@ public class CameraController : MonoBehaviour
                 minCollisionDistance = desiredDist;
             }
         }
-        //if (distance <= MinDistance)
-        //{
-        //    target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
-        //}
-        //else
-        //{
-        //    target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
-        //}
+        if (distance <= MinDistance)
+        {
+            target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+        }
+        else
+        {
+            target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+        }
     }
 
     public struct ClipPanePoints

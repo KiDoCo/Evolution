@@ -1,0 +1,32 @@
+ManifestFileVersion: 0
+CRC: 2748101528
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 8eba73e362cbbc69448685bbcb9eb481
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: cb9f59a82d3d5ab1caac202c2deee7a9
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+Assets:
+- Assets/Meshes/Characters/ProtoFish.FBX
+Dependencies: []

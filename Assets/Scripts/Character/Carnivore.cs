@@ -14,7 +14,7 @@ public class Carnivore2 : Character
     [SerializeField] protected bool canMouseMove = true;
     [SerializeField] protected float chargeTime = 2f;
     [SerializeField] protected float chargeCoolTime = 6f;
-    public bool CanStrafe;
+
 
     //objects 
     [SerializeField] GameObject Camera1;
@@ -66,6 +66,7 @@ public class Carnivore2 : Character
         MouseMove();
         Restrict();
         Stabilize();
+
         Strafe();
       
         //Charge();
