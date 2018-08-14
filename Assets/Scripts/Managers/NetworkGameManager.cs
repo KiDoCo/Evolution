@@ -3,21 +3,20 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
+// This class is basically lobby manager but handles also some in-game networking
 public class NetworkGameManager : NetworkLobbyManager {
 
     public static NetworkGameManager Instance;
 
-    [SerializeField] private GameObject UI = null;
+    [Space]
+    [SerializeField] private GameObject lobbyUI = null;
 
-    // TODO: Make a menu dictionary that is possible to edit in Unity inspector.
-    // And edit switchUIWindow() to work with dictonaries
+    // All these components are child objects in this gameobject (assigned in Unity Editor)
     [SerializeField] private GameObject mainUI = null;
     [SerializeField] private GameObject hostUI = null;
     [SerializeField] private GameObject clientUI = null;
-    private GameObject[] UIWindows;
-
-    // All these components are child objects in this gameobject (assigned in Unity Editor)
     [SerializeField] private GameObject insertNameError = null;
     [SerializeField] private Text hostingText = null;
     [SerializeField] private Text clientAddressText = null;
@@ -25,26 +24,41 @@ public class NetworkGameManager : NetworkLobbyManager {
     [SerializeField] private GameObject playerListContent = null;
     [SerializeField] private InputField playerName = null;
 
+    private GameObject[] UIWindows;
+    private List<Character> inGamePlayerList = new List<Character>();
+    private Character localCharacter = null;
+    private bool thisIsHosting = false;
+    private string externalIP = "";
+    private List<GameObject> carnivorePrefabs = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs = new List<GameObject>();
+    public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
+
     public GameObject PlayerListContent { get { return playerListContent; } }
     public string PlayerName { get { return playerName.text; } }
     public bool Hosting { get { return thisIsHosting; } }
-
-    private bool thisIsHosting = false;
-    private string externalIP = "";
+    public List<Character> InGamePlayerList { get { return inGamePlayerList; } }
+    public Character LocalCharacter { get { return localCharacter; } set { localCharacter = value; } }
+    public List<GameObject> HerbivorePrefabs { get { return herbivorePrefabs; } set { herbivorePrefabs = value; } }
 
     private void Awake ()
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        LoadAssetToDictionaries();
+
+        SceneManager.LoadScene(lobbyScene);
+        UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
 
         // Resets UI
-        UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
-        switchUIWindow(UIWindows, 0);
-        UI.SetActive(true);
+        UIManager.switchGameObject(UIWindows, mainUI);
         insertNameError.SetActive(false);
     }
 
-    // --- Button methods
+    // --- Lobby button methods
     // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
 
     public void B_HostGame()
@@ -114,89 +128,138 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyStartHost()
     {
-        base.OnLobbyStartHost();
-
         thisIsHosting = true;
         StartCoroutine(GetPublicIP());
         hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;  // Temp message before public IP is updated
-        switchUIWindow(UIWindows, 1);   // Host window
+        UIManager.switchGameObject(UIWindows, hostUI);
         Debug.Log("Hosting started");
     }
 
     public override void OnLobbyStopHost()
     {
-        base.OnLobbyStopHost();
-
         thisIsHosting = false;
-        switchUIWindow(UIWindows, 0);   // Main window
+        UIManager.switchGameObject(UIWindows, mainUI);
         insertNameError.SetActive(false);
         Debug.Log("Hosting stopped");
     }
 
     public override void OnLobbyClientEnter()
     {
-        base.OnLobbyClientEnter();
-
         if (!thisIsHosting)
         {
             clientAddressText.text = networkAddress + ":" + networkPort;
-            switchUIWindow(UIWindows, 2);   // Client window
+            UIManager.switchGameObject(UIWindows, clientUI);
         }
-        Debug.Log("Client joined!");
+        Debug.Log("Client joined");
     }
 
     public override void OnLobbyClientExit()
     {
-        base.OnLobbyClientExit();
-
         if (!thisIsHosting)
         {
-            switchUIWindow(UIWindows, 0);   // Main window
+            UIManager.switchGameObject(UIWindows, mainUI);
             insertNameError.SetActive(false);
         }
         Debug.Log("Client exited");
     }
 
+    public override void OnLobbyServerSceneChanged(string sceneName)
+    {
+        if (sceneName == playScene)
+        {
+            EventManager.Broadcast(EVENT.RoundBegin);
+        }
+        Debug.Log("Scene changed");
+    }
+
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
     {
-        base.OnLobbyClientSceneChanged(conn);
-
-        // Disables UI if players are in game
+        // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)
         {
-            UI.SetActive(false);
+            Instantiate(UIManager.Instance.PauseMenuPrefab);
+            lobbyUI.SetActive(false);
         }
-        else
+        else if (SceneManager.GetActiveScene().name == lobbyScene)
         {
-            UI.SetActive(true);
+            lobbyUI.SetActive(true);
+            UIManager.Instance.HideCursor(false);
+            InGamePlayerList.Clear();
         }
     }
 
+    public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
+    {
+        LobbyPlayer player = null;
+
+        // Finds the lobby player
+        foreach (LobbyPlayer p in lobbySlots)
+        {
+            if (p.netId == conn.playerControllers[playerControllerId].unetView.netId)
+            {
+                player = p;
+                break;
+            }
+        }
+
+        if (player == null)
+        {
+            Debug.Log("NetworkGameManager, OnLobbyServerCreateGamePlayer: Player not found!");
+            return null;
+        }
+
+        Debug.Log("Client " + conn.playerControllers[playerControllerId].unetView.netId + " selected " + player.CharacterSelected.name);
+
+        GameObject spawnedPlayer;
+
+        // Spawns corresponding player prefab
+        if (!spawnPrefabs.Contains(player.CharacterSelected))
+        {
+            spawnedPlayer = Instantiate(gamePlayerPrefab);
+        }
+        else
+        {
+            spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
+            InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+        }
+
+        return spawnedPlayer;
+    }
+
     // --- Other private methods
+
+    /// <summary>
+    /// Populates the asset dictionaries
+    /// </summary>
+    private void LoadAssetToDictionaries()
+    {
+        //Search the file with WWW class and loads them to cache
+        carnivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Carnivore"));
+        herbivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Herbivore"));
+
+        foreach (GameObject prefab in carnivorePrefabs)
+        {
+            PlayerPrefabs.Add(prefab.name, prefab);
+        }
+
+        foreach (GameObject prefab in herbivorePrefabs)
+        {
+            PlayerPrefabs.Add(prefab.name, prefab);
+        }
+
+        Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
+        Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
+    }
 
     private IEnumerator GetPublicIP()
     {
         using (WWW www = new WWW("https://api.ipify.org"))
         {
             yield return www;
+
+            // After the file has downloaded
             externalIP = www.text;
             hostingText.text = hostUIMessage + externalIP + ":" + networkPort;
-        }
-    }
-
-    // Enables only one of the objects in GameObject[] and disables others (NEEDS REPLACEMENT! See the top TODO)
-    private void switchUIWindow(GameObject[] obj, int index)
-    {
-        for (int o = 0; o < obj.Length; o++)
-        {
-            if (o == index)
-            {
-                obj[o].SetActive(true);
-            }
-            else if (obj[o].activeSelf)
-            {
-                obj[o].SetActive(false);
-            }
         }
     }
 }

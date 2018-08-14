@@ -11,13 +11,16 @@ public enum KeyInput { Horizontal, Vertical, Rotation, Jump, Ability, Eat }
 public class InputManager : MonoBehaviour
 {
 
-    public static InputManager      Instance;
-    private int                     xboxController = 0;
-    private int                     playstationController = 0;
-    private bool                    waitingForKey;
-    private bool                    coroutinerunning;
-    private StoredInformation       storage;
-    private string                  gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
+    public static InputManager Instance;
+    public bool EnableInput;
+
+    private int xboxController = 0;
+    private int playstationController = 0;
+    private bool waitingForKey;
+    private bool coroutinerunning;
+    private bool pressed;
+    private StoredInformation storage;
+    private string gameDataProjectFilePath = "/StreamingAssets/UserInputSettings.json";
 
     //Lists and dictionaries
     [SerializeField]
@@ -127,7 +130,7 @@ public class InputManager : MonoBehaviour
 
     public void LoadAllAxes()
     {
-        storage.configurations.Sort((x,y) => x.AxisName.CompareTo(y.AxisName));
+        storage.configurations.Sort((x, y) => x.AxisName.CompareTo(y.AxisName));
         inputAxes = storage.configurations;
     }
 
@@ -150,8 +153,13 @@ public class InputManager : MonoBehaviour
                 v = inputAxes[i].Axis;
             }
         }
+
+        if (!EnableInput)
+            v = 0;
+
         return v;
     }
+
     /// <summary>
     /// Used to get the users input when button is held down
     /// </summary>
@@ -168,8 +176,39 @@ public class InputManager : MonoBehaviour
                 retVal = inputAxes[i].positive;
             }
         }
+
+        if (!EnableInput)
+            retVal = false;
+
         return retVal;
     }
+
+    public bool GetButtonDown(string name)
+    {
+        bool retval = false;
+        if (GetButton(name))
+        {
+            if (pressed) return retval;
+            pressed = true;
+            for (int i = 0; i < inputAxes.Count; i++)
+            {
+                if (inputAxes[i].AxisName == name)
+                {
+                    retval = inputAxes[i].positive;
+                }
+            }
+        }
+        else
+        {
+            pressed = false;
+        }
+
+        if (!EnableInput)
+            retval = false;
+
+        return retval;
+    }
+
     #endregion Input getters
 
     #region UnityMethdods
@@ -204,7 +243,7 @@ public class InputManager : MonoBehaviour
         }
         else
         {
-            for(int i = 0; i < inputAxes.Capacity; i++)
+            for (int i = 0; i < inputAxes.Capacity; i++)
             {
                 AssignKeyboardInput(inputAxes[i]);
             }
@@ -213,32 +252,33 @@ public class InputManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        for(int i = 0; i < inputAxes.Count; i++)
+        for (int i = 0; i < inputAxes.Count; i++)
         {
             AxisBase a = inputAxes[i];
 
             a.negative = (Input.GetKey(a.Nkey));
             a.positive = (Input.GetKey(a.Pkey));
 
-            if(a.negative)
+            if (a.negative)
             {
                 a.TargetAxis--;
             }
 
-            if(a.positive)
+            if (a.positive)
             {
                 a.TargetAxis++;
             }
 
-            if(!a.positive && !a.negative)
+            if (!a.positive && !a.negative)
             {
                 a.TargetAxis = 0;
             }
-            
+
             a.Axis = Mathf.MoveTowards(a.Axis, a.TargetAxis, Time.deltaTime * a.Sensitivity);
         }
     }
     #endregion
+
 }
 
 #region Serialized Classes

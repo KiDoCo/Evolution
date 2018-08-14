@@ -30,20 +30,20 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4385922772924926
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1443851604809318}
-  m_LocalRotation: {x: 0, y: -0.86602545, z: 0, w: 0.49999994}
-  m_LocalPosition: {x: 188.42567, y: 10.941, z: 253.37239}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -120, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &20095017839008228
 Camera:
   m_ObjectHideFlags: 1
@@ -99,16 +99,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  offset: {x: 0, y: 0.2, z: 1}
+  cameraPos: {x: 0, y: -0.2, z: -1}
   distanceDamp: 0.025
-  rotationalDamp: 100
+  rotationalDamp: 50
   distanceDampValue: 0.025
   rotationalDampValue: 20
-  fastDistanceDamp: 0
+  strafeDamp: 0.005
+  verticalDamp: 0.003
+  rotationYDamp: 12
   fastRotationDamp: 20
-  m_FieldOfView: 30
-  FOVValue: 90
-  Camera1st: {fileID: 20095017839008228}
 --- !u!114 &114458675210166678
 MonoBehaviour:
   m_ObjectHideFlags: 1

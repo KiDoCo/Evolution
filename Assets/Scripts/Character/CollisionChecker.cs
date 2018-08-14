@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class CollisionChecker : MonoBehaviour
 {
-    private Rigidbody rBod;
     private Vector3 moveDirection;
     private Vector3 surfaceNormal;
     private Vector3 colDirection;
     private CapsuleCollider col;
-    private bool canMove = true;
 
     private void Awake()
     {
-        rBod = GetComponent<Rigidbody>();
         col = GetComponentInChildren<CapsuleCollider>();
     }
 

@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4184306425417230}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_Bottom_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,7 +34,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4767949347173620}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_TopFront_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4689268266797434}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -64,7 +64,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4444859185418714}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_L_Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,7 +79,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4915398627683672}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Spine1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4343419293129746}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_R_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4236940537156968}
   - component: {fileID: 137726244424343562}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Shark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4747588725312216}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_R_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,7 +140,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4385174547160586}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_R_Top3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4224762990188746}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_Bottom_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,7 +170,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4764639912655986}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eye_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,7 +185,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4315340824839486}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Jaw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4897727222533810}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Spine4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,10 +218,13 @@ GameObject:
   - component: {fileID: 95662106521183134}
   - component: {fileID: 136574025905355464}
   - component: {fileID: 82769841182586898}
-  - component: {fileID: 114663192462634156}
-  m_Layer: 0
+  - component: {fileID: 114401673902600974}
+  - component: {fileID: 114213708722299978}
+  - component: {fileID: 114089988995669340}
+  - component: {fileID: 54280091110362696}
+  m_Layer: 8
   m_Name: Carnivore
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -234,7 +237,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4264412704286792}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_R_Top1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +252,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4072179846532860}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_L_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -264,7 +267,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4707915920487134}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_R_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +282,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4988864474543908}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Spine5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +297,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4739556885383818}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_L_Top1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -309,7 +312,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4111920518394960}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_L_Top3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -324,7 +327,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4113475099408160}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_R_Top2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -339,7 +342,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4570721074446654}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_L_Top2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +357,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4490732825590142}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_TailTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -369,7 +372,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4412569524336966}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_L_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -384,7 +387,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4725641293356682}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_TopBack_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -399,7 +402,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4950699185019922}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eyelid_R_Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -414,7 +417,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4522121577094880}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_TopFront_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -429,7 +432,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4517499809003858}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Spine2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -444,7 +447,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4825930806805756}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_TopBack_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -459,7 +462,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4350476069230008}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_TailBottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -474,7 +477,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4011335878545230}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_TopFront_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,7 +492,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4185216001416078}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Fin_L_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -504,7 +507,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4329468065067084}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Eye_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,7 +522,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4676383181824980}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Spine3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +537,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4385365755309484}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bn_Predator1_Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -842,7 +845,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1445834569832970}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 210.45479, y: 6.809, z: 220.71548}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4689268266797434}
@@ -1032,6 +1035,21 @@ Transform:
   m_Father: {fileID: 4897727222533810}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &54280091110362696
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!82 &82769841182586898
 AudioSource:
   m_ObjectHideFlags: 1
@@ -1145,7 +1163,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114663192462634156
+--- !u!114 &114089988995669340
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1153,38 +1171,93 @@ MonoBehaviour:
   m_GameObject: {fileID: 1445834569832970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c9258bf9d34c342a4a3a9d2980ccf1, type: 3}
+  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 1
+  m_SendInterval: 0.1
+  m_SyncRotationAxis: 7
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_VelocityThreshold: 0.0001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
+--- !u!114 &114213708722299978
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 175
+    i1: 70
+    i2: 148
+    i3: 9
+    i4: 83
+    i5: 67
+    i6: 194
+    i7: 228
+    i8: 155
+    i9: 200
+    i10: 220
+    i11: 142
+    i12: 124
+    i13: 167
+    i14: 39
+    i15: 10
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
+--- !u!114 &114401673902600974
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454403b8f5f6317479775b3ec12e4130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   verticalSpeed: 2
   horizontalSpeed: 2
-  speed: 2
-  AscendSpeed: 2
-  turnSpeed: 2
   rotateSpeed: 2
-  myQuat: {x: 0, y: 0, z: 0, w: 0}
-  targetQuat: {x: 0, y: 0, z: 0, w: 0}
-  quatSpeed: 1
-  stabilize: 0.1
-  velocity: 0
-  restrictAngle: 80
+  strafeSpeed: 2
+  maxSpeed: 10
+  accTimeToMax: 1.5
+  decTimeToMin: 1
+  turnSpeed: 2
+  turning: 0
   rolling: 0
-  isMoving: 0
-  camerascript: {fileID: 0}
+  isDashing: 0
+  isStrafing: 0
   hasjustRolled: 0
-  Rotatingspeed: 0
-  camera: {fileID: 0}
-  y: 0
-  barrelRoll: 0
-  dashSpeed: 0
-  strafeSpeed: 0
-  dashing: 0
+  coolTimer: 0
+  canBarrellRoll: 0
+  canStrafe: 0
+  canTurn: 0
   canDash: 0
-  dashSpeedValue: 100
-  staminaValue: 100
-  stamina: 100
-  staminaDecrement: 2
-  staminaIncrement: 2
+  cameraPrefab: {fileID: 1443851604809318, guid: 63a97eadac062624fa5bbd367cf0b5c9,
+    type: 2}
+  Rotatingspeed: 0
+  playerMesh: {fileID: 137726244424343562}
+  canMouseMove: 1
+  carnivoreMesh: {fileID: 1175654593334706}
+  stamina: 0
+  coolDownTime: 0
+  chargeTime: 2
+  eatCooldown: 0
+  xpReward: 0
+  damage: 1
+  slowDown: 0
 --- !u!136 &136574025905355464
 CapsuleCollider:
   m_ObjectHideFlags: 1

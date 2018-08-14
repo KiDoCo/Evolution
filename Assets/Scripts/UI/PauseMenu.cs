@@ -1,34 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-public class PauseMenu : MonoBehaviour {
+public class PauseMenu : NetworkBehaviour {
 
+    // All these components are child objects in this gameobject (assigned in Unity Editor)
+    [SerializeField] public GameObject UI = null;   // GameObject that is parent to all UI elements in pause menu
     [SerializeField] private GameObject disconnectButton = null;
     [SerializeField] private GameObject stopGameButton = null;
-
-    private CurMenu activemenu;
-
-    //Menu holders
-    public GameObject OptionMenu;
-    public GameObject ControlMenu;
-    public GameObject SoundMenu;
-    public GameObject PauseUI;
-
-    private GameObject curActiveMenu;
-    public GameObject backButton;
-    public GameObject optionsDefaultButton;
 
     public static PauseMenu Instance;
 
     private void Awake()
     {
         Instance = this;
+    }
 
-        //UI.SetActive(false);
+    private void Start()
+    {
+        UI.SetActive(false);
 
-        //stopGameButton.SetActive(NetworkGameManager.Instance.Hosting);
-        //disconnectButton.SetActive(!NetworkGameManager.Instance.Hosting);
-
+        stopGameButton.SetActive(NetworkGameManager.Instance.Hosting);
+        disconnectButton.SetActive(!NetworkGameManager.Instance.Hosting);
     }
 
     // Each B_ method is used in UI buttons (Button in Unity Editor -> OnClick())
@@ -37,69 +29,7 @@ public class PauseMenu : MonoBehaviour {
     {
         if (NetworkGameManager.Instance != null)
         {
-            NetworkGameManager.Instance.ServerReturnToLobby();
+            NetworkGameManager.Instance.SendReturnToLobby();
         }
     }
-
-    public void OpenOptionsMenu()
-    {
-        activemenu = CurMenu.Options;
-        optionsDefaultButton.SetActive(true);
-        backButton.SetActive(true);
-        ChangeCurrentActiveMenu(OptionMenu);
-    }
-
-    public void OpenControlsMenu()
-    {
-        activemenu = CurMenu.Controls;
-        ChangeCurrentActiveMenu(ControlMenu);
-        backButton.SetActive(true);
-        ControlMenu.GetComponent<ControlsMenu>().Init();
-    }
-
-    public void OpenSoundMenu()
-    {
-        activemenu = CurMenu.Sound;
-        optionsDefaultButton.SetActive(true);
-        backButton.SetActive(true);
-        ChangeCurrentActiveMenu(SoundMenu);
-
-    }
-
-    public void OpenPauseMenu()
-    {
-        activemenu = CurMenu.Pause;
-        backButton.SetActive(false);
-        ChangeCurrentActiveMenu(PauseUI);
-    }
-
-    public void BackButtonMethod()
-    {
-        if (activemenu == CurMenu.Options)
-        {
-            OpenPauseMenu();
-        }
-        else if (activemenu == CurMenu.Controls)
-        {
-            OpenOptionsMenu();
-        }
-        else if (activemenu == CurMenu.Sound)
-        {
-            OpenOptionsMenu();
-        }
-    }
-
-    private void ChangeCurrentActiveMenu(GameObject menu)
-    {
-        if (curActiveMenu != PauseUI)
-        {
-            if (curActiveMenu != null)
-            {
-                curActiveMenu.SetActive(false);
-            }
-        }
-        curActiveMenu = menu;
-        curActiveMenu.SetActive(true);
-    }
-
 }

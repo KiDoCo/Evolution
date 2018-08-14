@@ -1,32 +1,32 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 
 /// <summary>
 /// This class takes care of the functionality of a food source
 /// </summary>
-public class FoodBaseClass : MonoBehaviour, IEatable
+public class FoodBaseClass : NetworkBehaviour, IEatable
 {
 
     //Food variables
-    private int         maxAmountFood     = 10;
-    private float       amountOfFood      = 10;
-    private float       foodPerSecond     = 4.0f;
+    private int maxAmountFood = 10;
+    [SyncVar(hook = "CmdOnDecreaseFood")]
+    private float amountOfFood = 10;
+    private float foodPerSecond = 4.0f;
     private const float regenerationTimer = 2.0f;
-    private const float sizeMultiplier    = 1.5f;
-    private const float DefaultSize       = 2.0f;
-    private float       cooldownTime;      
-    private bool        isEatening        = false;
-    private bool        eaten;
+    private const float sizeMultiplier = 1.5f;
+    private const float DefaultSize = 2.0f;
+    private float cooldownTime;
+    private bool isEatening = false;
+    private bool eaten;
 
     //collider variables
-    private const float radiusMultiplier  = 1.5f;
-    //private float       vectoroffset      = 0.55f;
-    private Collider    coralCollider;
-    //private BoxCollider box;
+    private const float radiusMultiplier = 1.5f;
+    private Collider coralCollider;
     private AudioSource source;
-    private Vector3     originalPos;
+    private Vector3 originalPos;
 
-
+    #region Getters&setters
     //interface properties
     public int MaxAmountFood
     {
@@ -41,7 +41,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         }
     }
 
-    public float AmountFood
+    public float AmountOfFood
     {
         get
         {
@@ -49,7 +49,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         }
         set
         {
-            amountOfFood = Mathf.Clamp(value,0,maxAmountFood);
+            amountOfFood = Mathf.Clamp(value, 0, maxAmountFood);
         }
     }
 
@@ -57,7 +57,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         if (amountOfFood > 0)
         {
-            return (foodPerSecond / 4) * Time.deltaTime;
+            return (FoodPerSecond / 4) * Time.deltaTime;
         }
         else
         {
@@ -69,11 +69,11 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         get
         {
-            return foodPerSecond;
+            return FoodPerSecond;
         }
         set
         {
-            foodPerSecond = value;
+            FoodPerSecond = value;
         }
     }
 
@@ -112,7 +112,32 @@ public class FoodBaseClass : MonoBehaviour, IEatable
 
         set
         {
-            cooldownTime = Mathf.Clamp(value, 0 , 5);
+            cooldownTime = Mathf.Clamp(value, 0, 5);
+        }
+    }
+
+    public object GetInstance
+    {
+        get
+        {
+            return this;
+        }
+
+        set
+        {
+        }
+    }
+
+    public float FoodPerSecond
+    {
+        get
+        {
+            return foodPerSecond;
+        }
+
+        set
+        {
+            foodPerSecond = value;
         }
     }
 
@@ -126,17 +151,18 @@ public class FoodBaseClass : MonoBehaviour, IEatable
         return source;
     }
 
-    //Methods
+    #endregion
 
-    /// <summary>
-    /// Decreases food from source
-    /// </summary>
-    public void DecreaseFood()
+    public void DecreaseFood(float food)
     {
-        StartCoroutine(EatChecker());
-        AmountFood -= foodPerSecond * Time.deltaTime;
-        CoolDownTime = 5.0f;
+        AmountOfFood -= food;
     }
+
+    public void CmdOnDecreaseFood(float food)
+    {
+        AmountOfFood = food;
+    }
+
 
     /// <summary>
     /// Increases food to source
@@ -145,7 +171,7 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     {
         if (amountOfFood < MaxAmountFood && !Eaten && CoolDownTime <= 0)
         {
-            amountOfFood += (foodPerSecond / 4) * Time.deltaTime;
+            amountOfFood += (FoodPerSecond / 4) * Time.deltaTime;
         }
     }
 
@@ -154,41 +180,60 @@ public class FoodBaseClass : MonoBehaviour, IEatable
     /// </summary>
     public void SizeChanger()
     {
-        if(AmountFood <= MaxAmountFood && amountOfFood > 0)
+        if (AmountOfFood <= MaxAmountFood && amountOfFood > 0)
         {
-            MathFunctions.BoxScaleObject(transform, transform.GetChild(0), originalPos, AmountFood / MaxAmountFood);
+            BoxScaleObject(transform, transform.GetChild(0), originalPos, AmountOfFood / MaxAmountFood);
         }
+
+    }
+
+    /// <summary>
+    /// Calculates the scaling of an box object which is a child 
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="transform"></param>
+    /// <param name="position"></param>
+    /// <param name="amount"></param>
+    public void BoxScaleObject(Transform parent, Transform transform, Vector3 position, float amount)
+    {
+        Vector3 scale = new Vector3(amount, amount, amount);
+        transform.localScale = Vector3.Lerp(scale, transform.localScale, Time.deltaTime / 1000);
+        transform.position = parent.position + (position * scale.y);
     }
 
     /// <summary>
     /// Checks if this object is being eaten
     /// </summary>
     /// <returns></returns>
-    IEnumerator EatChecker()
+    public IEnumerator EatChecker()
     {
         Eaten = true;
         yield return new WaitForSeconds(1.0f);
         Eaten = false;
     }
 
-    //Unity methods
+    #region unityMethods
+
     public void Awake()
     {
         coralCollider = GetComponent<Collider>();
-        //box = coralCollider.GetComponent<BoxCollider>();
         source = GetComponent<AudioSource>();
-        Gamemanager.Instance.FoodPlaceList.Add(this);
     }
 
     public void Start()
     {
+        InGameManager.Instance.FoodPlaceList.Add(gameObject);
         EventManager.ActionAddHandler(EVENT.Increase, IncreaseFood);
         originalPos = transform.GetChild(0).localPosition;
     }
 
     public void Update()
     {
-        CoolDownTime -= Time.deltaTime;
         SizeChanger();
+
+        CoolDownTime -= Time.deltaTime;
     }
+
+    #endregion
+
 }

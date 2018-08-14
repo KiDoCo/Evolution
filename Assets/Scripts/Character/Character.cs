@@ -1,37 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 [System.Serializable]
-public abstract class Character : MonoBehaviour
+public abstract class Character : NetworkBehaviour
 {
-    //values
-    public float SpeedValue = 2f;   //very important value that can be affected
-    protected float speed = 2f;     // speed in character movement
-    [SerializeField] protected float turnSpeed = 2f;     //herbivore A & D turn
-    [SerializeField] protected float AscendSpeed = 2f; //altitude shift & ctrl
-    [SerializeField] protected float verticalSpeed = 2f; //mouse movement vertical speed
+
+    #region Floats    
+    [SerializeField] protected float verticalSpeed = 2f;   //mouse movement vertical speed    
     [SerializeField] protected float horizontalSpeed = 2f; // mouse movement horizontal speed
-    [SerializeField] protected float rotateSpeed = 2f; //barrelroll speed
-    [SerializeField] protected float strafeSpeed = 2f; //carnivore strafe
-    [SerializeField] protected float dashSpeed = 20f; //herbivore sprint
+    [SerializeField] protected float rotateSpeed = 2f;     //barrelroll speed
+    [SerializeField] protected float strafeSpeed = 2f;     //carnivore strafe
 
-    protected float velocity;
+    //Movement variables
+    [SerializeField] protected float maxSpeed = 10.0f;
+    [SerializeField] protected float accTimeToMax = 1.5f;
+    [SerializeField] protected float decTimeToMin = 1.0f;
+    protected float accPerSec;
+    protected float decPerSec;
+    protected float forwardVelocity;
+    protected float backwardVelocity;
+    protected float currentInput;
     protected float restrictAngle = Mathf.Abs(80);
+    public float turnSpeed = 2.0f;
+    protected float defaultSpeed = 1.0f;
 
-    //script reference
-    [HideInInspector] public CameraController camerascript;
+    #endregion
 
-    //bools
-    protected bool isMoving;
+
+    #region Booleans
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
-    public bool isReversing; //3rd person camera käyttää
     public bool isDashing;
     public bool isStrafing; //1st person kamera käyttää näitä
-    public bool isMovingVertical; // --"--
-    public bool isMovingForward;
+    protected bool isMoving;
+    public bool hasjustRolled;
+    protected bool barrelRoll;
+    private bool ready;
+    protected bool eating;
 
+    //timer bools
+    [SerializeField] protected bool coolTimer;
 
     //ability unlock bools used in editor
     [SerializeField] protected bool canBarrellRoll;
@@ -39,259 +49,115 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
 
+    #endregion
 
-    //timer bools
-    [SerializeField] protected bool timerStart;
-    [SerializeField] protected bool coolTimer;
-    //timer values
-    [SerializeField] protected float dashTime = 6f;
-    [SerializeField] protected float coolTime = 6f;
-
-
-
-
-
-
-    protected float health = 100;
-    protected float experience = 0;
-    private const float healthMax = 100.0f;
-    private const float waitTime = 1.0f;
-    private const float experiencePenalty = 25.0f;
-    private const float deathpenaltytime = 2.0f;
-    private bool ready;
-
-    private bool eating;
+    [SerializeField] protected GameObject cameraPrefab;
+    protected GameObject spawnedCam;
     protected Animator m_animator;
-
-    private Vector3 lastposition = Vector3.zero;
-    private Vector3 MovementInputVector;
-    private Vector3 rotationInputVector;
     private AudioSource musicSource;
-    private AudioSource SFXsource;
-    //bools
+    protected AudioSource SFXsource;
 
-
-    public float Rotatingspeed; private Vector3 moveDirection;
-    private Vector3 surfaceNormal;
-    private Vector3 capsuleNormal;
-    private Vector3 colDirection;
-    private Vector3 colNormal;
-    private Vector3 colPoint;
+    //Movement vectors
+    protected Vector3 Y;
+    protected Vector3 X;
+    protected Vector3 Z;
     protected Vector3 inputVector;
-    private CapsuleCollider col;
-    private bool collided = false;
+    private Vector3 rotationInputVector;
+
+    #region Collider variables
+    public float Rotatingspeed;
+    protected Vector3 moveDirection;
+    protected Vector3 surfaceNormal;
+    protected Vector3 capsuleNormal;
+    protected Vector3 colDirection;
+    protected Vector3 colNormal;
+    protected Vector3 colPoint;
+    protected CapsuleCollider col;
+    protected bool collided = false;
+
+    #endregion
+
+    [SerializeField] protected Renderer playerMesh = null;
+
+    //End variables
 
     #region Getter&Setter
-    public float Maxhealth { get { return healthMax; } }
-    public float Health
+
+    public float ForwardVelocity
     {
         get
         {
-            return health;
+            return forwardVelocity;
         }
+
         set
         {
-            health = value;
-            if (health <= 0)
-            {
-                Death();
-                health = Maxhealth;
-            }
+            forwardVelocity = Mathf.Clamp(value, -maxSpeed, maxSpeed);
         }
     }
-    public float Experience
-    {
-        get
-        {
-            return experience;
-        }
-        set
-        {
-            experience = Mathf.Clamp(value, 0, 100);
-        }
-    }
+
     protected float Speed
     {
         get
         {
-            return speed;
+            return defaultSpeed;
         }
 
         set
         {
-            speed = value;
+            defaultSpeed = value;
         }
     }
+
+    public Vector3 InputVector
+    {
+        get
+        {
+            return inputVector;
+        }
+    }
+
+    public GameObject PlayerCamera
+    {
+        get
+        {
+            return spawnedCam;
+        }
+    }
+
     #endregion
 
-    /// <summary>
-    /// Takes care of the eating for the player
-    /// </summary>
-    /// <param name="eatObject"></param>
-    protected virtual void CmdEat(IEatable eatObject)
-    {
-        if (eatObject == null || eatObject.AmountFood <= 0)
-        {
-            eating = false;
-        }
-        else
-        {
-            if (Input.GetButton("Fire1"))
-            {
-                eating = true;
-                Experience += eatObject.GetAmount();
-                eatObject.Eaten = eating;
-                eatObject.DecreaseFood();
-                if (!eatObject.Source().isPlaying)
-                {
-                    //EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
-                }
-            }
-            else
-            {
-                eating = false;
-                //EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
-                eatObject.Eaten = eating;
-            }
-        }
-    }
+    #region Movement methods
 
-    protected virtual void Death()
-    {
-        Experience -= experiencePenalty;
-        Gamemanager.Instance.RespawnPlayer(this);
-    }
+    protected abstract void ForwardMovement();
 
-    protected virtual void TakeDamage(float amount)
-    {
-        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
-        Health -= amount;
-    }
+    protected abstract void SidewayMovement();
+
+    protected abstract void UpwardsMovement();
+
+    protected abstract void ApplyMovement();
+
+    protected abstract void AnimationChanger();
 
     /// <summary>
-    /// Checks for interaction when player enters the corals bounding box
-    /// </summary>
-    protected virtual void InteractionChecker()
-    {
-        for (int i = 0; Gamemanager.Instance.FoodPlaceList.Count > i; i++)
-        {
-            if (GetComponent<Collider>().bounds.Intersects(Gamemanager.Instance.FoodPlaceList[i].GetCollider().bounds))
-            {
-                CmdEat(Gamemanager.Instance.FoodPlaceList[i]);
-            }
-        }
-    }
-
-    protected virtual void AnimationChanger()
-    {
-        m_animator.SetBool("isEating", eating);
-        m_animator.SetBool("isMoving", isMoving);
-    }
-
-    /// <summary>
-    /// Avoid control jerkiness with ristricting x rotation
+    /// Avoid control jerkiness with restricting x rotation
     /// </summary>
     protected virtual void Restrict()
     {
-        if (transform.rotation.x > 15)
-        {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
-        }
-
-        if (transform.rotation.x < -15)
-        {
-            float x = transform.eulerAngles.x;
-            transform.Rotate(-x, 0, 0);
-        }
+        transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 75, 275), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
     }
 
-
-    /// <summary>
-    ///  Altitude & Forward/Backwards
-    /// </summary>    
-    protected virtual void Move()
+    // Clamps angle (different from the normal clamp function)
+    private float strangeAxisClamp(float value, float limit1, float limit2)
     {
-        Vector3 inputvectorX = InputManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed;
-        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Rotation") * Vector3.right * rotateSpeed) * Time.deltaTime;
-        //tarkista peruuttaako
-        inputVector = inputvectorX + inputvectorY + inputvectorZ;
-        if (Input.GetAxisRaw("Vertical") < 0)
-        {
-            isReversing = true;
-            isMovingForward = false;
-
-
-        }
-        if (Input.GetAxisRaw("Vertical") > 0)
-        {
-            isReversing = false;
-            isMovingForward = true;
-
-        }
-        else if (Input.GetAxisRaw("Vertical") == 0)
-        {
-            isReversing = false;
-            isMovingForward = false;
-        }
-        Turn();
-        if (inputVector.normalized.magnitude != 0)
-        {
-            isMoving = true;
-        }
-        //tarkista nouseeko laskeeko
-        if (inputvectorZ.magnitude != 0)
-        {
-            isMovingVertical = true;
-        }
-        else if (inputvectorZ.magnitude == 0)
-        {
-            isMovingVertical = false;
-        }
-        else
-        {
-            MovementInputVector = inputvectorY + inputvectorZ;
-        }
-
-        
-            moveDirection = Vector3.Cross(colPoint, surfaceNormal);
-            moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
-            moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
-
-
-            MovementInputVector = moveDirection;
-        
-
-        if (!eating)
-        {
-            transform.Translate(MovementInputVector);
-
-        }
+        if (value > limit1 && value < 180f)
+            value = limit1;
+        else if (value > 180f && value < limit2)
+            value = limit2;
+        return value;
     }
 
-
-
-    /// <summary>
-    /// A and D keys turn
-    /// </summary>
-    protected virtual void Turn()// is separately from "Move" -method, because it has bool check
-    {
-        if (canTurn)
-        {
-
-            float rotation = (Input.GetAxisRaw("Horizontal") * turnSpeed * Time.deltaTime);
-            if (rotation != 0)
-            {
-                isMoving = true;
-            }
-            transform.Rotate(0, rotation, 0);
-
-        }
-
-    }
-
-    protected virtual void BarrellRoll() //if needed 
+    protected virtual void BarrelRoll() //if needed 
     {
 
         if (canBarrellRoll)
@@ -312,66 +178,17 @@ public abstract class Character : MonoBehaviour
         }
 
     }
-    protected virtual void Dash() // sprint for herbivores
+
+    #endregion
+
+    public bool CollisionCheck()
     {
-        if (canDash)
-        {
-            Vector3 inputVectorX = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Dash") * dashSpeed * Time.deltaTime);
-            transform.Translate(inputVectorX);
-            if (inputVectorX.magnitude != 0)
-            {
-                isDashing = true;
-
-                StartCoroutine(DashTimer());
-            }
-            else
-            {
-                isDashing = false;
-                //StopCoroutine(DashTimer());
-            }
-        }
-    }
-
-
-
-    public IEnumerator DashTimer() //used in Dash();
-    {
-        timerStart = true;
-        yield return new WaitForSeconds(dashTime);
-
-        canDash = false;
-        timerStart = false;
-        yield return StartCoroutine(CoolTimer());
-
-
-    }
-    // -->
-    IEnumerator CoolTimer()
-    {
-        canDash = false;
-        coolTimer = true;
-        yield return new WaitForSeconds(coolTime);
-        coolTimer = false;
-        canDash = true;
-
-    }
-
-
-
-    /// <summary>
-    /// Checks if player can move in wanted direction
-    /// returns true if there is not another bject's collider in way
-    /// and false if player would collide with another collider
-    /// </summary>
-    protected bool CanMove(Vector3 dir)
-    {
-
         float distanceToPoints = col.height / 2 - col.radius;
 
         //calculating start and en point  of capuleCollider for capsuleCast to use
         Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
-
+        Vector3 dir = InputVector;
         float radius = col.radius * 1.1f;
         float castDistance = 0.5f;
 
@@ -409,64 +226,110 @@ public abstract class Character : MonoBehaviour
         return true;
     }
 
+    private void PauseMenuUpdate()
+    {
+        if (InGameManager.Instance != null)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape) && InGameManager.Instance.InMatch)
+            {
+                PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
+
+                if (NetworkGameManager.Instance.LocalCharacter != null)
+                {
+                    InputManager.Instance.EnableInput = !PauseMenu.Instance.UI.activeSelf;
+                }
+
+                UIManager.Instance.HideCursor(!PauseMenu.Instance.UI.activeSelf);
+            }
+        }
+    }
 
     /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
     protected virtual void Stabilize()
     {
-        if (!rolling)
-        {
-
-        }
-
+        float z = transform.eulerAngles.z;
+        transform.Rotate(0, 0, -z);
     }
 
+    protected abstract void SpawnCamera();
+
+    [ServerCallback]
+    public void EnablePlayer(bool enabled)
+    {
+        playerMesh.enabled = enabled;
+        InputManager.Instance.EnableInput = enabled;
+        col.enabled = enabled;
+        RpcEnablePlayer(enabled);
+    }
+
+    [ClientRpc]
+    private void RpcEnablePlayer(bool enabled)
+    {
+        playerMesh.enabled = enabled;
+        col.enabled = enabled;
+        InputManager.Instance.EnableInput = enabled;
+    }
+
+    [ServerCallback]
+    public void EnablePlayerCamera(bool enabled)
+    {
+        if (isLocalPlayer)
+            spawnedCam.SetActive(enabled);
+        if (InGameManager.Instance != null)
+            InGameManager.Instance.MapCamera.SetActive(!enabled);
+
+        RpcEnablePlayerCamera(enabled);
+    }
+
+    [ClientRpc]
+    private void RpcEnablePlayerCamera(bool enabled)
+    {
+        if (isLocalPlayer)
+            spawnedCam.SetActive(enabled);
+        if (InGameManager.Instance != null)
+            InGameManager.Instance.MapCamera.SetActive(!enabled);
+    }
+
+    #region Unity Methods
 
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
-
-
-        musicSource = GetComponentInChildren<AudioSource>();
-        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
+        musicSource = GetComponent<AudioSource>();
     }
 
     protected virtual void Start()
     {
-        speed = SpeedValue; // can change character speed (by adding value in editor or by a code)
-        //Component search
-        m_animator = gameObject.GetComponent<Animator>();
+        Debug.Log("Character activated");
+        if (isLocalPlayer)
+        {
+            NetworkGameManager.Instance.LocalCharacter = this;
+            UIManager.Instance.InstantiateInGameUI(this);
+            SpawnCamera();
+            EnablePlayerCamera(true);
+        }
 
-
-        Debug.Log("Loading character start");
-        //Cursor lock state and quaterions
-        Cursor.lockState = CursorLockMode.Locked;
-
-
-        //UIManager.Instance.InstantiateMatchUI(this);
-        // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        InputManager.Instance.EnableInput = true;
+        accPerSec = maxSpeed / accTimeToMax;
+        decPerSec = -maxSpeed / decTimeToMin;
+        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.lockState = CursorLockMode.None;
-        }
-
-        CanMove(MovementInputVector);
+        ForwardMovement();
+        UpwardsMovement();
+        SidewayMovement();
+        PauseMenuUpdate();
     }
 
     protected virtual void FixedUpdate()
     {
-
-        //Stabilize();
-        CanMove(MovementInputVector);
-        Move();
-        BarrellRoll();
-        Dash();
-        AnimationChanger();
+        Restrict();
+        Stabilize();
     }
 
+    #endregion
 }

@@ -1,18 +1,13 @@
 ManifestFileVersion: 0
-CRC: 1782150081
+CRC: 2757258497
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: carnivore.pl
-      Dependencies:
-        Dependency_0: music.mfg
+      Name: carnivore
+      Dependencies: {}
     Info_1:
-      Name: herbivore.pl
-      Dependencies:
-        Dependency_0: music.mfg
-    Info_2:
       Name: soundeffects.sfx
       Dependencies: {}
-    Info_3:
+    Info_2:
       Name: music.mfg
       Dependencies: {}

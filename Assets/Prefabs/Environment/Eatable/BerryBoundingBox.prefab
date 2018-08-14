@@ -20,8 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4514682086811180}
   - component: {fileID: 65531871529236706}
-  - component: {fileID: 114436570758774076}
   - component: {fileID: 82549650338354686}
+  - component: {fileID: 114262389958134640}
+  - component: {fileID: 114287570208949394}
   m_Layer: 0
   m_Name: BerryBoundingBox
   m_TagString: Untagged
@@ -88,7 +89,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 11b59625d2a27774b9f822bf1bd4d48a, type: 2}
+  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -222,7 +223,39 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &114436570758774076
+--- !u!114 &114262389958134640
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1159671913952188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 215
+    i1: 220
+    i2: 204
+    i3: 253
+    i4: 173
+    i5: 238
+    i6: 131
+    i7: 212
+    i8: 184
+    i9: 199
+    i10: 169
+    i11: 52
+    i12: 6
+    i13: 1
+    i14: 161
+    i15: 23
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
+--- !u!114 &114287570208949394
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

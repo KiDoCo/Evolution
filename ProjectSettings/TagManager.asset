@@ -7,6 +7,7 @@ TagManager:
   - FoodSource
   - player
   - MusicSource
+  - MapCamera
   layers:
   - Default
   - TransparentFX
@@ -19,6 +20,7 @@ TagManager:
   - Carnivore
   - Herbivore
   - stuff
+  - IgnoreCaustics
   - UiEffects
   - 
   - 

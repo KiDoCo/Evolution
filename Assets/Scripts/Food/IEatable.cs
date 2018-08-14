@@ -8,15 +8,14 @@ using UnityEngine;
 public interface IEatable 
 {
     int MaxAmountFood { get;  set; }
-    float AmountFood { get;  set; }
+    float AmountOfFood { get;  set; }
     float FoodPerSecond { get; set; }
     float CoolDownTime { get; set; }
     bool Eaten { get; set; }
     bool IsEatening { get; set; }
     float GetAmount();
-    void SizeChanger();
     void Awake();
-    void DecreaseFood();
     Collider GetCollider();
     AudioSource Source();
+    object GetInstance { get; set; } 
 }

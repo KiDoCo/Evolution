@@ -59,7 +59,7 @@ ModelImporter:
     2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -136,5 +136,5 @@ ModelImporter:
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
-  assetBundleName: 
+  assetBundleName: carnivore
   assetBundleVariant: 

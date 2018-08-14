@@ -2,35 +2,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CloakAbility : MonoBehaviour {
-   
+public class CloakAbility : MonoBehaviour
+{
 
-    bool cloaked = false;
 
-    Color visibilityColor;
-   
-    //Uses 2 materials to swap between when cloak is used
+    private bool cloaked = false;
+
+    private Color visibilityColor;
+
     public Material defaultMat;
     public Material glassMat;
     public float defSmooth = 0;
 
-    void Start ()
+    private void Start()
     {
         visibilityColor = gameObject.GetComponent<MeshRenderer>().material.color;
     }
 
-	
-	void Update () //Delete this update
+
+    private void Update() //Delete this update
     {
 
-		if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             ToggleCloak();
 
         }
     }
 
-    void ToggleCloak() //Change this to non-toggle if needed
+    private void ToggleCloak() //Change this to non-toggle if needed
     {
         Debug.Log("toggle cloak");
         cloaked = !cloaked;
@@ -47,20 +47,20 @@ public class CloakAbility : MonoBehaviour {
     }
 
 
-    void SetNormal() //Change material
+    private void SetNormal() //Change material
     {
         gameObject.GetComponent<MeshRenderer>().material = defaultMat;
-        
+
     }
-    void SetGlass() //Change material
+    private void SetGlass() //Change material
     {
         gameObject.GetComponent<MeshRenderer>().material = glassMat;
-        
+
         StartCoroutine(SetBump());
     }
 
 
-    IEnumerator SwapColor(Color goal) //Change visiblity of normal material
+    private IEnumerator SwapColor(Color goal) //Change visiblity of normal material
     {
         gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", 0);
         float backUpTimer = 0;
@@ -77,7 +77,7 @@ public class CloakAbility : MonoBehaviour {
         else { gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", defSmooth); }
     }
 
-    IEnumerator SetBump() //Increase distorion for glass
+    private IEnumerator SetBump() //Increase distorion for glass
     {
         float backUpTimer = 0;
         float i = 0;
@@ -92,7 +92,7 @@ public class CloakAbility : MonoBehaviour {
 
     }
 
-    IEnumerator RemoveGlass() //Decrease distortion for glass
+    private IEnumerator RemoveGlass() //Decrease distortion for glass
     {
         float backUpTimer = 0;
         float i = 50;

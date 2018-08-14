@@ -55,9 +55,9 @@ MonoBehaviour:
       reflection:
         blendType: 0
         reflectionQuality: 2
-        maxDistance: 100
-        iterationCount: 256
-        stepSize: 3
+        maxDistance: 104
+        iterationCount: 271
+        stepSize: 4
         widthModifier: 0.5
         reflectionBlur: 1
         reflectBackfaces: 0
@@ -72,12 +72,12 @@ MonoBehaviour:
     m_Enabled: 0
     m_Settings:
       focusDistance: 11.57
-      aperture: 18.1
-      focalLength: 246
+      aperture: 3.9
+      focalLength: 80
       useCameraFov: 0
       kernelSize: 1
   motionBlur:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       shutterAngle: 270
       sampleCount: 10
@@ -101,13 +101,13 @@ MonoBehaviour:
     m_Settings:
       bloom:
         intensity: 0.1
-        threshold: 1.1
-        softKnee: 0.48
-        radius: 4
+        threshold: 1
+        softKnee: 0.3
+        radius: 2
         antiFlicker: 1
       lensDirt:
         texture: {fileID: 0}
-        intensity: 3
+        intensity: 0
   colorGrading:
     m_Enabled: 1
     m_Settings:
@@ -125,7 +125,7 @@ MonoBehaviour:
         tint: -3
         hueShift: 0
         saturation: 1.3
-        contrast: 1.2
+        contrast: 1
       channelMixer:
         red: {x: 1, y: 0, z: 0}
         green: {x: 0, y: 1, z: 0}
@@ -331,10 +331,10 @@ MonoBehaviour:
   dithering:
     m_Enabled: 0
   monitors:
-    currentMonitorID: 0
-    refreshOnPlay: 0
+    currentMonitorID: 1
+    refreshOnPlay: 1
     histogramMode: 3
-    waveformExposure: 0.12
+    waveformExposure: 0.17
     waveformY: 0
     waveformR: 1
     waveformG: 1

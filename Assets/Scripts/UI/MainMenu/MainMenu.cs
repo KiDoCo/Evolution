@@ -54,6 +54,7 @@ public class MainMenu : MonoBehaviour
     }
 
     #region Button methods
+
     public void OpenOptionsMenu()
     {
         activemenu = CurMenu.Options;
