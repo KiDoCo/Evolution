@@ -41,7 +41,7 @@ public class MainMenu : MonoBehaviour
     public void StartNewGame()
     {
         backButton.SetActive(true);
-        Gamemanager.Instance.LoadGame();
+        // Change to lobby
         canvasImage.enabled = false;
         
        

@@ -22,10 +22,8 @@ public class ControlsMenu : MonoBehaviour
 
     public void Init()
     {
-        if(!initOnce)
-        {
-            initOnce = true;
-        }
+        if (initOnce) return;
+
         Axes = InputManager.Instance.InputAxes;
         for(int i = 0; i < InputManager.Instance.InputAxes.Capacity; i++)
         {
@@ -35,6 +33,9 @@ public class ControlsMenu : MonoBehaviour
 
         InputManager.Instance.LoadAllAxes();
         CreateAxisButtons();
+
+        initOnce = true;
+       
     }
 
     /// <summary>
