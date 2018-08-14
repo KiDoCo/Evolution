@@ -17,7 +17,6 @@ public class Herbivore : Character
     [SerializeField] new GameObject  CameraClone;
     [SerializeField] GameObject Camera3rd;
     
-    public GameObject CameraClone { get { return cameraClone; } }
 
 
     public void MouseMove()
@@ -35,8 +34,8 @@ public class Herbivore : Character
 
     protected override void Start()
     {
-        cameraClGameObject cam = Instantiate(Camera3rd);
-        cam.GetComponent<CameraController>().target = this.transform;
+        cameraClone = Instantiate(Camera3rd);
+        cameraClone.GetComponent<CameraController>().target = this.transform;
         canBarrellRoll = true;
         canTurn = true;    }
 

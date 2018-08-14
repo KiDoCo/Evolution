@@ -7,9 +7,10 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     //lists containing sounds 
-    private static List<AudioClip>         SFXClips   = new List<AudioClip>();
-    private static List<AudioClip>         MusicClips = new List<AudioClip>(); 
-
+    private static List<AudioClip> SFXClips = new List<AudioClip>();
+    private static List<AudioClip> MusicClips = new List<AudioClip>();
+    static float musicvolume;
+    static float sfxvolume;
     //list of sounds and their id
 
     /* Sound Effect ID list (SFX)
@@ -27,19 +28,20 @@ public class AudioManager : MonoBehaviour
      1: Hunting Music
      2: Main Menu
      */
-     /// <summary>
-     /// Randomizes the pitch of a clip
-     /// </summary>
-     /// <param name="clip"></param>
-     /// <param name="source"></param>
+    /// <summary>
+    /// Randomizes the pitch of a clip
+    /// </summary>
+    /// <param name="clip"></param>
+    /// <param name="source"></param>
     private static void RandomizeSFX(AudioClip clip, AudioSource source)
     {
         source.clip = clip;
-       // source.pitch = Random.Range(0.8f, 1.0f);
+
+        // source.pitch = Random.Range(0.8f, 1.0f);
         source.Play();
     }
 
-    private static void SFXMethod(AudioSource source,int id)
+    private static void SFXMethod(AudioSource source, int id)
     {
         RandomizeSFX(SFXClips[id], source);
     }
@@ -47,6 +49,7 @@ public class AudioManager : MonoBehaviour
     private static void MusicMethod(AudioSource source, int id)
     {
         source.clip = MusicClips[id];
+
         source.Play();
     }
 
@@ -55,6 +58,17 @@ public class AudioManager : MonoBehaviour
         source.Stop();
     }
 
+    public static void Sfxvolume(float setsfxvolume)
+    {
+        sfxvolume = setsfxvolume;
+    }
+
+    public static void Musicvolume(float setmusicvolume)
+    {
+        musicvolume = setmusicvolume;
+    }
+
+    
 
     //Unity Methods
 

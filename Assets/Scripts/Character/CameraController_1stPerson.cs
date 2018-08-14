@@ -90,7 +90,7 @@ public class CameraController_1stPerson : MonoBehaviour
     /// <param name="source"></param>
     public void CameraPlaceOnDeath(Character test)
     {
-        test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
+       // test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }
 
     

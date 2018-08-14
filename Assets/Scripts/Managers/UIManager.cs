@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
     private void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.Space))
+       /* if (Input.GetKeyDown(KeyCode.Space))
         {
 
             Cursor.lockState = CursorLockMode.Locked;
@@ -69,7 +69,7 @@ public class UIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
-        }
+            PauseMenu.Instance.PauseUI.SetActive(!PauseMenu.Instance.PauseUI.activeSelf);
+        }*/
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour
 {
     //values
-public float SpeedValue = 2f;   //very important value that can be affected
+    public float SpeedValue = 2f;   //very important value that can be affected
     protected float speed = 2f;     // speed in character movement
     [SerializeField] protected float turnSpeed = 2f;     //herbivore A & D turn
     [SerializeField] protected float AscendSpeed = 2f; //altitude shift & ctrl
@@ -18,7 +18,7 @@ public float SpeedValue = 2f;   //very important value that can be affected
 
     protected float velocity;
     protected float restrictAngle = Mathf.Abs(80);
-    
+
     //script reference
     [HideInInspector] public CameraController camerascript;
 
@@ -38,7 +38,7 @@ public float SpeedValue = 2f;   //very important value that can be affected
     [SerializeField] protected bool canStrafe;
     [SerializeField] protected bool canTurn;
     [SerializeField] protected bool canDash;
-    
+
 
     //timer bools
     [SerializeField] protected bool timerStart;
@@ -47,7 +47,7 @@ public float SpeedValue = 2f;   //very important value that can be affected
     [SerializeField] protected float dashTime = 6f;
     [SerializeField] protected float coolTime = 6f;
 
-  
+
 
 
 
@@ -59,28 +59,25 @@ public float SpeedValue = 2f;   //very important value that can be affected
     private const float experiencePenalty = 25.0f;
     private const float deathpenaltytime = 2.0f;
     private bool ready;
-    
+
     private bool eating;
     protected Animator m_animator;
-   
+
     private Vector3 lastposition = Vector3.zero;
     private Vector3 MovementInputVector;
     private Vector3 rotationInputVector;
     private AudioSource musicSource;
     private AudioSource SFXsource;
-    protected GameObject    //bools
-    public bool                      hasjustRolled;
-    private bool                     ready;
-    public bool                      rolling;
-    public bool                      isMoving;
-    private bool                     eating;
+    //bools
 
-    public float Rotatingspeed;    private Vector3 moveDirection;
+
+    public float Rotatingspeed; private Vector3 moveDirection;
     private Vector3 surfaceNormal;
     private Vector3 capsuleNormal;
     private Vector3 colDirection;
     private Vector3 colNormal;
     private Vector3 colPoint;
+    protected Vector3 inputVector;
     private CapsuleCollider col;
     private bool collided = false;
 
@@ -212,18 +209,19 @@ public float SpeedValue = 2f;   //very important value that can be affected
 
     /// <summary>
     ///  Altitude & Forward/Backwards
-    /// </summary>    protected virtual void Move()
+    /// </summary>    
+    protected virtual void Move()
     {
-        Vector3 inputvectorX =utManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed);
-        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical")   * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (InputManager.Instan
+        Vector3 inputvectorX = InputManager.Instance.GetAxis("Horizontal") * Vector3.up * turnSpeed;
+        Vector3 inputvectorY = (InputManager.Instance.GetAxis("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
+        Vector3 inputvectorZ = (InputManager.Instance.GetAxis("Rotation") * Vector3.right * rotateSpeed) * Time.deltaTime;
         //tarkista peruuttaako
-        
+        inputVector = inputvectorX + inputvectorY + inputvectorZ;
         if (Input.GetAxisRaw("Vertical") < 0)
         {
-isReversing = true;
+            isReversing = true;
             isMovingForward = false;
-           
+
 
         }
         if (Input.GetAxisRaw("Vertical") > 0)
@@ -232,43 +230,39 @@ isReversing = true;
             isMovingForward = true;
 
         }
-        else if (Input.GetAxisRaw("Vertical") ==0)
+        else if (Input.GetAxisRaw("Vertical") == 0)
         {
             isReversing = false;
             isMovingForward = false;
         }
-            
-       
-
-        Vector3 inputvectorY = (Input.GetAxisRaw("Vertical") * Vector3.forward * Speed) * Time.deltaTime;
-        Vector3 inputvectorZ = (Input.GetAxisRaw("Jump") * Vector3.up * AscendSpeed) * Time.deltaTime;
         Turn();
-        if(inputvector)
-{            isMoving = true;
+        if (inputVector.normalized.magnitude != 0)
+        {
+            isMoving = true;
         }
-      //tarkista nouseeko laskeeko
+        //tarkista nouseeko laskeeko
         if (inputvectorZ.magnitude != 0)
         {
             isMovingVertical = true;
         }
         else if (inputvectorZ.magnitude == 0)
         {
-            isMovingVertical = false; 
+            isMovingVertical = false;
+        }
+        else
+        {
+            MovementInputVector = inputvectorY + inputvectorZ;
         }
 
-        {
+        
             moveDirection = Vector3.Cross(colPoint, surfaceNormal);
             moveDirection = Vector3.Cross(surfaceNormal, moveDirection);
             moveDirection = (moveDirection - (Vector3.Dot(moveDirection, surfaceNormal)) * surfaceNormal).normalized;
 
 
             MovementInputVector = moveDirection;
-        }
-        else
-        {
-            MovementInputVector = inputvectorY + inputvectorZ;
-        }
-       
+        
+
         if (!eating)
         {
             transform.Translate(MovementInputVector);
@@ -285,18 +279,18 @@ isReversing = true;
     {
         if (canTurn)
         {
-            
+
             float rotation = (Input.GetAxisRaw("Horizontal") * turnSpeed * Time.deltaTime);
-            if(rotation != 0)
+            if (rotation != 0)
             {
                 isMoving = true;
             }
             transform.Rotate(0, rotation, 0);
 
         }
-        
+
     }
-    
+
     protected virtual void BarrellRoll() //if needed 
     {
 
@@ -327,7 +321,7 @@ isReversing = true;
             if (inputVectorX.magnitude != 0)
             {
                 isDashing = true;
-                
+
                 StartCoroutine(DashTimer());
             }
             else
@@ -338,17 +332,17 @@ isReversing = true;
         }
     }
 
-    
+
 
     public IEnumerator DashTimer() //used in Dash();
     {
         timerStart = true;
         yield return new WaitForSeconds(dashTime);
-        
+
         canDash = false;
         timerStart = false;
         yield return StartCoroutine(CoolTimer());
-        
+
 
     }
     // -->
@@ -361,9 +355,9 @@ isReversing = true;
         canDash = true;
 
     }
-    
 
-   
+
+
     /// <summary>
     /// Checks if player can move in wanted direction
     /// returns true if there is not another bject's collider in way
@@ -432,7 +426,7 @@ isReversing = true;
     protected virtual void Awake()
     {
         col = GetComponentInChildren<CapsuleCollider>();
-       
+
 
         musicSource = GetComponentInChildren<AudioSource>();
         //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
@@ -448,10 +442,10 @@ isReversing = true;
         Debug.Log("Loading character start");
         //Cursor lock state and quaterions
         Cursor.lockState = CursorLockMode.Locked;
-        
+
 
         //UIManager.Instance.InstantiateMatchUI(this);
-       // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+        // EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
     }
 
     protected virtual void Update()
@@ -474,5 +468,5 @@ isReversing = true;
         Dash();
         AnimationChanger();
     }
-   
+
 }

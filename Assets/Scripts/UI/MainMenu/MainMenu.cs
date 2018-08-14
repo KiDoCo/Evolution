@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum CurMenu { Main,Options,Controls,Sound,Credit }
+public enum CurMenu { Main,Options,Controls,Sound,Credit,Pause }
 
 public class MainMenu : MonoBehaviour
 {
@@ -14,28 +14,37 @@ public class MainMenu : MonoBehaviour
     public GameObject MainMenuGrid;
     public GameObject OptionMenu;
     public GameObject ControlMenu;
-    public GameObject Credit;
+    public GameObject CreditMenu;
+    public GameObject SoundMenu;
 
     //Buttons
     public GameObject backButton;
     public GameObject optionsDefaultButton;
     public GameObject controlsDefaultButton;
+    public GameObject soundDefaultButton;
 
     private GameObject curActiveMenu;
     #endregion
 
     public bool FreezeOnMenu;
+    public Image canvasImage;
+
 
     private void CloseAllButtons()
     {
         OptionMenu.SetActive(false);
         backButton.SetActive(false);
         ControlMenu.SetActive(false);
+        SoundMenu.SetActive(false);
     }
 
     public void StartNewGame()
     {
         backButton.SetActive(true);
+        Gamemanager.Instance.LoadGame();
+        canvasImage.enabled = false;
+        
+       
     }
 
     public void LoadLevel()
@@ -72,11 +81,18 @@ public class MainMenu : MonoBehaviour
     public void OpenSoundMenu()
     {
         activemenu = CurMenu.Sound;
+        optionsDefaultButton.SetActive(true);
+        backButton.SetActive(true);
+        ChangeCurrentActiveMenu(SoundMenu);
+
     }
 
     public void OpenCreditMenu()
     {
         activemenu = CurMenu.Credit;
+        ChangeCurrentActiveMenu(CreditMenu);
+        backButton.SetActive(true);
+        CreditMenu.GetComponent<CreditsScreen>();
     }
 
     public void BackButtonMethod()

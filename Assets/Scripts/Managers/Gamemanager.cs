@@ -34,7 +34,7 @@ public class Gamemanager : NetworkBehaviour
     private string gameScene       = "DemoScene";
     private string foodSourceName  = "FoodSource";
     private string playerSpawnName = "player";
-    private string menuScene       = "Menu";
+    private string menuScene       = "MainMenu";
 
     //Prefabs
     public  GameObject CameraPrefab;
@@ -187,7 +187,7 @@ public class Gamemanager : NetworkBehaviour
         Debug.Log("Herbivores loaded: " + herbivorePrefabs.Count);
     }
 
-    private void LoadGame() 
+    public void LoadGame() 
     {
         //Load the match scene
         SceneManager.LoadSceneAsync(gameScene);
@@ -234,5 +234,6 @@ public class Gamemanager : NetworkBehaviour
         EventManager.ActionAddHandler(EVENT.RoundBegin, LoadGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
         EventManager.ActionAddHandler(EVENT.Spawn, SpawnFoodSources);
-        SceneManager.LoadSceneAsync(menuScene);    }
+        //SceneManager.LoadSceneAsync(menuScene);
+    }
 }
