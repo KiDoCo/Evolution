@@ -34,8 +34,20 @@ public class CameraController_1stPerson : MonoBehaviour
     
     public Camera Camera1st;
 
-   
-   
+    [Header("Collision varibles")]
+    public float MinDistance = 0.5f;
+    public float MaxDistance = 2.0f;
+    public LayerMask CollisionMask;
+    private Camera colCamera;
+    private Vector3[] desiredClipPoints = new Vector3[5];
+    private Vector3[] adjustedClipPoints = new Vector3[5];
+    private float distance;
+    private bool colliding = false;
+    private float minCollisionDistance;
+    Vector3 lookAtTarget;
+    private float desiredDist;
+    [SerializeField] Vector3 cameraOffset = Vector3.zero;
+
 
     //camera reset point
     Vector3 startcameraPos = Vector3.zero;
@@ -68,12 +80,22 @@ public class CameraController_1stPerson : MonoBehaviour
         Camera1st.fieldOfView = 60f;
         Camera1st.cullingMask = (1 << 0 | 1<<15); //hide everything but default and ground layers, NEEDED to hide carnivore from camera, carnivore is in different layer;
 
+
+        distance = Vector3.Distance(transform.position, target.position * cameraOffset.z);
+        desiredDist = distance;
+
+        colCamera = transform.GetComponent<Camera>();
+        CameraClipPlanePoints(distance, ref desiredClipPoints);
     }
 
     public void FixedUpdate()
     {
 
         if (target == null) return;
+
+
+        CameraClipPlanePoints(GetAdjustedDistance(target.position), ref adjustedClipPoints);
+        CheckColliding(target.position);
 
         SetDampening(); //this has to be first
         FollowRot();
@@ -96,7 +118,125 @@ public class CameraController_1stPerson : MonoBehaviour
         test.CameraClone.GetComponent<CameraController>().Target = Gamemanager.Instance.DeathCameraPlace.transform;
     }
 
-    
+    public struct ClipPanePoints
+    {
+        public Vector3 UpperLeft;
+        public Vector3 UpperRight;
+        public Vector3 LowerLeft;
+        public Vector3 LowerRight;
+        public Vector3 MiddleRight;
+        public Vector3 MiddleLeft;
+        public Vector3 MiddleUp;
+        public Vector3 MiddleDown;
+    }
+
+    //find clippoints and save them to arrays
+    public ClipPanePoints CameraClipPlanePoints(float distance, ref Vector3[] intoArray)
+    {
+        intoArray = new Vector3[5];
+
+        ClipPanePoints clipPlanePoints = new ClipPanePoints();
+        Transform transform = colCamera.transform;
+        Vector3 pos = transform.position;
+
+        float halfFOV = (colCamera.fieldOfView * 0.5f) * Mathf.Deg2Rad;
+        float aspect = colCamera.aspect;
+
+        float height = Mathf.Tan(halfFOV) * (distance);
+        float width = (height * aspect);
+        float tmp = colCamera.nearClipPlane;
+
+        //LowerRight point
+        clipPlanePoints.LowerRight = pos + transform.forward * distance;
+        clipPlanePoints.LowerRight += transform.right * width;
+        clipPlanePoints.LowerRight -= transform.up * height;
+        intoArray[0] = clipPlanePoints.LowerRight;
+
+        //LowerLeft point
+        clipPlanePoints.LowerLeft = pos + transform.forward * distance;
+        clipPlanePoints.LowerLeft -= transform.right * width;
+        clipPlanePoints.LowerLeft -= transform.up * height;
+        intoArray[1] = clipPlanePoints.LowerLeft;
+
+        //UpperRight point
+        clipPlanePoints.UpperRight = pos + transform.forward * distance;
+        clipPlanePoints.UpperRight += transform.right * width;
+        clipPlanePoints.UpperRight += transform.up * height;
+        intoArray[2] = clipPlanePoints.UpperRight;
+
+        //UpperLeft point
+        clipPlanePoints.UpperLeft = pos + transform.forward * distance;
+        clipPlanePoints.UpperLeft -= transform.right * width;
+        clipPlanePoints.UpperLeft += transform.up * height;
+        intoArray[3] = clipPlanePoints.UpperLeft;
+
+        //Camera's position point
+        intoArray[4] = pos;
+
+        return clipPlanePoints;
+    }
+
+    //detect collisions at clippoints
+    private bool CollisionDetectedAtClipPoint(Vector3[] clipPoints, Vector3 fromPosition)
+    {
+        for (int i = 0; i < clipPoints.Length; i++)
+        {
+            RaycastHit hit;
+            Ray ray = new Ray(fromPosition, clipPoints[i] - fromPosition);
+            float Distance = Vector3.Distance(clipPoints[i], fromPosition);
+
+            if (Physics.Raycast(ray, out hit, Distance, CollisionMask))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //adjust the distance to closest position where camera collides
+    private float GetAdjustedDistance(Vector3 from)
+    {
+        for (int i = 0; i < adjustedClipPoints.Length; i++)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(from, adjustedClipPoints[i] - from, out hit, distance, CollisionMask))
+            {
+
+                if (distance == -1)
+                {
+                    minCollisionDistance = hit.distance;
+                }
+
+                else
+                {
+                    if (hit.distance < distance)
+                    {
+                        minCollisionDistance = hit.distance;
+                    }
+                }
+            }
+        }
+
+        if (minCollisionDistance == -1)
+        {
+            minCollisionDistance = 0f;
+            return minCollisionDistance;
+        }
+        else
+            return minCollisionDistance;
+    }
+
+    public void CheckColliding(Vector3 targetPosition)
+    {
+        if (CollisionDetectedAtClipPoint(adjustedClipPoints, targetPosition))
+        {
+            colliding = true;
+        }
+        else
+        {
+            colliding = false;
+        }
+    }
 
     /// <summary>
     /// Follows target movement and rotation smoothly (using distanceDamp and rotationalDamp values, cameraPos is camera distance from target)

@@ -46,7 +46,7 @@ public class CameraController : MonoBehaviour
     private Vector3[] desiredClipPoints = new Vector3[5];
     private Vector3[] adjustedClipPoints = new Vector3[5];
     private float distance;
-    private bool colliding = false;    
+    private bool colliding = false;
     private float minCollisionDistance;
     Vector3 lookAtTarget;
     private float desiredDist;
@@ -91,7 +91,7 @@ public class CameraController : MonoBehaviour
         ControlCamera();
 
         CameraClipPlanePoints(GetAdjustedDistance(target.position), ref adjustedClipPoints);
-        CheckColliding(target.position); 
+        CheckColliding(target.position);
 
         SmoothFollow();
         SmoothRotate(); //rotation method1
@@ -107,7 +107,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-         if (!colliding)
+        if (!colliding)
         {
             if (minCollisionDistance < desiredDist)
             {
@@ -118,6 +118,14 @@ public class CameraController : MonoBehaviour
                 minCollisionDistance = desiredDist;
             }
         }
+        //if (distance <= MinDistance)
+        //{
+        //    target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+        //}
+        //else
+        //{
+        //    target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+        //}
     }
 
     public struct ClipPanePoints
@@ -172,8 +180,8 @@ public class CameraController : MonoBehaviour
         clipPlanePoints.UpperLeft += transform.up * height;
         intoArray[3] = clipPlanePoints.UpperLeft;
 
-        ////Camera's position point
-        //intoArray[4] = pos + transform.forward * distance;
+        //Camera's position point
+        intoArray[4] = pos;
 
         return clipPlanePoints;
     }
@@ -213,7 +221,7 @@ public class CameraController : MonoBehaviour
                 {
                     if (hit.distance < distance)
                     {
-                        minCollisionDistance = hit.distance ;
+                        minCollisionDistance = hit.distance;
                     }
                 }
             }
@@ -222,7 +230,7 @@ public class CameraController : MonoBehaviour
         if (minCollisionDistance == -1)
         {
             minCollisionDistance = 0f;
-            return distance;
+            return minCollisionDistance;
         }
         else
             return minCollisionDistance;
@@ -235,7 +243,7 @@ public class CameraController : MonoBehaviour
             colliding = true;
         }
         else
-        {          
+        {
             colliding = false;
         }
     }

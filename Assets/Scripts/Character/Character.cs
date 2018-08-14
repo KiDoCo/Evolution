@@ -74,13 +74,12 @@ public abstract class Character : MonoBehaviour
     private Vector3 colPoint;
     private RaycastHit hitDown;
     private RaycastHit hitInfo;
-    public LayerMask ground;
+    public LayerMask CollisionMask;
     private float Height = 0.3f;
     public float HeightPadding = 0.05f;
     public float MaxGroundAngle = 120f;
     private float step;
     private float groundAngle;
-    private float smooth;
     int hitCount;
     RaycastHit[] hits = new RaycastHit[12];
     private CapsuleCollider ownCollider;
@@ -342,7 +341,6 @@ public abstract class Character : MonoBehaviour
 
     }
 
-
     /// <summary>
     /// Checks if player can move in wanted direction
     /// returns true if there is not another bject's collider in way
@@ -354,13 +352,11 @@ public abstract class Character : MonoBehaviour
         float castDistance;
         if (isDashing)
         {
-            smooth = dashSpeed;
             castDistance = (MovementInputVector * dashSpeed).magnitude;
             print("castdistance when dashing: " + castDistance);
         }
         else
         {
-            smooth = speed;
             castDistance = 0.5f;
         }
 
@@ -404,7 +400,8 @@ public abstract class Character : MonoBehaviour
             }
         }
 
-        hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, castDistance + 0.02f, ground, QueryTriggerInteraction.Ignore);
+        //cast CapsuleCastNonAlloc to collect ala colliders within casting distance
+        hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, castDistance, CollisionMask, QueryTriggerInteraction.Ignore);
 
         if (hitCount > 0)
         {
@@ -508,8 +505,6 @@ public abstract class Character : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
         }
-
-
     }
 
     protected virtual void FixedUpdate()
@@ -538,5 +533,4 @@ public abstract class Character : MonoBehaviour
             Dash();
         }
     }
-
 }

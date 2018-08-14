@@ -24,7 +24,6 @@ GameObject:
   - component: {fileID: 81812026616519396}
   - component: {fileID: 114703077202592306}
   - component: {fileID: 114689218469743634}
-  - component: {fileID: 114715499504959704}
   m_Layer: 0
   m_Name: 3rdPerson Camera
   m_TagString: MainCamera
@@ -103,7 +102,7 @@ MonoBehaviour:
   pivotpoint: {fileID: 0}
   Camera3rd: {fileID: 20080875289540046}
   FreeCamera: 0
-  cameraOffset: {x: 0, y: 0.2, z: 2}
+  cameraOffset: {x: 0, y: 0.2, z: -2}
   distanceDampValue: 0.08
   reverseDistanceDamp: 0.02
   verticalDistanceDamp: 0.02
@@ -115,8 +114,7 @@ MonoBehaviour:
   lookSmooth: 100
   pivotPos: {x: 0, y: 0.2, z: 0}
   MinDistance: 0.5
-  MaxDistance: 3
-  smoothTime: 5
+  MaxDistance: 2
   CollisionMask:
     serializedVersion: 2
     m_Bits: 32768
@@ -132,35 +130,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 982aae529381c164ca28fdce0f2120b7, type: 2}
---- !u!114 &114715499504959704
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1953833088195292}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40483e12615fce04ca7ec4274a798c46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  lookAtTarget: {x: 0, y: 0, z: 0}
-  defaultMinDistance: 0.5
-  defaultMaxDistance: 2
-  defaultMaxHeight: 0.2
-  distance: 2
-  minDistance: 0.5
-  maxDistance: 2
-  maxHeight: 0.2
-  height: 0.2
-  dampingFactor: 3
-  collision: 0
-  mask:
-    serializedVersion: 2
-    m_Bits: 32768
-  horizontalOffsetDefault: 0.22
-  horizontalOffset: 0
-  damping: 1
 --- !u!124 &124773107626207228
 Behaviour:
   m_ObjectHideFlags: 1

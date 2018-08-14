@@ -297,6 +297,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1481013475366048
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4679060350381058}
+  - component: {fileID: 136124317984628562}
+  m_Layer: 8
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1528127864197558
 GameObject:
   m_ObjectHideFlags: 1
@@ -383,7 +399,6 @@ GameObject:
   - component: {fileID: 95250451962224070}
   - component: {fileID: 114322189595923178}
   - component: {fileID: 114262112809787954}
-  - component: {fileID: 54123475181567240}
   m_Layer: 8
   m_Name: CarnivoreShark
   m_TagString: Untagged
@@ -879,6 +894,19 @@ Transform:
   m_Father: {fileID: 4908470598457990}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4679060350381058
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1481013475366048}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.02, y: -0.11, z: -0.57}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4908470598457990}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!4 &4723430023184346
 Transform:
   m_ObjectHideFlags: 1
@@ -998,11 +1026,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1714542320776172}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 190.90054, y: 10.503499, z: 252.78}
+  m_LocalPosition: {x: 190.90054, y: 10.503499, z: 246.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4600266347048768}
   - {fileID: 4723430023184346}
+  - {fileID: 4679060350381058}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1032,21 +1061,6 @@ Transform:
   m_Father: {fileID: 4372166332211442}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &54123475181567240
-Rigidbody:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1714542320776172}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.5
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!95 &95250451962224070
 Animator:
   serializedVersion: 3
@@ -1071,7 +1085,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1714542320776172}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 454403b8f5f6317479775b3ec12e4130, type: 3}
   m_Name: 
@@ -1100,6 +1114,11 @@ MonoBehaviour:
   coolTimer: 0
   dashTime: 6
   coolTime: 6
+  CollisionMask:
+    serializedVersion: 2
+    m_Bits: 33280
+  HeightPadding: 1
+  MaxGroundAngle: 150
   IsCharging: 0
   canCharge: 0
   chargeSpeed: 50
@@ -1113,7 +1132,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1714542320776172}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb8c7cd7a0f5661409d4fb4a7b371840, type: 3}
   m_Name: 
@@ -1140,12 +1159,25 @@ MonoBehaviour:
   forwardVelocity: 0
   forwardVelocity2: 0
   inputVectorY: {x: 0, y: 0, z: 0}
-  rb: {fileID: 54123475181567240}
+  rb: {fileID: 0}
   thrust: 20
   gravity: 0.2
   jumpforce: 5
   decel: 0
   isStrafing: 0
+--- !u!136 &136124317984628562
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1481013475366048}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.7
+  m_Height: 4
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!137 &137558028637286044
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
