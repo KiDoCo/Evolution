@@ -60,7 +60,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -101,7 +101,7 @@ MonoBehaviour:
   target: {fileID: 0}
   cameraPos: {x: 0, y: -0.2, z: -1}
   distanceDamp: 0.025
-  rotationalDamp: 50
+  rotationalDamp: 0.1
   distanceDampValue: 0.005
   rotationalDampValue: 25
   strafeDamp: 0.005

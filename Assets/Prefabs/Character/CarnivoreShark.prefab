@@ -1107,18 +1107,21 @@ MonoBehaviour:
   isMovingVertical: 0
   isMovingForward: 0
   canBarrellRoll: 0
-  canStrafe: 1
   canTurn: 0
   canDash: 1
+  canStrafe: 0
   timerStart: 0
   coolTimer: 0
   dashTime: 6
   coolTime: 6
   CollisionMask:
     serializedVersion: 2
-    m_Bits: 33280
-  HeightPadding: 1
+    m_Bits: 32768
+  HeightPadding: 2
   MaxGroundAngle: 150
+  CastDistance: 1
+  SideColDistance: 1
+  Buffer: 3
   IsCharging: 0
   canCharge: 0
   chargeSpeed: 50
@@ -1174,7 +1177,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.7
+  m_Radius: 1.2
   m_Height: 4
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
