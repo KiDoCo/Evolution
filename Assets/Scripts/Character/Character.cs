@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Linq;
 
 /// <summary>
 /// Class which all playable characters inherit
@@ -57,9 +58,11 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected GameObject cameraPrefab;
     protected GameObject spawnedCam;
     protected Animator m_animator;
-    private AudioSource musicSource;
+    protected AudioSource musicSource;
     protected AudioSource SFXsource;
     protected SkinnedMeshRenderer playerMesh = null;
+    protected Collider triggerCollider;
+    private List<Character> characterList = new List<Character>();
 
     #endregion
 
@@ -82,6 +85,9 @@ public abstract class Character : NetworkBehaviour
     protected bool collided = false;
 
     #endregion
+
+    protected MusicEvent mClip;
+
 
     #region Getter&Setter
 
@@ -132,10 +138,36 @@ public abstract class Character : NetworkBehaviour
         }
     }
 
+    public List<Character> CharacterList
+    {
+        get
+        {
+            return characterList;
+        }
+
+        set
+        {
+            characterList = value;
+        }
+    }
+
+    public Collider TriggerCollider
+    {
+        get
+        {
+            return triggerCollider;
+        }
+    }
+
     #endregion
 
     #region Movement methods
 
+    [Command]
+    protected virtual void CmdEatCheck(bool value)
+    {
+        eating = value;
+    }
 
     protected abstract void ForwardMovement();
 
@@ -268,9 +300,9 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void Start()
     {
+
         if (isLocalPlayer)
         {
-
             InputEnabled = true;
             accPerSec = maxSpeed / accTimeToMax;
             decPerSec = -maxSpeed / decTimeToMin;

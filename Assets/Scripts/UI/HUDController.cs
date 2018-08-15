@@ -10,6 +10,8 @@ public class HUDController : MonoBehaviour
 #pragma warning disable
     private float curProgress;
 
+    private bool carnivore;
+
     #region Texts
 
     //General
@@ -32,6 +34,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private GameObject HresultScreen;
     [SerializeField] private GameObject CresultScreen;
     [SerializeField] private GameObject ResScreen;
+    [SerializeField] private GameObject chargeIcon;
     private Animator helixAnim;
     private Animator predatorMouthAnim;
     private AnimationClip clip;
@@ -137,6 +140,19 @@ public class HUDController : MonoBehaviour
         }
     }
 
+    public bool Carnivore
+    {
+        get
+        {
+            return carnivore;
+        }
+
+        set
+        {
+            carnivore = value;
+        }
+    }
+
     #endregion
 
     /// <summary>
@@ -163,6 +179,21 @@ public class HUDController : MonoBehaviour
         curHealthText.text = "" + curHealth;
         maxHealthText.text = "/" + maxHealth;
         inGameMatchTime.text = Atime + " : " + Btime.ToString("00");
+
+        if(Carnivore)
+        {
+            if(FindObjectOfType<Carnivore>().CoolDownTime > 0)
+            {
+                chargeIcon.SetActive(true);
+            }
+
+            if (FindObjectOfType<Carnivore>().CoolDownTime == 0)
+            {
+                chargeIcon.SetActive(false);
+            }
+
+            chargeIcon.transform.GetChild(1).GetComponent<Image>().fillAmount = FindObjectOfType<Carnivore>().CoolDownTime / 10;
+        }
     }
 
     /// <summary>
@@ -174,15 +205,6 @@ public class HUDController : MonoBehaviour
             HelixAnim.Play("Take", 0, (1.0f / 99) * curProgress);
     }
 
-    /// <summary>
-    /// Updates the player Cooldown UI
-    /// </summary>
-    private void UpdateCooldowns() 
-    {
-        StartCoroutine(Cooldown(5, coolDownObjects[0]));
-        StartCoroutine(Cooldown(5, coolDownObjects[1]));
-        StartCoroutine(Cooldown(5, coolDownObjects[2]));
-    }
 
     /// <summary>
     /// Prints out the result screen for the player
@@ -263,6 +285,16 @@ public class HUDController : MonoBehaviour
     }
 
     /// <summary>
+    /// Updates the player Cooldown UI
+    /// </summary>
+    private void UpdateCooldowns() 
+    {
+        StartCoroutine(Cooldown(5, coolDownObjects[0]));
+        StartCoroutine(Cooldown(5, coolDownObjects[1]));
+        StartCoroutine(Cooldown(5, coolDownObjects[2]));
+    }
+
+    /// <summary>
     /// Sets the cooldown number and gives the info for UI elements
     /// </summary>
     /// <param name="cd"></param>
@@ -288,6 +320,12 @@ public class HUDController : MonoBehaviour
         Instance = this;
         HresultScreen.SetActive(false);
         CresultScreen.SetActive(false);
+    }
+
+    private void Start()
+    {
+        chargeIcon.SetActive(Carnivore);
+
     }
 
     private void Update()

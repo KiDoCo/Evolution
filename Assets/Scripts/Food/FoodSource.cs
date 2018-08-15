@@ -14,10 +14,16 @@ public class FoodSource : NetworkBehaviour
         {
             GameObject go = new GameObject();
             go.name = "Berries";
-            berryLocations.AddRange(transform.GetChild(1).GetComponentsInChildren<Transform>());
+            for (int i = 0; i < transform.GetChild(0).childCount; i++)
+            {
+                if (transform.GetChild(0).GetChild(i).tag == "BerrySpawn")
+                {
+                    berryLocations.Add(transform.GetChild(0).GetChild(i).GetComponent<Transform>());
+
+                }
+            }
             for (int i = 0; i < berryLocations.ToArray().Length; i++)
             {
-                Debug.Log("Spawning");
                 GameObject clone = Instantiate(InGameManager.Instance.BerryPrefab, berryLocations[i].position, Quaternion.identity);
                 clone.transform.parent = go.transform;
                 NetworkServer.Spawn(clone);

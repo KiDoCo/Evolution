@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections.Generic;
+using System.Linq;
 
 
 public class Herbivore : Character
@@ -13,26 +15,24 @@ public class Herbivore : Character
     private Color visibilityColor;
     public Material defaultMat;
     public Material glassMat;
+    private ParticleSystem blood;
 
-    private Vector3 lastPos;
-
-    private bool HasRespawned;
     [SyncVar]
     private bool cloaked = false;
     private bool canDash = true;
+    private bool HasRespawned;
     private bool dashing;
-    private float surTime;
-    public float defSmooth = 0;
     [SyncVar]
     private float cloakTimer;
-
     [SyncVar]
     private float invincibleTimer;
-
     [SyncVar]
     private float horMov;
+    private float surTime;
+    public float defSmooth = 0;
 
-    private ParticleSystem blood;
+    [SyncVar]
+    protected bool hunt = false;
 
     //timer values
     [SerializeField] private float dashTime = 2f;
@@ -53,7 +53,14 @@ public class Herbivore : Character
 
     #region Getters&Setters
 
-    public float Maxhealth { get { return healthMax; } }
+    public float Maxhealth
+    {
+        get
+        {
+            return healthMax;
+        }
+    }
+
     public float Health
     {
         get
@@ -70,6 +77,7 @@ public class Herbivore : Character
             }
         }
     }
+
     public float Experience
     {
         get
@@ -81,6 +89,7 @@ public class Herbivore : Character
             experience = Mathf.Clamp(value, 0, 100);
         }
     }
+
     public int Deathcount
     {
         get
@@ -93,6 +102,7 @@ public class Herbivore : Character
             deathcount = value;
         }
     }
+
     public float SurTime
     {
         get
@@ -129,11 +139,25 @@ public class Herbivore : Character
 
     #endregion
 
+    //Methods
+
+    #region Geteaten methods
+
     //methods
     [Command]
     private void CmdTakeDamage(float amount)
     {
-        Debug.Log("Takedamage");
+        Debug.Log("dmg : " + amount);
+        blood.Play();
+        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
+        InvincibleTimer = 1.0f;
+        Health -= amount;
+    }
+
+    [ClientRpc]
+    private void RpcTakeDamage(float amount)
+    {
+        Debug.Log("dmg : " + amount);
         blood.Play();
         EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         InvincibleTimer = 1.0f;
@@ -142,16 +166,50 @@ public class Herbivore : Character
 
     public void GetEaten(float dmg)
     {
-        Debug.Log("Geteatem");
-        Debug.Log(dmg);
         if (InvincibleTimer <= 0)
-            CmdTakeDamage(dmg);
+        {
+            if (isServer)
+                RpcTakeDamage(dmg);
+            else
+                CmdTakeDamage(dmg);
+
+        }
+    }
+
+    #endregion
+
+    public void RpcMusicChanger(bool hunted)
+    {
+        if (!hunted)
+        {
+            if (mClip != MusicEvent.Ambient)
+            {
+                EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
+                mClip = MusicEvent.Ambient;
+            }
+
+        }
+        else
+        {
+            if (mClip != MusicEvent.Hunting)
+            {
+                EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Hunting);
+                mClip = MusicEvent.Hunting;
+            }
+
+        }
+    }
+
+    [Command]
+    private void CmdMusicChangerCheck()
+    {
+        InGameManager.Instance.MusicChecker(this, true, false);
     }
 
     /// <summary>
-    /// Checks for interaction when player enters the corals bounding box
+    /// Checks for interaction when player enters the eatable bounding box
     /// </summary>
-    protected virtual void InteractionChecker()
+    protected void InteractionChecker()
     {
         for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
         {
@@ -160,36 +218,6 @@ public class Herbivore : Character
                 Eat(InGameManager.Instance.FoodPlaceList[i]);
             }
         }
-    }
-
-    protected void AnimationChanger()
-    {
-        if (!isServer)
-            CmdAnimationChanger(isMoving, horMov, eating, Experience);
-        else
-            RpcAnimationChanger(isMoving, horMov, eating, Experience);
-    }
-
-    [Command]
-    protected void CmdAnimationChanger(bool move, float hor, bool eat, float exp)
-    {
-        playerMesh.SetBlendShapeWeight(0, Mathf.Clamp(exp, 25, 100));
-        m_animator.SetBool("isEating", eat && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
-        m_animator.SetBool("isMoving", move);
-        m_animator.SetFloat("Evolution", exp);
-        m_animator.SetFloat("Horizontal", hor);
-    }
-
-    [ClientRpc]
-    protected void RpcAnimationChanger(bool move, float hor, bool eat, float exp)
-    {
-        Debug.Log("Move :" + move);
-        Debug.Log("Horizontal movement : " + hor);
-        playerMesh.SetBlendShapeWeight(0, Mathf.Clamp(exp, 25, 100));
-        m_animator.SetBool("isEating", eat && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
-        m_animator.SetBool("isMoving", move);
-        m_animator.SetFloat("Evolution", exp);
-        m_animator.SetFloat("Horizontal", hor);
 
 
     }
@@ -198,6 +226,7 @@ public class Herbivore : Character
     {
         if (InGameManager.Instance.LifeCount > 0)
         {
+            FindObjectOfType<Carnivore>().KillCount++;
             if (!HasRespawned)
             {
                 surTime = InGameManager.Instance.MatchTimer;
@@ -221,6 +250,38 @@ public class Herbivore : Character
         spawnedCam = Instantiate(cameraPrefab);
         spawnedCam.GetComponent<CameraController>().InstantiateCamera(this);
     }
+
+    #region AnimationMethods
+
+    protected void AnimationChanger()
+    {
+        if (!isServer)
+            CmdAnimationChanger(isMoving, horMov, eating, Experience);
+        else
+            RpcAnimationChanger(isMoving, horMov, eating, Experience);
+    }
+
+    [Command]
+    protected void CmdAnimationChanger(bool move, float hor, bool eat, float exp)
+    {
+        playerMesh.SetBlendShapeWeight(0, Mathf.Clamp(exp, 25, 100));
+        m_animator.SetBool("isEating", eat && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
+        m_animator.SetBool("isMoving", move);
+        m_animator.SetFloat("Evolution", exp);
+        m_animator.SetFloat("Horizontal", hor);
+    }
+
+    [ClientRpc]
+    protected void RpcAnimationChanger(bool move, float hor, bool eat, float exp)
+    {
+        playerMesh.SetBlendShapeWeight(0, Mathf.Clamp(exp, 25, 100));
+        m_animator.SetBool("isEating", eat && !m_animator.GetCurrentAnimatorStateInfo(1).IsName("Eat"));
+        m_animator.SetBool("isMoving", move);
+        m_animator.SetFloat("Evolution", exp);
+        m_animator.SetFloat("Horizontal", hor);
+    }
+
+    #endregion
 
     #region Eat methods
 
@@ -386,7 +447,6 @@ public class Herbivore : Character
 
     #endregion
 
-    //BUG: teeth can be seen
     #region Cloak
 
     private void ApplyCloak()
@@ -537,6 +597,7 @@ public class Herbivore : Character
         visibilityColor = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>().material.color;
         SFXsource = transform.GetChild(2).GetComponent<AudioSource>();
         blood = transform.GetChild(4).GetComponent<ParticleSystem>();
+        triggerCollider = transform.GetChild(0).GetComponent<Collider>();
     }
 
     #region Unitymethods
@@ -555,6 +616,7 @@ public class Herbivore : Character
             cloakTimer = 10.0f;
             base.Start();
             SpawnCamera();
+            HUDController.Instance.Carnivore = false;
         }
 
     }
@@ -569,7 +631,9 @@ public class Herbivore : Character
             base.Update();
             Dash();
             InteractionChecker();
+            CmdMusicChangerCheck();
             UIManager.Instance.UpdateMatchUI(this);
+
         }
     }
 

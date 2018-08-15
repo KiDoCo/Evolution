@@ -183,19 +183,18 @@ public class InGameManager : NetworkBehaviour
     {
         while (!NetworkServer.active && !NetworkServer.localClientActive) yield return null;
 
-        if (isServer)
+
+        for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
         {
-            for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
-            {
-                FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
-            }
-            for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
-            {
-                GameObject clone = Instantiate(foodsources[0], FoodSpawnPointList[i].position, Quaternion.identity);
-                NetworkServer.Spawn(clone);
-                clone.name = foodSourceName + i;
-            }
+            FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
         }
+        for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
+        {
+            GameObject clone = Instantiate(foodsources[0], FoodSpawnPointList[i].position, Quaternion.identity);
+            NetworkServer.Spawn(clone);
+            clone.name = foodSourceName + i;
+        }
+
         yield return 1;
     }
 
@@ -250,8 +249,6 @@ public class InGameManager : NetworkBehaviour
     [ServerCallback]
     public void StartGame()
     {
-        Debug.Log("Here");
-
         StartCoroutine(StartMatch());
     }
 
@@ -267,7 +264,7 @@ public class InGameManager : NetworkBehaviour
                     Debug.Log("No charge check");
                     Herbivore a = p as Herbivore;
                     vor.Eat(a);
-                    
+
                 }
                 else
                 {
@@ -277,6 +274,58 @@ public class InGameManager : NetworkBehaviour
                 }
             }
         }
+    }
+
+    [ServerCallback]
+    public void MusicChecker(Character car, bool hunt, bool carnivore)
+    {
+        bool hunted = false;
+        if (carnivore)
+        {
+            Carnivore a = car as Carnivore;
+            foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
+            {
+                if (p.GetType() == typeof(Herbivore))
+                {
+                    if (p.TriggerCollider.bounds.Intersects(a.TriggerCollider.bounds))
+                    {
+                        hunted = true;
+                        a.RpcMusicChanger(hunted);
+                        break;
+                    }
+                    else
+                    {
+                        a.RpcMusicChanger(hunted);
+                        break;
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            Herbivore h = car as Herbivore;
+            foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
+            {
+                if (p.GetType() == typeof(Carnivore))
+                {
+                    if (p.TriggerCollider.bounds.Intersects(h.TriggerCollider.bounds))
+                    {
+                        Debug.Log("intersect");
+                        hunt = true;
+                        h.RpcMusicChanger(hunted);
+                        break;
+                    }
+                    else
+                    {
+                        Debug.Log("Doesnt intersect");
+                        h.RpcMusicChanger(hunted);
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
     public void ClearBoxes()
