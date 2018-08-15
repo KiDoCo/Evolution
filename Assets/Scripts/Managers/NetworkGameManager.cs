@@ -23,6 +23,8 @@ public class NetworkGameManager : NetworkLobbyManager {
     [SerializeField] private string hostUIMessage = "Hosting match in\n";
     [SerializeField] private GameObject playerListContent = null;
     [SerializeField] private InputField playerName = null;
+    [SerializeField] private GameObject errorWindow = null;
+    [SerializeField] private Text errorWindowText = null;
 
     private GameObject[] UIWindows;
     private List<Character> inGamePlayerList = new List<Character>();
@@ -163,6 +165,49 @@ public class NetworkGameManager : NetworkLobbyManager {
         Debug.Log("Client exited");
     }
 
+    public override void OnLobbyServerPlayersReady()
+    {
+        List<LobbyPlayer> players = new List<LobbyPlayer>();
+        List<LobbyPlayer> selectedCarnivores = new List<LobbyPlayer>();
+
+        // Find all lobbyplayers
+        foreach (var netObj in NetworkServer.objects)
+        {
+            LobbyPlayer p = netObj.Value.GetComponent<LobbyPlayer>();
+
+            if (p != null)
+            {
+                players.Add(p);
+
+                if (p.PlayerCharacter == "Carnivore")
+                {
+                    selectedCarnivores.Add(p);
+                }
+            }
+        }
+
+        // Picks random carnivore or herbivore
+        int carnivoreAmount = selectedCarnivores.Count;
+        if (carnivoreAmount > 1)
+        {
+            int pick = Random.Range(0, carnivoreAmount);
+            for (int c = 0; c < carnivoreAmount; c++)
+            {
+                if (c != pick)
+                {
+                    selectedCarnivores[c].PlayerCharacter = "Herbivore";
+                }
+            }
+        }
+        else if (carnivoreAmount == 0)
+        {
+            int pick = Random.Range(0, players.Count);
+            players[pick].PlayerCharacter = "Carnivore";
+        }
+
+        base.OnLobbyServerPlayersReady();
+    }
+
     public override void OnLobbyServerSceneChanged(string sceneName)
     {
         if (sceneName == playScene)
@@ -249,6 +294,12 @@ public class NetworkGameManager : NetworkLobbyManager {
 
         Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
         Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
+    }
+
+    private void ShowErrorBox(string msg)
+    {
+        errorWindowText.text = msg;
+        errorWindow.SetActive(true);
     }
 
     private IEnumerator GetPublicIP()

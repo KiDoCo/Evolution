@@ -16,6 +16,14 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     [SerializeField] private Dropdown characterDropdown = null;
     [SerializeField] private Text characterSelectedText = null;
 
+    // Syncs name from server to clients and calls in clients changePlayerName
+    [SyncVar(hook = "changePlayerName")]
+    private string playerName = "";
+
+    // Syncs type from server to clients and calls in clients changePlayerType
+    [SyncVar(hook = "changePlayerType")]
+    private int playerType = 0;
+
     public GameObject CharacterSelected
     {
         get
@@ -24,13 +32,45 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         }
     }
 
-    // Syncs name from server to clients and calls in clients changePlayerName
-    [SyncVar(hook = "changePlayerName")]
-    private string playerName = "";
+    public int PlayerType
+    {
+        get
+        {
+            return playerType;
+        }
+        set
+        {
+            OnTypeChange(value);
+        }
+    }
 
-    // Syncs type from server to clients and calls in clients changePlayerType
-    [SyncVar(hook = "changePlayerType")]
-    private int playerType = 0;
+    public string PlayerCharacter
+    {
+        get
+        {
+            return characterDropdown.options[playerType].text;
+        }
+        set
+        {
+            if (NetworkGameManager.Instance.PlayerPrefabs.ContainsKey(value))
+            {
+                int index = characterDropdown.options.FindIndex(x => x.text == value);
+
+                if (index != -1)
+                {
+                    OnTypeChange(index);
+                }
+            }
+        }
+    }
+
+    public string PlayerName
+    {
+        get
+        {
+            return playerName;
+        }
+    }
 
 
     // OnClientEnterLobby() is called also when client goes back from in-game to lobby
