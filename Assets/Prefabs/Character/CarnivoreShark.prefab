@@ -901,7 +901,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1481013475366048}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.02, y: -0.11, z: -0.57}
+  m_LocalPosition: {x: 0, y: 0, z: -0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4908470598457990}
@@ -1117,11 +1117,10 @@ MonoBehaviour:
   CollisionMask:
     serializedVersion: 2
     m_Bits: 32768
-  HeightPadding: 2
+  HeightPadding: 0.5
   MaxGroundAngle: 150
-  CastDistance: 1
-  SideColDistance: 1
-  Buffer: 3
+  SideColDistance: 0.5
+  Buffer: 0.5
   IsCharging: 0
   canCharge: 0
   chargeSpeed: 50
@@ -1177,8 +1176,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.2
-  m_Height: 4
+  m_Radius: 1
+  m_Height: 4.5
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!137 &137558028637286044

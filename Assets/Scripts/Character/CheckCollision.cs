@@ -98,8 +98,114 @@ public class CheckCollision : MonoBehaviour
         camTransform.localPosition = goToPos;
         camTransform.LookAt(pivot.position);
 
-   
 
+        //private void CheckCollision()
+        //{
+
+        //    //initialize rays
+        //    Ray rayForward = new Ray(transform.position, transform.forward);
+        //    Ray rayBack = new Ray(transform.position, -transform.forward);
+        //    Ray rayUp = new Ray(transform.position, transform.up);
+        //    Ray rayDown = new Ray(transform.position, -transform.up);
+        //    Ray rayRight = new Ray(transform.position, transform.right);
+        //    Ray rayLeft = new Ray(transform.position, -transform.right);
+
+        //    //calculating and setting points and distances for capsule cast (and rays)
+        //    float distanceToPoints = col.height / 2 - col.radius;
+        //    Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
+        //    Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
+        //    float radius = col.radius * 1.1f;
+        //    Height = col.height;
+
+        //    Vector3 direction = dir.normalized;
+
+        //    if (isDashing)
+        //    {
+        //        CastDistance = (MovementInputVector * dashSpeed).magnitude;
+        //        print("castdistance when dashing: " + CastDistance);
+        //    }
+        //    else
+        //    {
+        //        CastDistance = normCastDist;
+        //    }
+
+        //    if (Physics.Raycast(rayDown, out hitInfo, CastDistance + (HeightPadding)))
+        //    {
+        //        grounded = true;
+        //        colPoint = hitInfo.point;
+        //        print("ground");
+        //        //check if ground angle allows movement
+        //        if (groundAngle < MaxGroundAngle)
+        //        {
+        //            if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
+        //            {
+        //                print(groundAngle);
+        //                surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
+        //            }
+
+        //            //Rotate character according to ground angle              
+        //            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), 1);
+        //            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), 0.01f * Time.deltaTime);
+
+        //            //check distance to ground and stay above it
+        //            //if (Vector3.Distance(transform.position, colPoint) < Buffer + HeightPadding)
+        //            //{
+        //            //    transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Buffer, step);
+        //            //}
+        //        }
+        //    }
+
+        //    //cast CapsuleCastNonAlloc to collect ala colliders within casting distance
+        //    hitCount = Physics.CapsuleCastNonAlloc(point1, point2, radius, direction, hits, CastDistance, CollisionMask, QueryTriggerInteraction.Ignore);
+
+        //    if (hitCount > 0)
+        //    {
+        //        collided = true;
+        //        for (int i = 0; i < hitCount; i++)
+        //        {
+        //            if (Vector3.Angle(hits[i].normal, hitInfo.normal) > 5)
+        //            {
+        //                curNormal = hits[i].normal;
+        //                colPoint = hits[i].point;
+        //            }
+        //            else
+        //            {
+        //                curNormal = hitInfo.normal;
+        //                colPoint = hitInfo.point;
+        //            }
+        //        }
+
+
+
+        //        if (Physics.Raycast(rayRight, out hitInfo, SideColDistance) && Physics.Raycast(rayLeft, out hitInfo, SideColDistance))
+        //        {
+        //            transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+        //        }
+        //        else if (Physics.Raycast(rayRight, out hitInfo, SideColDistance))
+        //        {
+        //            Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+        //            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), step);
+        //        }
+        //        else if (Physics.Raycast(rayLeft, out hitInfo, SideColDistance))
+        //        {
+        //            Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+        //            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
+        //        }
+
+
+        //        if (Vector3.Distance(transform.position, colPoint) < Buffer + HeightPadding)
+        //        {
+        //            //transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * Buffer, step);              
+        //        }
+        //    }
+        //    else
+        //    {
+        //        collided = false;
+        //    }
+
+
+
+        //}
 
         //Viewport Bleed prevention
         float c = myCamera.nearClipPlane;

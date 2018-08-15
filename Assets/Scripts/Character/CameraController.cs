@@ -48,9 +48,8 @@ public class CameraController : MonoBehaviour
     private float distance;
     private bool colliding = false;
     private float minCollisionDistance;
-    Vector3 lookAtTarget;
     private float desiredDist;
-    
+
 
 #pragma warning restore
     public Transform Target
@@ -74,7 +73,7 @@ public class CameraController : MonoBehaviour
         distanceDamp = distanceDampValue;
         rotationalDamp = rotationalDampValue;
 
-        distance = Vector3.Distance(transform.position, target.position * cameraOffset.z);
+        distance = Vector3.Distance(transform.position, target.position * cameraOffset.z); //get starting distance
         desiredDist = distance;
 
         colCamera = transform.GetComponent<Camera>();
@@ -91,6 +90,7 @@ public class CameraController : MonoBehaviour
         SetDampening();
         ControlCamera();
 
+        //update camera's clipPoints to get adjustedclipPoints
         CameraClipPlanePoints(GetAdjustedDistance(target.position), ref adjustedClipPoints);
         CheckColliding(target.position);
 
@@ -108,6 +108,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
+        //change distance to player to max distance if not colliding
         if (!colliding)
         {
             if (minCollisionDistance < desiredDist)
@@ -119,17 +120,11 @@ public class CameraController : MonoBehaviour
                 minCollisionDistance = desiredDist;
             }
         }
-        //if (distance <= MinDistance)
-        //{
-        //    target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
-        //}
-        //else
-        //{
-        //    target.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
-        //}
+
     }
 
-    public struct ClipPanePoints
+    // saving place for clipPlane values
+    public struct ClipPlanePoints
     {
         public Vector3 UpperLeft;
         public Vector3 UpperRight;
@@ -141,21 +136,23 @@ public class CameraController : MonoBehaviour
         public Vector3 MiddleDown;
     }
 
-    //find clippoints and save them to arrays
-    public ClipPanePoints CameraClipPlanePoints(float distance, ref Vector3[] intoArray)
+    /// <summary>
+    /// calculates clippoints for 4 corners of nearClipPlane
+    /// also saves position of camera as one clippoint
+    /// </summary>
+    public ClipPlanePoints CameraClipPlanePoints(float distance, ref Vector3[] intoArray)
     {
         intoArray = new Vector3[5];
 
-        ClipPanePoints clipPlanePoints = new ClipPanePoints();
+        ClipPlanePoints clipPlanePoints = new ClipPlanePoints();
         Transform transform = colCamera.transform;
         Vector3 pos = transform.position;
 
-        float halfFOV = (colCamera.fieldOfView * 0.5f) * Mathf.Deg2Rad;
+        float halfFOV = (colCamera.fieldOfView * 0.5f) * Mathf.Deg2Rad; // half Of cameras field of view changed from degree to radians
         float aspect = colCamera.aspect;
 
-        float height = Mathf.Tan(halfFOV) * (distance);
-        float width = (height * aspect);
-        float tmp = colCamera.nearClipPlane;
+        float height = Mathf.Tan(halfFOV) * (distance); //height of nearClipPlane
+        float width = (height * aspect); //width of nearClipPlane
 
         //LowerRight point
         clipPlanePoints.LowerRight = pos + transform.forward * distance;
@@ -187,16 +184,21 @@ public class CameraController : MonoBehaviour
         return clipPlanePoints;
     }
 
-    //detect collisions at clippoints
+    /// <summary>
+    /// go through all clipPoints and cast ray from target to each of them
+    /// return true if something hit at one of the clippoints
+    /// </summary>
     private bool CollisionDetectedAtClipPoint(Vector3[] clipPoints, Vector3 fromPosition)
     {
+        print("clippoints lenght: " + clipPoints.Length);
+
         for (int i = 0; i < clipPoints.Length; i++)
         {
             RaycastHit hit;
             Ray ray = new Ray(fromPosition, clipPoints[i] - fromPosition);
             float Distance = Vector3.Distance(clipPoints[i], fromPosition);
 
-            if (Physics.Raycast(ray, out hit, Distance, CollisionMask))
+            if (Physics.Raycast(ray, out hit, Distance, CollisionMask)) //ray is cast to ach of clipPoints to see if they are occluded
             {
                 return true;
             }
@@ -204,31 +206,26 @@ public class CameraController : MonoBehaviour
         return false;
     }
 
-    //adjust the distance to closest position where camera collides
+    /// <summary>
+    /// adjust the distance to closest position where camera collides
+    /// returns shortest distance from target to collision point
+    /// </summary>
     private float GetAdjustedDistance(Vector3 from)
     {
         for (int i = 0; i < adjustedClipPoints.Length; i++)
         {
             RaycastHit hit;
-            if (Physics.Raycast(from, adjustedClipPoints[i] - from, out hit, distance, CollisionMask))         
+            if (Physics.Raycast(from, adjustedClipPoints[i] - from, out hit, distance, CollisionMask))
             {
-
-                if (distance == -1)
+                if (hit.distance < distance)
                 {
                     minCollisionDistance = hit.distance;
-                }
-
-                else
-                {
-                    if (hit.distance < distance)
-                    {
-                        minCollisionDistance = hit.distance;
-                    }
                 }
             }
         }
 
-        if (minCollisionDistance == -1)
+        //check that distance is not less than -1
+        if (minCollisionDistance <= -1)
         {
             minCollisionDistance = 0f;
             return minCollisionDistance;
@@ -237,6 +234,7 @@ public class CameraController : MonoBehaviour
             return minCollisionDistance;
     }
 
+    //used to check if colliding or not by using targets position and cameras adjustedClipPoints
     public void CheckColliding(Vector3 targetPosition)
     {
         if (CollisionDetectedAtClipPoint(adjustedClipPoints, targetPosition))
@@ -293,13 +291,12 @@ public class CameraController : MonoBehaviour
 
     void SmoothFollow()// follow every frame
     {
-        distance = minCollisionDistance - Mathf.Abs(0 + cameraOffset.x) * 2;
-        distance = Mathf.Clamp(distance, MinDistance, MaxDistance);
+        distance = minCollisionDistance - Mathf.Abs(0 + cameraOffset.x) * 2; //reduce absolute of cameraOffset.z from shortest collision point to get distance
+        distance = Mathf.Clamp(distance, MinDistance, MaxDistance); //Clamp distance between minDistance and maxDistance
 
         print("distance: " + distance);
 
-        Vector3 toPos;
-        lookAtTarget = target.position + Vector3.up * cameraOffset.y + target.right * cameraOffset.x;
+        Vector3 toPos;       
         toPos = target.position - (target.forward * distance);
         transform.position = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
     }

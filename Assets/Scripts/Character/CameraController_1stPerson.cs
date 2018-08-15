@@ -34,21 +34,6 @@ public class CameraController_1stPerson : MonoBehaviour
     
     public Camera Camera1st;
 
-    [Header("Collision varibles")]
-    public float MinDistance = 0.5f;
-    public float MaxDistance = 2.0f;
-    public LayerMask CollisionMask;
-    private Camera colCamera;
-    private Vector3[] desiredClipPoints = new Vector3[5];
-    private Vector3[] adjustedClipPoints = new Vector3[5];
-    private float distance;
-    private bool colliding = false;
-    private float minCollisionDistance;
-    Vector3 lookAtTarget;
-    private float desiredDist;
-    [SerializeField] Vector3 cameraOffset = Vector3.zero;
-
-
     //camera reset point
     Vector3 startcameraPos = Vector3.zero;
 

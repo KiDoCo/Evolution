@@ -75,16 +75,12 @@ public class Herbivore : Character
         {
             MouseMove();
         }
-        
-       
+              
         Restrict();
 
         if (!rolling)
         {
            Stabilize();
-        }
-
-        
-    }
-    
+        }        
+    }  
 }

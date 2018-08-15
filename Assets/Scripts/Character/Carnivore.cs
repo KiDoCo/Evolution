@@ -26,9 +26,7 @@ public class Carnivore2 : Character
             float v = verticalSpeed * Input.GetAxis("Mouse Y");
             float h = horizontalSpeed * Input.GetAxis("Mouse X");
             transform.Rotate(v, h, 0);
-        }
-        
-
+        }      
     }
     protected override void Awake()
     {
@@ -43,7 +41,6 @@ public class Carnivore2 : Character
         GameObject cam = Instantiate(Camera1); // Instantioi cameran ja pistää cam muuttujaksi
 
         cam.GetComponent<CameraController_1stPerson>().target = this.transform; //pääsee käsiksi koodiin ja kohteeseen
-
     }
 
 
@@ -66,9 +63,11 @@ public class Carnivore2 : Character
         MouseMove();
         Restrict();
         Stabilize();
-
-        Strafe();
-      
+       
+        if(canStrafe)
+        {
+            Strafe();
+        }  
         //Charge();
     }
 
