@@ -25,7 +25,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1487475292514350
 GameObject:
@@ -42,7 +42,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4165759193447886
 Transform:
@@ -50,27 +50,27 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1113797963547362}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 166.96002, y: -2.8899994, z: -276.21}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.067631, y: 0.019016935, z: -0.008387526, w: 0.997494}
+  m_LocalPosition: {x: -34.194183, y: -20.464859, z: -47.0903}
+  m_LocalScale: {x: 0.60000014, y: 0.6, z: 0.5999999}
   m_Children:
   - {fileID: 4448923596568186}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 7.7730002, y: 2.1290002, z: -0.81900007}
 --- !u!4 &4448923596568186
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1487475292514350}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: -0.6316456, y: -0.0012575003, z: 0.004032133, w: 0.77524567}
   m_LocalPosition: {x: -1.65, y: -2.0200043, z: -1.75}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 4165759193447886}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -78.336006, y: -1.9970001, z: 2.223}
 --- !u!23 &23672434223102322
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -120,13 +120,13 @@ LODGroup:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1113797963547362}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: -6.4700003, y: 6.2306614, z: 2.8900373}
-  m_Size: 7.3413734
+  m_LocalReferencePoint: {x: -1.6752412, y: 1.4910202, z: -1.0256317}
+  m_Size: 7.8730288
   m_FadeMode: 0
   m_AnimateCrossFading: 0
   m_LODs:
-  - screenRelativeHeight: 0.18552384
+  - screenRelativeHeight: 0.09936503
     fadeTransitionWidth: 0
     renderers:
-    - renderer: {fileID: 0}
+    - renderer: {fileID: 23672434223102322}
   m_Enabled: 1

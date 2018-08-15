@@ -25,7 +25,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!1 &1782258425925860
 GameObject:
@@ -43,7 +43,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4128651363315968
 Transform:
@@ -65,7 +65,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1498766997087436}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 158.37003, y: -1.4335938, z: -285.69}
+  m_LocalPosition: {x: 39.98581, y: -5.884857, z: -68.88626}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4128651363315968}
@@ -133,13 +133,13 @@ LODGroup:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1498766997087436}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: -6.4700003, y: 6.2306614, z: 2.8900373}
-  m_Size: 7.3413734
+  m_LocalReferencePoint: {x: -0.000011444092, y: 2.6589231, z: 0.83999586}
+  m_Size: 8.290394
   m_FadeMode: 0
   m_AnimateCrossFading: 0
   m_LODs:
-  - screenRelativeHeight: 0.18552384
+  - screenRelativeHeight: 0.09762715
     fadeTransitionWidth: 0
     renderers:
-    - renderer: {fileID: 0}
+    - renderer: {fileID: 23804092385993800}
   m_Enabled: 1
