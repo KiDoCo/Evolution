@@ -7,6 +7,7 @@ public enum CurMenu { Main,Options,Controls,Sound,Credit,Pause }
 
 public class MainMenu : MonoBehaviour
 {
+    private Image FadeShape;
     private CurMenu activemenu;
 
     #region GameObjects
@@ -29,6 +30,13 @@ public class MainMenu : MonoBehaviour
     public bool FreezeOnMenu;
     public Image canvasImage;
 
+    private void Start()
+    {
+        FadeShape = transform.Find("MainMenuGrid").GetComponent<Image>();
+        curActiveMenu = MainMenuGrid;
+        ControlMenu.SetActive(true);
+        CloseAllButtons();
+    }
 
     private void CloseAllButtons()
     {
@@ -57,10 +65,12 @@ public class MainMenu : MonoBehaviour
 
     public void OpenOptionsMenu()
     {
+        Cursor.visible = false;
+        StartCoroutine(Fader(OptionMenu));
         activemenu = CurMenu.Options;
         optionsDefaultButton.SetActive(true);
         backButton.SetActive(true);
-        ChangeCurrentActiveMenu(OptionMenu);
+        //ChangeCurrentActiveMenu(OptionMenu);
     }
 
     public void OpenMainMenu()
@@ -123,6 +133,30 @@ public class MainMenu : MonoBehaviour
     }
     #endregion
 
+    private IEnumerator Fader(GameObject NextMenu)
+    {
+        bool Fading = true;
+        NextMenu.SetActive(true);
+        Image NextMenuMask = NextMenu.GetComponent<Image>();
+
+        while (Fading)
+        {
+            yield return new WaitForSeconds(0.00001f);
+            NextMenuMask.fillAmount += 0.01f;
+            FadeShape.fillAmount -= 0.01f;
+            
+            if(NextMenuMask.fillAmount >= 1 || FadeShape.fillAmount <= 0)
+            {
+                Debug.Log("Hello!");
+                Fading = false;
+            }
+        }
+
+        //if (curActiveMenu != null) curActiveMenu.SetActive(false);
+        //ChangeCurrentActiveMenu(OptionMenu);
+        Cursor.visible = true;
+    }
+
     public void LoadMainMenu()
     {
         ChangeCurrentActiveMenu(MainMenuGrid);
@@ -134,12 +168,5 @@ public class MainMenu : MonoBehaviour
         if(curActiveMenu != null) curActiveMenu.SetActive(false);
         curActiveMenu = menu;
         curActiveMenu.SetActive(true);
-    }
-
-    private void Start()
-    {
-        curActiveMenu = MainMenuGrid;
-        ControlMenu.SetActive(true);
-        CloseAllButtons();
     }
 }

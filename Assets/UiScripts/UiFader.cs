@@ -6,34 +6,35 @@ using UnityEngine.UI;
 public class UiFader : MonoBehaviour {
 
     Image FadeShape;
-    //ParticleSystem bubbler;
-    GameObject MenuGrid;
-    //ParticleSystem.ShapeModule BubblerMover;
+
+    [SerializeField]
+    float FilledAmount;
+
+    [SerializeField]
+    float UnfilledAmount;
 
 	void Start ()
     {
-        MenuGrid = transform.Find("MainMenuGrid").gameObject;
-        //bubbler = GetComponent<ParticleSystem>();
-        //BubblerMover = bubbler.shape;
         FadeShape = GetComponent<Image>();
-        FadeShape.fillAmount = 1;
+        FadeShape.fillAmount = FilledAmount;
 	}
 
-    public void StartFader()
+    private void OnEnable()
+    {
+        FadeShape.fillAmount = FilledAmount;
+    }
+
+    private void OnDisable()
     {
         StartCoroutine(Fader());
-        //bubbler.Play();
     }
 
     private IEnumerator Fader()
     {
-        while (FadeShape.fillAmount != 0)
+        while (FadeShape.fillAmount >= UnfilledAmount)
         {
             yield return new WaitForSeconds(0.00001f);
-            //BubblerMover.position += new Vector3(0.06f, 0, 0); 
             FadeShape.fillAmount -= 0.01f;
         }
-        MenuGrid.SetActive(false);
-        //bubbler.Stop();
     }
 }
