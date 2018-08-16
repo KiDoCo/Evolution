@@ -33,6 +33,14 @@ public static class EventManager
         }
     }
 
+    public static void ActionDeleteHandler(EVENT evnt)
+    {
+        if (actionEventTable.ContainsKey(evnt))
+        {
+            actionEventTable.Remove(evnt);
+        }
+    }
+
     /// <summary>
     /// Adds a new sound action or adds a new method to existing entry to dictionary
     /// </summary>

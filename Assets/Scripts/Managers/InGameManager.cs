@@ -22,19 +22,15 @@ public class InGameManager : NetworkBehaviour
     [SerializeField] private float experiencePenalty = 25.0f;
     [SerializeField] private float endScreenTime = 20f;
     [SerializeField] private int maxLifeCount = 2;
-    [SyncVar(hook = "Timer")]
-    private float matchTimer;
-    [SyncVar] private int lifeCount;
-    [SyncVar] private bool matchEnd = false;    // BUG: MatchEnd doesn't sync to other players
-    private bool matchStart = true;
-
+    [SyncVar] private float matchTimer;      // Mathf clamppaa juttuja    [SyncVar] private int lifeCount;
+    [SyncVar] private bool inMatch = false;
+    private GameObject mapCamera = null;
+    private int herbivoresWon = 0;
+    private int lifeCount;
     // Gamemanager lists
-    private List<GameObject> carnivorePrefabs = new List<GameObject>();
-    private List<GameObject> herbivorePrefabs = new List<GameObject>();
-    public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
-    public List<GameObject> foodsources;
+    [SerializeField] private List<GameObject> foodSources;
     public List<GameObject> FoodPlaceList = new List<GameObject>();
-    private List<Transform> FoodSpawnPointList = new List<Transform>();
+    private List<GameObject> FoodSpawnPointList;
 
     // Strings
     private string gameScene = "DemoScene";
@@ -55,23 +51,9 @@ public class InGameManager : NetworkBehaviour
         {
             return matchTimer;
         }
-
         set
         {
             matchTimer = Mathf.Clamp(value, 0, Mathf.Infinity);
-        }
-    }
-
-    public List<GameObject> HerbivorePrefabs
-    {
-        get
-        {
-            return herbivorePrefabs;
-        }
-
-        set
-        {
-            herbivorePrefabs = value;
         }
     }
 
@@ -88,11 +70,11 @@ public class InGameManager : NetworkBehaviour
         }
     }
 
-    public bool MatchEnd
+    public bool InMatch
     {
         get
         {
-            return matchEnd;
+            return inMatch;
         }
     }
 
@@ -104,13 +86,27 @@ public class InGameManager : NetworkBehaviour
         }
     }
 
+    public GameObject MapCamera
+    {
+        get
+        {
+            return mapCamera;
+        }
+        set
+        {
+            mapCamera = value;
+        }
+    }
+
     #endregion
 
     #region match Methods
 
-    private void IncreaseFoodOnSources()
+    // Void to IEnumerable
+    [ServerCallback]
+    public void StartGame()
     {
-        EventManager.Broadcast(EVENT.Increase);
+        StartCoroutine(StartMatch());
     }
 
     /// <summary>
@@ -119,18 +115,16 @@ public class InGameManager : NetworkBehaviour
     private IEnumerator StartMatch()
     {
         if (SceneManager.GetActiveScene().name != gameScene) yield return null;
-        MatchTimer = StartingMatchTimer;
-        Debug.Log(MatchTimer);
-        MatchTimer = startingMatchTimer;
-        LifeCount = maxLifeCount;
+        matchTimer = startingMatchTimer;
+        LifeCount = maxLifeCount * NetworkGameManager.Instance.InGamePlayerList.Count(x => x.GetType() == typeof(Herbivore));
         yield return SpawnFoodSources();
         EventManager.Broadcast(EVENT.AINodeSpawn);
-        matchStart = false;
+        inMatch = true;
         InvokeRepeating("IncreaseFoodOnSources", interval, interval);
     }
 
     /// <summary>
-    /// Respawns the player 
+/// Respawns the player 
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
@@ -185,41 +179,78 @@ public class InGameManager : NetworkBehaviour
     }
 
 
-    /// <summary>
-    /// Ends the match when time ends or one of the sides wins the game
+    /// <summary>    /// Ends the match when time ends or one of the sides wins the game
     /// </summary>
     [ServerCallback]
     private void EndMatch()
     {
-        matchEnd = true;
+        inMatch = false;
         CancelInvoke();
+
         // Get stats and stop/end match for in game players
         foreach (Character p in NetworkGameManager.Instance.InGamePlayerList)
         {
+            p.EnablePlayerCamera(false);
             p.EnablePlayer(false);
-            // - Get stats for end screen (ShowEndScreen())
-            // - Fixed camera in scene with end screen
         }
 
+        // Show match screen
+        UIManager.Instance.MatchResultScreen();
+        RpcShowResultScreen();
+
         StartCoroutine(ReturnToLobby(endScreenTime));
+    }
+
+    [ClientRpc]
+    private void RpcShowResultScreen()
+    {
+        UIManager.Instance.MatchResultScreen();
     }
 
     private IEnumerator ReturnToLobby(float time)
     {
         yield return new WaitForSeconds(time);
-        matchEnd = false;
         NetworkGameManager.Instance.SendReturnToLobby();
     }
 
     /// <summary>
-    /// Ends the match for a single player, kills it
+    /// Checks if the player can be spawned
     /// </summary>
-    public void KillPlayer(Character player)
+    /// <param name="player"></param>
+    [ServerCallback]
+    public void RespawnPlayer(Herbivore player)
     {
-        player.EnablePlayer(false);
-        // - Fixed camera in scene. Spectate others?
+        LifeCount--;
+        StartCoroutine(Respawn(player));
     }
 
+    [ServerCallback]
+    public void KillPlayer(Herbivore player)
+    {
+        player.EnablePlayer(false);
+        player.EnablePlayerCamera(false);
+    }
+
+
+    /// <summary>
+    /// Ends the match for a single player
+    /// </summary>
+    [ServerCallback]
+    public void EndMatchForPlayer(Herbivore player)
+    {
+        herbivoresWon += 1;
+        player.EnablePlayer(false);
+        player.EnablePlayerCamera(false);
+        if (herbivoresWon == NetworkGameManager.Instance.InGamePlayerList.Count - 1)
+        {
+            EndMatch();
+        }
+    }
+
+    private void IncreaseFoodOnSources()
+    {
+        EventManager.Broadcast(EVENT.Increase);
+    }
     /// <summary>
     /// Spawns the sources to the environment
     /// </summary>
@@ -229,13 +260,12 @@ public class InGameManager : NetworkBehaviour
 
         if (isServer)
         {
-            for (int i = 0; i < GameObject.FindGameObjectsWithTag(foodSourceName).Length; i++)
+            while (FoodSpawnPointList == null)
+                yield return null;
+
+            for (int i = 0; i < FoodSpawnPointList.Count; i++)
             {
-                FoodSpawnPointList.Add(GameObject.FindGameObjectsWithTag(foodSourceName)[i].transform);
-            }
-            for (int i = 0; i < FoodSpawnPointList.Capacity; i++)
-            {
-                GameObject clone = Instantiate(foodsources[0], FoodSpawnPointList[i].position, Quaternion.identity);
+                GameObject clone = Instantiate(foodSources[0], FoodSpawnPointList[i].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(clone);
                 clone.name = foodSourceName + i;
             }
@@ -243,72 +273,21 @@ public class InGameManager : NetworkBehaviour
         yield return 1;
     }
 
-    /// <summary>
-    /// Checks if the player can be spawned
-    /// </summary>
-    /// <param name="player"></param>
-    public void RespawnPlayer(Herbivore player)
-    {
-        if (LifeCount > 0)
-        {
-            LifeCount--;
-            StartCoroutine(Respawn(player));
-        }
-        else
-        {
-            KillPlayer(player);
-        }
-    }
-
-    
     #endregion
 
     /// <summary>
-    /// Populates the asset dictionaries
+    /// Hides scene food spawnpoint boxes
     /// </summary>
-    private void LoadAssetToDictionaries()
+    public void HideBoxes()
     {
-        //Search the file with WWW class and loads them to cache
-        carnivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Carnivore"));
-        herbivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Herbivore"));
-
-        foreach (GameObject prefab in carnivorePrefabs)
+        foreach (GameObject g in FoodSpawnPointList)
         {
-            PlayerPrefabs.Add(prefab.name, prefab);
+            if (g != null)
+                g.SetActive(false);
         }
-
-        foreach (GameObject prefab in herbivorePrefabs)
-        {
-            PlayerPrefabs.Add(prefab.name, prefab);
-        }
-
-        Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
-        Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
     }
 
-
-    private void Timer(float time)
-    {
-        MatchTimer = time;
-    }
-
-    // Void to IEnumerable
-    [ServerCallback]
-    public void StartGame()
-    {
-        StartCoroutine(StartMatch());
-    }
-
-    public void ClearBoxes()
-    {
-        for (int a = 0; a < FoodSpawnPointList.Capacity; a++)
-        {
-            Destroy(FoodSpawnPointList[a].gameObject);
-        }
-        FoodSpawnPointList.Clear();
-    }
-
-    public void DestroyFoodPlaceLists()
+    public void DestroyFoodPlaceList()
     {
         foreach (GameObject g in FoodPlaceList)
         {
@@ -323,17 +302,16 @@ public class InGameManager : NetworkBehaviour
     [ServerCallback]
     private void Update()
     {
-        if (matchEnd || matchStart) return;
+        if (!inMatch) return;
 
         MatchTimer -= Time.deltaTime;
 
         if (Input.GetKeyDown(KeyCode.O)) // for testing purposes
         {
-            Debug.Log("Decrease");
             MatchTimer -= 20;
         }
 
-        if (MatchTimer == 0 && SceneManager.GetActiveScene().name == gameScene)
+        if (matchTimer == 0 && SceneManager.GetActiveScene().name == gameScene)
         {
             Debug.Log("Time's up!");
             EventManager.Broadcast(EVENT.RoundEnd);
@@ -343,11 +321,25 @@ public class InGameManager : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
-        LoadAssetToDictionaries();
         EventManager.ActionAddHandler(EVENT.RoundBegin, StartGame);
         EventManager.ActionAddHandler(EVENT.RoundEnd, EndMatch);
+
+        UIManager.Instance.HideCursor(true);
+        Debug.Log("InGameManager awake");
+    }
+
+    private void Start()
+    {
+        FoodSpawnPointList = new List<GameObject>(GameObject.FindGameObjectsWithTag(foodSourceName));
+        HideBoxes();
+        mapCamera = GameObject.FindGameObjectWithTag("MapCamera");
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.ActionDeleteHandler(EVENT.RoundBegin);
+        EventManager.ActionDeleteHandler(EVENT.RoundEnd);
     }
 
     #endregion

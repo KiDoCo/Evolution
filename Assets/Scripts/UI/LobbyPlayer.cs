@@ -16,14 +16,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     [SerializeField] private Dropdown characterDropdown = null;
     [SerializeField] private Text characterSelectedText = null;
 
-    public GameObject CharacterSelected
-    {
-        get
-        {
-            return InGameManager.Instance.PlayerPrefabs[characterDropdown.options[playerType].text];
-        }
-    }
-
     // Syncs name from server to clients and calls in clients changePlayerName
     [SyncVar(hook = "changePlayerName")]
     private string playerName = "";
@@ -32,21 +24,64 @@ public class LobbyPlayer : NetworkLobbyPlayer {
     [SyncVar(hook = "changePlayerType")]
     private int playerType = 0;
 
+    public GameObject CharacterSelected
+    {
+        get
+        {
+            return NetworkGameManager.Instance.PlayerPrefabs[characterDropdown.options[playerType].text];
+        }
+    }
+
+    public int PlayerType
+    {
+        get
+        {
+            return playerType;
+        }
+        set
+        {
+            OnTypeChange(value);
+        }
+    }
+
+    public string PlayerCharacter
+    {
+        get
+        {
+            return characterDropdown.options[playerType].text;
+        }
+        set
+        {
+            if (NetworkGameManager.Instance.PlayerPrefabs.ContainsKey(value))
+            {
+                int index = characterDropdown.options.FindIndex(x => x.text == value);
+
+                if (index != -1)
+                {
+                    OnTypeChange(index);
+                }
+            }
+        }
+    }
+
+    public string PlayerName
+    {
+        get
+        {
+            return playerName;
+        }
+    }
+
 
     // OnClientEnterLobby() is called also when client goes back from in-game to lobby
     public override void OnClientEnterLobby()
     {
-        base.OnClientEnterLobby();
-
         Debug.Log("Client " + netId + " entered lobby");
 
         // Adds players to dropbox
         if (characterDropdown.options.Count == 0)
         {
-            Debug.Log(characterDropdown);
-            Debug.Log(InGameManager.Instance.gameObject);
-            characterDropdown.AddOptions(new List<string>(InGameManager.Instance.PlayerPrefabs.Keys));
-            characterDropdown.RefreshShownValue();
+            characterDropdown.AddOptions(new List<string>(NetworkGameManager.Instance.PlayerPrefabs.Keys));
         }
 
         // Puts client in the player list
@@ -54,8 +89,9 @@ public class LobbyPlayer : NetworkLobbyPlayer {
 
         // Resets player UI
         readyText.SetActive(false);
-        characterDropdown.value = 0;
-        characterSelectedText.text = characterDropdown.options[0].text;
+        characterDropdown.value = playerType;
+        characterSelectedText.text = characterDropdown.options[playerType].text;
+        characterDropdown.RefreshShownValue();
 
         if (!isServer)
         {

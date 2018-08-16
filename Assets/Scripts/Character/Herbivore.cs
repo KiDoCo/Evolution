@@ -29,7 +29,7 @@ public class Herbivore : Character
     private const float waitTime = 1.0f;
     private const float deathpenaltytime = 2.0f;
     protected float experience = 0;
-    private int deathcount;
+    private int deathcount = 0;
 
     //Carnivore Send Rate Timer!
     public float compassTimer = 8f;
@@ -52,7 +52,7 @@ public class Herbivore : Character
             health = value;
             if (health <= 0)
             {
-                Death();
+                CmdDeath();
                 health = Maxhealth;
             }
         }
@@ -94,6 +94,8 @@ public class Herbivore : Character
 
     public void MouseMove()
     {
+        if (!InputManager.Instance.EnableInput) return;
+
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
@@ -105,12 +107,17 @@ public class Herbivore : Character
     /// </summary>
     protected virtual void InteractionChecker()
     {
-        for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
+        if (InGameManager.Instance != null)
         {
-            if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+            for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
             {
-                Eat(InGameManager.Instance.FoodPlaceList[i]);
-            }
+				if (InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>() != null)
+                {
+                    if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+                    {
+                        Eat(InGameManager.Instance.FoodPlaceList[i]);
+                    }
+                }            }
         }
     }
 
@@ -120,7 +127,8 @@ public class Herbivore : Character
         m_animator.SetBool("IsMoving", isMoving);
     }
 
-    protected void Death()
+    [Command]
+    protected void CmdDeath()
     {
         if (InGameManager.Instance.LifeCount > 0)
         {
@@ -154,10 +162,6 @@ public class Herbivore : Character
 
     protected override void SpawnCamera()
     {
-        GameObject mapCam = GameObject.FindGameObjectWithTag("MapCamera");
-        if (mapCam != null)
-            Destroy(mapCam);
-
         spawnedCam = Instantiate(cameraPrefab);
         spawnedCam.GetComponent<CameraController>().InstantiateCamera(this);
     }
@@ -243,7 +247,6 @@ public class Herbivore : Character
     [ClientRpc]
     private void RpcEat(GameObject go)
     {
-        Debug.Log(go);
         if (go != null)
         {
             FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
@@ -266,7 +269,6 @@ public class Herbivore : Character
     [Command]
     private void CmdEat(GameObject go)
     {
-        Debug.Log(go);
         if (go != null)
         {
             FoodBaseClass eatObject = go.GetComponent<FoodBaseClass>();
@@ -458,16 +460,15 @@ public class Herbivore : Character
     protected override void Start()
     {
         ComponentSearch();
+        base.Start();
         if (isLocalPlayer)
         {
-            base.Start();
-            SpawnCamera();
         }
     }
 
     protected override void Update()
     {
-        if (isLocalPlayer && inputEnabled)
+        if (isLocalPlayer)
         {
             //  Compass Update Timer limit!!
             if (!canSetNewCompassPosition)
@@ -493,7 +494,7 @@ public class Herbivore : Character
 
     protected override void FixedUpdate()
     {
-        if (isLocalPlayer && inputEnabled)
+        if (isLocalPlayer)
         {
             base.FixedUpdate();
             if (!spawnedCam.GetComponent<CameraController>().FreeCamera)

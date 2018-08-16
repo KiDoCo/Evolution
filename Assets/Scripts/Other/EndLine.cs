@@ -15,7 +15,7 @@ public class EndLine : NetworkBehaviour {
             if (p.Experience == 100)
             {
                 Debug.Log("Herbivore won!");
-                EventManager.Broadcast(EVENT.RoundEnd);
+                InGameManager.Instance.EndMatchForPlayer(p);
             }
         }
     }

@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4121217877272720}
   - component: {fileID: 137513976720039116}
   - component: {fileID: 95771614020106814}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: DHelix 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: ff072d9ef492ffe499912b1ed6eb2041, type: 3}
+  - {fileID: 2100000, guid: b0888153071a41144b939929d5969e1c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

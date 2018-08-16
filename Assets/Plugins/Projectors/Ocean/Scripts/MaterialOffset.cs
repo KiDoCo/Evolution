@@ -18,11 +18,15 @@ public class MaterialOffset : MonoBehaviour
     public float amplitude;
     public float frequency;
 
-    public Renderer MaterialRenderer;
+    private Renderer MaterialRenderer;
 
     Vector2 uvOffset = Vector2.zero;
     Vector2 uvOffsetNormal = Vector2.zero;
 
+    private void Awake()
+    {
+        MaterialRenderer = GetComponent(typeof(Renderer)) as Renderer;
+    }
 
     void LateUpdate()
     {

@@ -36,7 +36,6 @@ public abstract class Character : NetworkBehaviour
 
     private bool ready;
     protected bool eating;
-    protected bool inputEnabled = true;
 
     //timer bools
     [SerializeField] protected bool coolTimer;    //ability unlock bools used in editor
@@ -119,16 +118,11 @@ public abstract class Character : NetworkBehaviour
             return inputVector;
         }
     }
-
-    public bool InputEnabled
-    {
+    public GameObject PlayerCamera
+ {
         get
         {
-            return inputEnabled;
-        }
-        set
-        {
-            inputEnabled = value;
+            return spawnedCam;
         }
     }
 
@@ -274,6 +268,24 @@ public abstract class Character : NetworkBehaviour
         groundAngle = Vector3.Angle(dir, hitDown.normal);
     }
 
+    private void PauseMenuUpdate()
+    {
+        if (InGameManager.Instance != null)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape) && InGameManager.Instance.InMatch)
+            {
+                PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
+
+                if (NetworkGameManager.Instance.LocalCharacter != null)
+                {
+                    InputManager.Instance.EnableInput = !PauseMenu.Instance.UI.activeSelf;
+                }
+
+                UIManager.Instance.HideCursor(!PauseMenu.Instance.UI.activeSelf);
+            }
+        }
+    }
+
     /// <summary>
     /// Reset z rotation to 0 every frame
     /// </summary>
@@ -288,7 +300,7 @@ public abstract class Character : NetworkBehaviour
     public void EnablePlayer(bool enabled)
     {
         playerMesh.enabled = enabled;
-        inputEnabled = enabled;
+        InputManager.Instance.EnableInput = enabled;
         col.enabled = enabled;
         RpcEnablePlayer(enabled);
     }
@@ -298,7 +310,27 @@ public abstract class Character : NetworkBehaviour
     {
         playerMesh.enabled = enabled;
         col.enabled = enabled;
-        inputEnabled = enabled;
+        InputManager.Instance.EnableInput = enabled;
+    }
+
+    [ServerCallback]
+    public void EnablePlayerCamera(bool enabled)
+    {
+        if (isLocalPlayer)
+            spawnedCam.SetActive(enabled);
+        if (InGameManager.Instance != null)
+            InGameManager.Instance.MapCamera.SetActive(!enabled);
+
+        RpcEnablePlayerCamera(enabled);
+    }
+
+    [ClientRpc]
+    private void RpcEnablePlayerCamera(bool enabled)
+    {
+        if (isLocalPlayer)
+            spawnedCam.SetActive(enabled);
+        if (InGameManager.Instance != null)
+            InGameManager.Instance.MapCamera.SetActive(!enabled);
     }
 
     #region Unity Methods
@@ -312,22 +344,23 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void Start()
     {
+        Debug.Log("Character activated");
         if (isLocalPlayer)
         {
             NetworkGameManager.Instance.LocalCharacter = this;
             UIManager.Instance.InstantiateInGameUI(this);
+            SpawnCamera();
+            EnablePlayerCamera(true);
         }
 
-
-
-        inputEnabled = true;
-        accPerSec = maxSpeed / accTimeToMax;
+        InputManager.Instance.EnableInput = true;        accPerSec = maxSpeed / accTimeToMax;
         decPerSec = -maxSpeed / decTimeToMin;
         EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient); }
 
     protected virtual void Update()
     {
 
+        PauseMenuUpdate();
     }
 
     protected virtual void FixedUpdate()

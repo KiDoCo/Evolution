@@ -139,11 +139,14 @@ public class HUDController : MonoBehaviour
     /// </summary>
     public void UpdateHUD()
     {
-        int Atime = (int)InGameManager.Instance.MatchTimer / 60;
-        int Btime = (int)InGameManager.Instance.MatchTimer % 60;
-        curHealthText.text = "" + curHealth;
-        maxHealthText.text = "/" + maxHealth;
-        inGameMatchTime.text = Atime + " : " + Btime.ToString("00");
+        if (InGameManager.Instance != null)
+        {
+            int Atime = (int)InGameManager.Instance.MatchTimer / 60;
+            int Btime = (int)InGameManager.Instance.MatchTimer % 60;
+            curHealthText.text = "" + curHealth;
+            maxHealthText.text = "/" + maxHealth;
+            inGameMatchTime.text = Atime + " : " + Btime.ToString("00");
+        }
     }
 
     /// <summary>
@@ -175,6 +178,7 @@ public class HUDController : MonoBehaviour
     /// <param name="herbivore"></param>
     public void ResultScreen(float exp, int death, float time,float surtime, bool herbivore)
     {
+        Debug.Log("Endscreen");
         ingameUI.SetActive(false);
         ResScreen.SetActive(true);
 

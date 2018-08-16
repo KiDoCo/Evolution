@@ -51,10 +51,10 @@ public class UIManager : MonoBehaviour
 
         if (source.GetType() == typeof(Herbivore))
         {
-            GameObject clone = Instantiate(helix, GameObject.Find("HelixLocation").transform.position, Quaternion.identity);
-            HUDController.Instance.InstantiateHelix(clone);
             GameObject cameraClone = Instantiate(helixCamera, GameObject.Find("CameraLocation").transform.position, Quaternion.identity);
             cameraClone.transform.rotation = Quaternion.Euler(90, 180, 0);
+            GameObject clone = Instantiate(helix, GameObject.Find("HelixLocation").transform.position, Quaternion.identity);
+            HUDController.Instance.InstantiateHelix(clone);
         }
         else if (source.GetType() == typeof(Carnivore))
         {
@@ -73,21 +73,17 @@ public class UIManager : MonoBehaviour
             HUDController.Instance.CurProgress = h.Experience;
             HUDController.Instance.CurHealth = (int)h.Health;
         }
-        /*else if (source.GetType() == typeof(Carnivore))
-        {
-            Carnivore c = source.GetComponent<Carnivore>();
-
-            // HUD updates?
-        }*/
     }
 
     /// <summary>
     /// Calls the hudcontroller to print the desired screen
     /// </summary>
     /// <param name="source"></param>
-    public void MatchResultScreen(Character source)
+    public void MatchResultScreen()
     {
-        if(source.GetType() == typeof(Herbivore))
+        Character source = NetworkGameManager.Instance.LocalCharacter;
+
+        if (source.GetType() == typeof(Herbivore))
         {
             Herbivore a = source.GetComponent<Herbivore>();
             HUDController.Instance.ResultScreen(a.Experience, a.Deathcount, InGameManager.Instance.MatchTimer, a.SurTime, true);
@@ -115,26 +111,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == NetworkGameManager.Instance.playScene && !InGameManager.Instance.MatchEnd)
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                PauseMenu.Instance.UI.SetActive(!PauseMenu.Instance.UI.activeSelf);
-
-                if (PauseMenu.Instance.UI.activeSelf)
-                {
-                    if (NetworkGameManager.Instance.LocalCharacter != null)
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = false;
-                    HideCursor(false);
-                }
-                else
-                {
-                    if (NetworkGameManager.Instance.LocalCharacter != null)
-                        NetworkGameManager.Instance.LocalCharacter.InputEnabled = true;
-                    HideCursor(true);
-                }
-            }
-        }
+        
     }
 
     public void HideCursor(bool hide)

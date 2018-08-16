@@ -128,7 +128,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ShadowTex:
-        m_Texture: {fileID: 2800000, guid: d71411ae7ebac4f42a354c7d1e2b9a72, type: 3}
+        m_Texture: {fileID: 2800000, guid: c089e98cede966e4e945a10745817fd0, type: 3}
         m_Scale: {x: 10, y: 10}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:

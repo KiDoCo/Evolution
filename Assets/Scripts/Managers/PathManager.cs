@@ -116,9 +116,14 @@ public class PathManager : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         EventManager.ActionAddHandler(EVENT.AINodeSpawn, NodeAssign);
         EventManager.ActionAddHandler(EVENT.Increase, SpawnFish);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.ActionDeleteHandler(EVENT.AINodeSpawn);
+        EventManager.ActionDeleteHandler(EVENT.Increase);
     }
 }
