@@ -17,6 +17,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     [SerializeField] private GameObject mainUI = null;
     [SerializeField] private GameObject hostUI = null;
     [SerializeField] private GameObject clientUI = null;
+    [SerializeField] private GameObject playerListUI = null;
     [SerializeField] private GameObject insertNameError = null;
     [SerializeField] private Text hostingText = null;
     [SerializeField] private Text clientAddressText = null;
@@ -33,6 +34,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     private List<GameObject> herbivorePrefabs = new List<GameObject>();
     public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
 
+    public GameObject LobbyUI { get { return lobbyUI; } }
     public GameObject PlayerListContent { get { return playerListContent; } }
     public string PlayerName { get { return playerName.text; } }
     public bool Hosting { get { return thisIsHosting; } }
@@ -51,10 +53,12 @@ public class NetworkGameManager : NetworkLobbyManager {
         LoadAssetToDictionaries();
 
         SceneManager.LoadScene(lobbyScene);
+        GetComponent<Canvas>().worldCamera = Camera.main;
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
 
         // Resets UI
         UIManager.switchGameObject(UIWindows, mainUI);
+        playerListUI.SetActive(false);
         insertNameError.SetActive(false);
     }
 
@@ -132,6 +136,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         StartCoroutine(GetPublicIP());
         hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;  // Temp message before public IP is updated
         UIManager.switchGameObject(UIWindows, hostUI);
+        playerListUI.SetActive(true);
         Debug.Log("Hosting started");
     }
 
@@ -139,6 +144,7 @@ public class NetworkGameManager : NetworkLobbyManager {
     {
         thisIsHosting = false;
         UIManager.switchGameObject(UIWindows, mainUI);
+        playerListUI.SetActive(false);
         insertNameError.SetActive(false);
         Debug.Log("Hosting stopped");
     }
@@ -149,6 +155,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         {
             clientAddressText.text = networkAddress + ":" + networkPort;
             UIManager.switchGameObject(UIWindows, clientUI);
+            playerListUI.SetActive(true);
         }
         Debug.Log("Client joined");
     }
@@ -158,6 +165,7 @@ public class NetworkGameManager : NetworkLobbyManager {
         if (!thisIsHosting)
         {
             UIManager.switchGameObject(UIWindows, mainUI);
+            playerListUI.SetActive(false);
             insertNameError.SetActive(false);
         }
         Debug.Log("Client exited");

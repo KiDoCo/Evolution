@@ -7,6 +7,8 @@ public enum CurMenu { Main,Options,Controls,Sound,Credit,Pause }
 
 public class MainMenu : MonoBehaviour
 {
+    public static MainMenu Instance;
+
     private CurMenu activemenu;
 
     #region GameObjects
@@ -134,6 +136,11 @@ public class MainMenu : MonoBehaviour
         if(curActiveMenu != null) curActiveMenu.SetActive(false);
         curActiveMenu = menu;
         curActiveMenu.SetActive(true);
+    }
+
+    private void Awake()
+    {
+        Instance = this;
     }
 
     private void Start()

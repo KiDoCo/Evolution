@@ -10,7 +10,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
     [SerializeField] private GameObject readyText = null;
-    [SerializeField] private GameObject readyButton = null;
     [SerializeField] private GameObject readyButtonText = null;
     [SerializeField] private GameObject notReadyButtonText = null;
     [SerializeField] private Dropdown characterDropdown = null;
@@ -67,7 +66,6 @@ public class LobbyPlayer : NetworkLobbyPlayer {
         SendNotReadyToBeginMessage();
         readyButtonText.SetActive(true);
         notReadyButtonText.SetActive(false);
-        readyButton.SetActive(true);
         characterDropdown.gameObject.SetActive(true);
         characterSelectedText.gameObject.SetActive(false);
 
