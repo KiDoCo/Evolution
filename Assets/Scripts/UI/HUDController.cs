@@ -7,6 +7,8 @@ using System;
 public class HUDController : MonoBehaviour
 {
     public static HUDController Instance;
+
+
 #pragma warning disable
     private float curProgress;
 
@@ -15,8 +17,6 @@ public class HUDController : MonoBehaviour
     #region Texts
 
     //General
-    [SerializeField] private Text curHealthText;
-    [SerializeField] private Text maxHealthText;
     [SerializeField] private Text matchTime;
     [SerializeField] private Text inGameMatchTime;
 
@@ -31,7 +31,9 @@ public class HUDController : MonoBehaviour
     #endregion
 
     private Image maskImage;
+    private Character car;
     [SerializeField] private GameObject ingameUI;
+    [SerializeField] private GameObject healthIcon;
     [SerializeField] private GameObject HresultScreen;
     [SerializeField] private GameObject CresultScreen;
     [SerializeField] private GameObject ResScreen;
@@ -50,32 +52,6 @@ public class HUDController : MonoBehaviour
 #pragma warning restore
 
     #region getters&setters
-
-    public Text CurHealthText
-    {
-        get
-        {
-            return curHealthText;
-        }
-
-        set
-        {
-            curHealthText = value;
-        }
-    }
-
-    public Text MaxHealthText
-    {
-        get
-        {
-            return maxHealthText;
-        }
-
-        set
-        {
-            maxHealthText = value;
-        }
-    }
 
     public int MaxHealth
     {
@@ -142,7 +118,6 @@ public class HUDController : MonoBehaviour
         }
     }
 
-
     #endregion
 
     /// <summary>
@@ -164,24 +139,32 @@ public class HUDController : MonoBehaviour
     /// </summary>
     public void UpdateHUD()
     {
-        Type type = null;
         int Atime = (int)InGameManager.Instance.MatchTimer / 60;
         int Btime = (int)InGameManager.Instance.MatchTimer % 60;
-        curHealthText.text = "" + curHealth;
-        maxHealthText.text = "/" + maxHealth;
         inGameMatchTime.text = Atime + " : " + Btime.ToString("00");
 
-        if (FindObjectOfType<Character>().CoolDownTime > 0)
+        if (car.CoolDownTime > 0)
         {
-            Debug.Log("Ssetacslgk j true");
             AbilityIcon.SetActive(true);
         }
 
-        if (FindObjectOfType<Character>().CoolDownTime == 0)
+        if (car.CoolDownTime <= 0)
         {
-            Debug.Log("setactive false");
             AbilityIcon.SetActive(false);
         }
+
+        if (FindObjectOfType<Character>().GetType() == typeof(Herbivore))
+        {
+            if (FindObjectOfType<Herbivore>().Health == 1)
+            {
+                healthIcon.SetActive(true);
+            }
+            else
+            {
+                healthIcon.SetActive(false);
+            }
+        }
+
         maskImage.fillAmount = FindObjectOfType<Character>().CoolDownTime / FindObjectOfType<Character>().C_CooldownTime;
     }
 
@@ -193,7 +176,6 @@ public class HUDController : MonoBehaviour
         if (HelixAnim != null)
             HelixAnim.Play("Take", 0, (1.0f / 99) * curProgress);
     }
-
 
     /// <summary>
     /// Prints out the result screen for the player
@@ -335,7 +317,7 @@ public class HUDController : MonoBehaviour
     private void Start()
     {
         AbilityIcon.SetActive(true);
-        
+        car = FindObjectOfType<Character>();
     }
 
     private void Update()
@@ -343,8 +325,12 @@ public class HUDController : MonoBehaviour
         if (!loadSprites)
             ChangeSprite();
 
-        UpdateHUD();
-        AnimationChanger();
+        if (FindObjectOfType<Character>().isLocalPlayer)
+        {
+            UpdateHUD();
+            AnimationChanger();
+
+        }
         // UpdateCooldowns();
     }
 }

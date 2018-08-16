@@ -99,6 +99,7 @@ public class Carnivore : Character
     }
 
     #endregion
+
     [ClientRpc]
     public void RpcMusicChanger(bool hunted)
     {
@@ -222,7 +223,7 @@ public class Carnivore : Character
     {
         if (InputManager.Instance.GetButtonDown("Eat") && defaultSpeed == 1)
         {
-            // EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Eat);
+            EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.C_Eat);
             CmdEatCheck(true);
             StartCoroutine(EatCoolDown());
         }
@@ -330,6 +331,7 @@ public class Carnivore : Character
         }
         else
         {
+            EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Charge);
             StartCoroutine(CameraFovChanger(speed));
             StartCoroutine(ChargeCooldown());
             CmdChargeChecker(true);
@@ -438,6 +440,7 @@ public class Carnivore : Character
         gameObject.name = "Carnivore";
         jawcollider = transform.GetChild(0).GetComponent<Collider>();
         triggerCollider = transform.GetChild(1).GetComponent<Collider>();
+        SFXsource = transform.GetChild(2).GetComponent<AudioSource>();
     }
 
     protected override void Start()

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3044790085
+CRC: 2325825016
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: bbc9ffc824abcb2d3c3d3edb2f2beb13
+    Hash: bff53bef30f6d1285544b4306f073848
   TypeTreeHash:
     serializedVersion: 2
     Hash: 3f7d0c5e0986ec71841622bcb2f9be1c
@@ -12,6 +12,8 @@ ClassTypes:
 - Class: 83
   Script: {instanceID: 0}
 Assets:
-- Assets/Sounds/SFX/eat.ogg
-- Assets/Sounds/SFX/hurt.ogg
+- Assets/Sounds/SFX/H_eat.ogg
+- Assets/Sounds/SFX/C_Eat.ogg
+- Assets/Sounds/SFX/Charge.ogg
+- Assets/Sounds/SFX/H_sprint.ogg
 Dependencies: []

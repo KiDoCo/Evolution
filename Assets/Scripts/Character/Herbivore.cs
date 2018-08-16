@@ -148,7 +148,6 @@ public class Herbivore : Character
     {
         Debug.Log("dmg : " + amount);
         blood.Play();
-        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         InvincibleTimer = 1.0f;
         Health -= amount;
     }
@@ -158,7 +157,6 @@ public class Herbivore : Character
     {
         Debug.Log("dmg : " + amount);
         blood.Play();
-        EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.Hurt);
         InvincibleTimer = 1.0f;
         Health -= amount;
     }
@@ -308,7 +306,7 @@ public class Herbivore : Character
         else
         {
             eating = false;
-            EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), 0);
+            EventManager.SoundBroadcast(EVENT.StopSound, eatObject.Source(), (int)SFXEvent.H_eat);
             eatObject.Eaten = eating;
         }
     }
@@ -330,7 +328,7 @@ public class Herbivore : Character
 
             if (!eatObject.Source().isPlaying)
             {
-                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.H_eat);
             }
         }
     }
@@ -352,7 +350,7 @@ public class Herbivore : Character
 
             if (!eatObject.Source().isPlaying)
             {
-                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.Eat);
+                EventManager.SoundBroadcast(EVENT.PlaySFX, eatObject.Source(), (int)SFXEvent.H_eat);
             }
         }
     }
@@ -367,6 +365,7 @@ public class Herbivore : Character
         {
             if (canDash)
             {
+                EventManager.SoundBroadcast(EVENT.PlaySFX, SFXsource, (int)SFXEvent.H_sprint);
                 StartCoroutine(DashTimer());
             }
         }
@@ -374,11 +373,11 @@ public class Herbivore : Character
 
     protected IEnumerator DashTimer()
     {
+        canDash = false;
         defaultSpeed = 3;
         yield return new WaitForSeconds(dashTime);
         defaultSpeed = 1;
         CoolDownTime = C_CooldownTime;
-        canDash = false;
         yield return StartCoroutine(CoolTimer());
     }
 

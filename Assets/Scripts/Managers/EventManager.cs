@@ -7,7 +7,7 @@ using UnityEngine;
 public enum EVENT { PlaySFX, PlayMusic, StopSound, AINodeSpawn, Increase, RoundBegin, RoundEnd, FoodSpawn };
 
 //list of sounds
-public enum SFXEvent { Eat, Hurt, Lose, RoundEnd, RoundBegin, Victory }; // ADD death when clip available
+public enum SFXEvent { C_Eat, Charge, H_eat, H_sprint, hurt}; // ADD death when clip available
 
 public enum MusicEvent { Ambient, Hunting, MainMenu };
 

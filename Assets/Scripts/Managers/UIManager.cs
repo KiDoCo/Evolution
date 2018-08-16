@@ -59,7 +59,6 @@ public class UIManager : MonoBehaviour
         {
             GameObject clone = Instantiate(carnivoreJaw, GameObject.Find("JawLocation").transform.position, Quaternion.identity);
             HUDController.Instance.InstantiateTeeth(clone);
-            HUDController.Instance.CurHealthText.gameObject.SetActive(false);
         }
     }
 

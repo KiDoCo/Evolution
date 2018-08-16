@@ -12,20 +12,18 @@ public class AudioManager : MonoBehaviour
 
     //list of sounds and their id
 
-    /* Sound Effect ID list (SFX)
-     0: Death
-     1: Eat
-     2: Hurt
-     3: Lose
-     4: RoundBegin
-     5: RoundEnd
-     6: Victory
+    /*
+     Sound Effect ID list (SFX)
+     0: C_eat
+     1: Charge
+     2: H_eat
+     3: H_sprint
      */
 
-    /* Music ID list
+    /* 
+     Music ID list
      0: Ambient Music
      1: Hunting Music
-     2: Main Menu
      */
      /// <summary>
      /// Randomizes the pitch of a clip
@@ -41,6 +39,7 @@ public class AudioManager : MonoBehaviour
 
     private static void SFXMethod(AudioSource source,int id)
     {
+        Debug.Log(SFXClips[id]);
         RandomizeSFX(SFXClips[id], source);
     }
 
