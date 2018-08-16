@@ -69,9 +69,6 @@ public abstract class Character : MonoBehaviour
     [Header("Collision Variables")]
     private CapsuleCollider col;
     private bool collided = false;
-    private bool grounded = false;
-    private bool bothSidesCol = true;
-    private bool canMove = false;
     private Vector3 dir;
     private Vector3 curNormal = Vector3.up;
     private Vector3 colPosition;
@@ -85,11 +82,8 @@ public abstract class Character : MonoBehaviour
     public float MaxGroundAngle = 120f;
     private float step;
     private float groundAngle;
-    int hitCount;
     RaycastHit[] hits = new RaycastHit[12];
-    private CapsuleCollider ownCollider;
     public float SideColDistance, Buffer;
-    private float normCastDist;
     private float smooth;
 
 
@@ -357,7 +351,6 @@ public abstract class Character : MonoBehaviour
     protected void CheckCollision()
     {
         collided = false;
-        canMove = true;
 
         if (isDashing)
         {
@@ -393,7 +386,6 @@ public abstract class Character : MonoBehaviour
         {
             if (Physics.Raycast(rayDown, out hitInfo, castDistance + Buffer))
             {
-                grounded = true;
                 colPoint = hitInfo.point;
                 print("ground");
                 //check if ground angle allows movement
@@ -412,19 +404,14 @@ public abstract class Character : MonoBehaviour
                     if (Vector3.Distance(transform.position, colPoint) < Height + HeightPadding)
                     {
                         transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Buffer, Time.fixedDeltaTime * 4);
-                        grounded = true;
                     }
                 }
-            }
-            else
-            {
-                grounded = false;
             }
 
             //check direction and determinate angle for normal and colPoint
             if (Physics.Raycast(transform.position,dir, out hitInfo, castDistance))
             {
-                print("front or up collision");
+
                 if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
                 {
                     curNormal = objectHit.normal;
@@ -436,13 +423,6 @@ public abstract class Character : MonoBehaviour
                     colPoint = hitInfo.point;
                 }
 
-                if (grounded)
-                {
-                    if (groundAngle < MaxGroundAngle)
-                        canMove = true;
-                    print("can move");
-                }
-
                 collided = true;
             }
 
@@ -451,21 +431,17 @@ public abstract class Character : MonoBehaviour
             if (Physics.Raycast(rayRight, out hitInfo, SideColDistance) && Physics.Raycast(rayLeft, out hitInfo, SideColDistance))
             {
                 transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
-                //collided = true;
             }
             else if (Physics.CapsuleCast(point1, point2, radius, transform.right, out hitInfo, SideColDistance))
             {
                 Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), step);
-                //collided = true;
             }
             else if (Physics.CapsuleCast(point1, point2, radius, -transform.right, out hitInfo, SideColDistance))
             {
                 Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
-                //collided = true;
             }
-
 
             //Keep character at given distance of colliding objects
             if (Vector3.Distance(transform.position, colPoint) < Height + HeightPadding)

@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-
     //objects
     public Transform target;
     public Transform pivotpoint;
