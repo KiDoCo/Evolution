@@ -86,7 +86,7 @@ AudioListener:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1443851604809318}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!114 &114373055260791972
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -108,15 +108,7 @@ MonoBehaviour:
   verticalDamp: 0.003
   rotationYDamp: 12
   fastRotationDamp: 20
-  m_FieldOfView: 30
-  FOVValue: 90
-  Camera1st: {fileID: 20095017839008228}
-  MinDistance: 0.5
-  MaxDistance: 2
-  CollisionMask:
-    serializedVersion: 2
-    m_Bits: 32768
-  cameraOffset: {x: 0, y: 0, z: 0}
+  Camera1st: {fileID: 0}
 --- !u!114 &114458675210166678
 MonoBehaviour:
   m_ObjectHideFlags: 1

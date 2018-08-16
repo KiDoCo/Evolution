@@ -290,6 +290,9 @@ public class CameraController : MonoBehaviour
             Quaternion camTurnAngleV = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * RotationSpeed, Vector3.right);// laske vertikaalinen liike
 
             //laske kulmat yhteen
+            Quaternion sum = camTurnAngleH * camTurnAngleV;
+
+            offset = sum * offset;
 
         }
         else if (!FreeCamera)
@@ -318,21 +321,12 @@ public class CameraController : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lookSmooth * Time.deltaTime);
     }
 
-    private void LateUpdate()
+    private void GetInput()
     {
-        //change distance to player to max distance if not colliding
-        if (!colliding)
-        {
-            if (minCollisionDistance < desiredDist)
-            {
-                minCollisionDistance += Time.deltaTime * 10f;
-            }
-            if (minCollisionDistance > desiredDist)
-            {
-                minCollisionDistance = desiredDist;
-            }
-        }
+        Input.GetAxisRaw("Mouse X");
+        Input.GetAxisRaw("Mouse Y");
     }
+
 
     private void Start()
     {
@@ -350,11 +344,7 @@ public class CameraController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (target == null)
-        {
-            return;
-        }
-
+        GetInput();
         //testiä varten
         if (Input.GetKey(KeyCode.R))
         {
@@ -368,4 +358,19 @@ public class CameraController : MonoBehaviour
         Restrict();
     }
 
+    private void LateUpdate()
+    {
+        //change distance to player to max distance if not colliding
+        if (!colliding)
+        {
+            if (minCollisionDistance < desiredDist)
+            {
+                minCollisionDistance += Time.deltaTime * 10f;
+            }
+            if (minCollisionDistance > desiredDist)
+            {
+                minCollisionDistance = desiredDist;
+            }
+        }
+    }
 }
