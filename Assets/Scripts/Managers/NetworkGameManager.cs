@@ -11,7 +11,6 @@ public class NetworkGameManager : NetworkLobbyManager {
     public static NetworkGameManager Instance;
 
     [Space]
-    [SerializeField] private GameObject[] spawnedNetManagers;
     [SerializeField] private GameObject lobbyUI = null;
 
     // All these components are child objects in this gameobject (assigned in Unity Editor)
@@ -24,18 +23,28 @@ public class NetworkGameManager : NetworkLobbyManager {
     [SerializeField] private string hostUIMessage = "Hosting match in\n";
     [SerializeField] private GameObject playerListContent = null;
     [SerializeField] private InputField playerName = null;
-
-    public GameObject PlayerListContent { get { return playerListContent; } }
-    public string PlayerName { get { return playerName.text; } }
-    public bool Hosting { get { return thisIsHosting; } }
-    public List<Character> InGamePlayerList { get { return inGamePlayerList; } }
-    public Character LocalCharacter { get { return localCharacter; } set { localCharacter = value; } }
+    [SerializeField] private GameObject errorWindow = null;
+    [SerializeField] private Text errorWindowText = null;
 
     private GameObject[] UIWindows;
     private List<Character> inGamePlayerList = new List<Character>();
     private Character localCharacter = null;
     private bool thisIsHosting = false;
     private string externalIP = "";
+    private List<GameObject> carnivorePrefabs = new List<GameObject>();
+    private List<GameObject> herbivorePrefabs = new List<GameObject>();
+    public Dictionary<string, GameObject> PlayerPrefabs = new Dictionary<string, GameObject>();
+
+    public GameObject PlayerListContent { get { return playerListContent; } }
+    public string PlayerName { get { return playerName.text; } }
+    public bool Hosting { get { return thisIsHosting; } }
+    public List<Character> InGamePlayerList { get { return inGamePlayerList; } }
+    public Character LocalCharacter { get { return localCharacter; } set { localCharacter = value; } }
+    public List<GameObject> HerbivorePrefabs { get { return herbivorePrefabs; } set { herbivorePrefabs = value; } }
+
+    private List<Transform> carnivoreStartPoints = new List<Transform>();
+    public List<Transform> herbivoreStartPoints = new List<Transform>();
+
 
     private void Awake ()
     {
@@ -45,14 +54,8 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     private void Start()
     {
-        if (spawnedNetManagers.Length != 0)
-        {
-            foreach (GameObject g in spawnedNetManagers)
-            {
-                Instantiate(g);
-            }
-        }
-
+        LoadAssetToDictionaries();
+        
         SceneManager.LoadScene(lobbyScene);
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
 
@@ -131,8 +134,6 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyStartHost()
     {
-        base.OnLobbyStartHost();
-
         thisIsHosting = true;
         StartCoroutine(GetPublicIP());
         hostingText.text = hostUIMessage + networkAddress + ":" + networkPort;  // Temp message before public IP is updated
@@ -142,19 +143,14 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyStopHost()
     {
-        base.OnLobbyStopHost();
-
         thisIsHosting = false;
         UIManager.switchGameObject(UIWindows, mainUI);
         insertNameError.SetActive(false);
         Debug.Log("Hosting stopped");
-
     }
 
     public override void OnLobbyClientEnter()
     {
-        base.OnLobbyClientEnter();
-
         if (!thisIsHosting)
         {
             clientAddressText.text = networkAddress + ":" + networkPort;
@@ -165,8 +161,6 @@ public class NetworkGameManager : NetworkLobbyManager {
 
     public override void OnLobbyClientExit()
     {
-        base.OnLobbyClientExit();
-
         if (!thisIsHosting)
         {
             UIManager.switchGameObject(UIWindows, mainUI);
@@ -175,41 +169,94 @@ public class NetworkGameManager : NetworkLobbyManager {
         Debug.Log("Client exited");
     }
 
+    public override void OnLobbyServerPlayersReady()
+    {
+        List<LobbyPlayer> players = new List<LobbyPlayer>();
+        List<LobbyPlayer> selectedCarnivores = new List<LobbyPlayer>();
+
+        // Find all lobbyplayers
+        foreach (var netObj in NetworkServer.objects)
+        {
+            LobbyPlayer p = netObj.Value.GetComponent<LobbyPlayer>();
+
+            if (p != null)
+            {
+                players.Add(p);
+
+                if (p.PlayerCharacter == "Carnivore")
+                {
+                    selectedCarnivores.Add(p);
+                }
+            }
+        }
+
+        // Picks random carnivore or herbivore
+        int carnivoreAmount = selectedCarnivores.Count;
+        if (carnivoreAmount > 1)
+        {
+            int pick = Random.Range(0, carnivoreAmount);
+            for (int c = 0; c < carnivoreAmount; c++)
+            {
+                if (c != pick)
+                {
+                    selectedCarnivores[c].PlayerCharacter = "Herbivore";
+                }
+            }
+        }
+        else if (carnivoreAmount == 0)
+        {
+            int pick = Random.Range(0, players.Count);
+            players[pick].PlayerCharacter = "Carnivore";
+        }
+
+        base.OnLobbyServerPlayersReady();
+    }
+
     public override void OnLobbyServerSceneChanged(string sceneName)
     {
-        base.OnLobbyServerSceneChanged(sceneName);
-
-        Debug.Log("Scene changed");
-
         if (sceneName == playScene)
         {
             EventManager.Broadcast(EVENT.RoundBegin);
         }
-    }
+        else if (sceneName == lobbyScene)
+        {
+            carnivoreStartPoints.Clear();
+            herbivoreStartPoints.Clear();
+        }    }
 
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
     {
-        base.OnLobbyClientSceneChanged(conn);
-
         // Disables UI if players are in-game
         if (SceneManager.GetActiveScene().name == playScene)
         {
             Instantiate(UIManager.Instance.PauseMenuPrefab);
             lobbyUI.SetActive(false);
-            UIManager.Instance.HideCursor(true);
-            InGameManager.Instance.ClearBoxes();
         }
         else if (SceneManager.GetActiveScene().name == lobbyScene)
         {
             lobbyUI.SetActive(true);
             UIManager.Instance.HideCursor(false);
             InGamePlayerList.Clear();
-            InGameManager.Instance.DestroyFoodPlaceLists();
         }
     }
+    
+    private List<Transform> notBlockedSpawnPoints = new List<Transform>();
 
     public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
     {
+
+        foreach (Transform startPos in startPositions)  //  Make Carnivore & Herbivore Start Position Lists
+        {
+            if (startPos.transform.tag == "CarnivoreStartPos")
+            {
+                carnivoreStartPoints.Add(startPos);
+            }
+            else
+            {
+                herbivoreStartPoints.Add(startPos);
+            }
+        }
+        
         LobbyPlayer player = null;
 
         // Finds the lobby player
@@ -239,17 +286,77 @@ public class NetworkGameManager : NetworkLobbyManager {
         }
         else
         {
-            spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
-            InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+            if (player.CharacterSelected.GetComponent<Character>().GetType() == typeof(Carnivore))
+            {
+                //  Debugging   Carnivores in game >>       Debug.Log("cList count: " + carnivoreStartPoints.Count);
+
+                spawnedPlayer = Instantiate(player.CharacterSelected, carnivoreStartPoints[Random.Range(0, carnivoreStartPoints.Count)].position, player.CharacterSelected.transform.rotation); //  Starting position is randomly selected from carnivore list
+
+                InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+            }
+            else
+            {
+                //  Debugging   Herbivores in game >>       Debug.Log("hList count: " + herbivoreStartPoints.Count);
+
+                notBlockedSpawnPoints.Clear();
+
+                foreach (Transform startPos in herbivoreStartPoints)    //  Add starting positions that are empty into new starting position list
+                {
+                    if (startPos.transform.GetComponent<StartPositionCheck>().isEmpty == true)
+                    {
+                        notBlockedSpawnPoints.Add(startPos.transform);
+                    }
+                }
+
+                //  Debugging count of available starting positions >>      Debug.Log("notblockedSpawnPoints Count: " + notBlockedSpawnPoints.Count);
+
+                Vector3 spawnPoint = Vector3.zero;
+
+                if (notBlockedSpawnPoints != null && notBlockedSpawnPoints.Count > 0)   //  Starting position is randomly selected from new list
+                {
+                    spawnPoint = notBlockedSpawnPoints[Random.Range(0, notBlockedSpawnPoints.Count)].transform.position;
+                }
+
+                spawnedPlayer = Instantiate(player.CharacterSelected, spawnPoint, player.CharacterSelected.transform.rotation);
+                InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+            }
         }
 
         return spawnedPlayer;
     }
 
-    // --- Other private methods
+        // --- Other private methods
 
-    private IEnumerator GetPublicIP()
+   // <summary>
+    /// Populates the asset dictionaries
+    /// </summary>
+    private void LoadAssetToDictionaries()
     {
+        //Search the file with WWW class and loads them to cache
+        carnivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Carnivore"));
+        herbivorePrefabs.AddRange(Resources.LoadAll<GameObject>("Character/Herbivore"));
+
+        foreach (GameObject prefab in carnivorePrefabs)
+        {
+            PlayerPrefabs.Add(prefab.name, prefab);
+        }
+
+        foreach (GameObject prefab in herbivorePrefabs)
+        {
+            PlayerPrefabs.Add(prefab.name, prefab);
+        }
+
+        Debug.Log("Carnivores loaded: " + carnivorePrefabs.Count);
+        Debug.Log("Herbivores loaded: " + HerbivorePrefabs.Count);
+    }
+
+    private void ShowErrorBox(string msg)
+    {
+        errorWindowText.text = msg;
+        errorWindow.SetActive(true);
+    }
+
+    private IEnumerator GetPublicIP()    {
         using (WWW www = new WWW("https://api.ipify.org"))
         {
             yield return www;
