@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 114689218469743634}
   m_Layer: 0
   m_Name: 3rdPerson Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1953833088195292}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 191.395, y: 10.55, z: 251.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -60,7 +60,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 2000
   field of view: 60
   orthographic: 0
@@ -102,24 +102,22 @@ MonoBehaviour:
   pivotpoint: {fileID: 0}
   Camera3rd: {fileID: 20080875289540046}
   FreeCamera: 0
-  reset: 0
-  offset: {x: 0, y: 0.2, z: -1}
-  distanceDamp: 0.04
-  distanceDampValue: 0.04
-  distanceDampValueB: 0.01
-  distanceDampValueV: 0.02
-  RotationsSpeed: 2
+  cameraOffset: {x: 0, y: 0.2, z: -2}
+  distanceDampValue: 0.08
+  reverseDistanceDamp: 0.02
+  verticalDistanceDamp: 0.02
+  rotationalDampValue: 75
+  rotationSpeed: 2
   resetLerpValue: 5
-  xRotation: -20
-  yRotation: -180
-  maxXRotation: 45
-  minXRotation: -45
-  vOrbitSmooth: 1
-  hOrbitSmooth: 1
   FOVValue: 60
   m_FieldOfView: 60
   lookSmooth: 100
-  targetPosOffset: {x: 0, y: 0.15, z: 0}
+  pivotPos: {x: 0, y: 0.2, z: 0}
+  MinDistance: 0.5
+  MaxDistance: 2
+  CollisionMask:
+    serializedVersion: 2
+    m_Bits: 32768
 --- !u!114 &114703077202592306
 MonoBehaviour:
   m_ObjectHideFlags: 1

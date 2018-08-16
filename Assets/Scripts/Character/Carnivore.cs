@@ -8,7 +8,6 @@ public class Carnivore : Character
 
     [SerializeField] protected bool canMouseMove = true;
     [SerializeField] private GameObject carnivoreMesh;
-
     //character stats
     public float stamina;
     private bool isEating;
@@ -118,7 +117,6 @@ public class Carnivore : Character
         {
             Herbivore vor = col as Herbivore;
             Debug.Log("mums, mums....");
-            StartCoroutine(EatCoolDown());
             EatHerbivore(slowDown, vor.Health);
             vor.GetEaten(damage);
         }
@@ -131,12 +129,6 @@ public class Carnivore : Character
         {
             killCount++;
         }
-    }
-
-    private IEnumerator EatCoolDown()
-    {
-        yield return new WaitForSeconds(eatCooldown);
-        RestoreSpeed();
     }
 
     #endregion
@@ -199,12 +191,12 @@ public class Carnivore : Character
     {
         inputVector = X + Y + Z;
         isMoving = InputVector.normalized.magnitude != 0 ? true : false;
-        if (!hitTarget || CollisionCheck())
+        if (!hitTarget || !collided)
         {
             transform.Translate(inputVector);
         }
     }
-    
+
 
     #endregion
 
@@ -312,7 +304,7 @@ public class Carnivore : Character
             }
             hitTarget = true;
         }
-        else if (CollisionCheck() && charging)
+        else if (collided && charging)
         {
             Debug.Log("osu");
             hitTarget = true;
@@ -374,11 +366,18 @@ public class Carnivore : Character
                 base.FixedUpdate();
                 MouseMove();
                 ApplyMovement();
+
+                if (isStrafing)
+                {
+                    dir = transform.TransformDirection(X);
+                }
             }
             else
             {
                 AnimationChanger();
             }
+
+
         }
     }
 

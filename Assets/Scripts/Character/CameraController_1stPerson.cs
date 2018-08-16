@@ -21,13 +21,7 @@ public class CameraController_1stPerson : MonoBehaviour
     [SerializeField] protected float rotationYDamp = 12f;
     [SerializeField] protected float fastRotationDamp = 1000;
 
-
-    public const float FOVValue = 75.0f;
-
-
-    private Camera Camera1st;
-
-
+    public Camera Camera1st;
 
 
     //camera reset point
@@ -54,7 +48,7 @@ public class CameraController_1stPerson : MonoBehaviour
         rotationalDamp = rotationalDampValue; // --"--
 
         startcameraPos = cameraPos; //set camera default location
-        
+
         Camera1st.fieldOfView = 60f;
         transform.position = target.position - (target.rotation * cameraPos);
     }
@@ -66,6 +60,7 @@ public class CameraController_1stPerson : MonoBehaviour
             Debug.Log("Camera needs a target");
             return;
         }
+
 
         SetDampening(); //this has to be first
         FollowRot();
@@ -92,7 +87,7 @@ public class CameraController_1stPerson : MonoBehaviour
 
         //Rotation
         //HUOM!!!! vaihda  tämän rivin koodissa transform.positionin ja target positionin +-merkit, jos cameraPos:in z asetetaan uudestaan editorissa positiiviseen arvoon :O
-        Quaternion toRot = Quaternion.LookRotation(transform.position - target.position + new Vector3(0,-0.2f,0), target.up); 
+        Quaternion toRot = Quaternion.LookRotation(transform.position - target.position + new Vector3(0, -0.2f, 0), target.up);
 
         Quaternion curRot = Quaternion.Slerp(transform.rotation, toRot, rotationalDamp * Time.deltaTime);
         transform.rotation = curRot;
@@ -121,7 +116,7 @@ public class CameraController_1stPerson : MonoBehaviour
     /// </summary>
     public void SetDampening()
     {
-        
+
         if (target.GetComponent<Carnivore>().InputVector.x != 0)
         {
             distanceDamp = strafeDamp;

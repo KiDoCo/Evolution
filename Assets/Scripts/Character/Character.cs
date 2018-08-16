@@ -25,30 +25,21 @@ public abstract class Character : NetworkBehaviour
     protected float restrictAngle = Mathf.Abs(80);
     public float turnSpeed = 2.0f;
     protected float defaultSpeed = 1.0f;
-
     #endregion
-
 
     #region Booleans
     [SerializeField] protected bool turning;
     [SerializeField] protected bool rolling = false;
-    public bool isDashing;
     public bool isStrafing; //1st person kamera käyttää näitä
     protected bool isMoving;
-    public bool hasjustRolled;
-    protected bool barrelRoll;
+
+
     private bool ready;
     protected bool eating;
     protected bool inputEnabled = true;
 
     //timer bools
-    [SerializeField] protected bool coolTimer;
-
-    //ability unlock bools used in editor
-    [SerializeField] protected bool canBarrellRoll;
-    [SerializeField] protected bool canStrafe;
-    [SerializeField] protected bool canTurn;
-    [SerializeField] protected bool canDash;
+    [SerializeField] protected bool coolTimer;    //ability unlock bools used in editor
 
     #endregion
 
@@ -79,10 +70,20 @@ public abstract class Character : NetworkBehaviour
     #endregion
 
     [SerializeField] protected Renderer playerMesh = null;
-
-    //End variables
-
-    #region Getter&Setter
+    protected Vector3 dir;
+    private Vector3 curNormal = Vector3.up;
+    private Vector3 colPosition;
+    private RaycastHit hitDown;
+    private RaycastHit hitInfo;
+    public LayerMask CollisionMask;
+    private float Height = 0.3f;
+    public float HeightPadding = 0.05f;
+    public float MaxGroundAngle = 120f;
+    private float step;
+    private float groundAngle;
+    RaycastHit[] hits = new RaycastHit[12];
+    public float SideColDistance, Buffer;
+    private float smooth;
 
     public float ForwardVelocity
     {
@@ -96,6 +97,7 @@ public abstract class Character : NetworkBehaviour
             forwardVelocity = Mathf.Clamp(value, -maxSpeed, maxSpeed);
         }
     }
+
 
     protected float Speed
     {
@@ -117,7 +119,7 @@ public abstract class Character : NetworkBehaviour
             return inputVector;
         }
     }
-    
+
     public bool InputEnabled
     {
         get
@@ -129,8 +131,6 @@ public abstract class Character : NetworkBehaviour
             inputEnabled = value;
         }
     }
-    
-    #endregion
 
     #region Movement methods
 
@@ -149,86 +149,129 @@ public abstract class Character : NetworkBehaviour
     /// </summary>
     protected virtual void Restrict()
     {
-        transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 75, 275), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
-    }
+        transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 75, 275), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z)); }
 
     // Clamps angle (different from the normal clamp function)
     private float strangeAxisClamp(float value, float limit1, float limit2)
     {
-        if (value > limit1 && value < 180f)
+        if (value > limit1 && value < 160f)
             value = limit1;
-        else if (value > 180f && value < limit2)
+        else if (value > 160f && value < limit2)
             value = limit2;
         return value;
     }
 
-    protected virtual void BarrelRoll() //if needed 
-    {
-
-        if (canBarrellRoll)
-        {
-            Vector3 inputRotationZ = new Vector3(0, 0, 1) * (Input.GetAxisRaw("Rotation") * rotateSpeed);
-            transform.Rotate(inputRotationZ);
-            if (inputRotationZ.magnitude != 0)
-            {
-                rolling = true;
-                isMoving = true;
-
-            }
-            else
-            {
-                rolling = false;
-            }
-
-        }
-
-    }
-
     #endregion
 
-    public bool CollisionCheck()
+    /// <summary>
+    /// Checks if player can move in wanted direction
+    /// returns true if there is not another bject's collider in way
+    /// and false if player would collide with another collider
+    /// </summary>
+    protected void CheckCollision()
     {
-        float distanceToPoints = col.height / 2 - col.radius;
+        collided = false;
+        //initialize rays
+        Ray rayForward = new Ray(transform.position, transform.forward);
+        Ray rayBack = new Ray(transform.position, -transform.forward);
+        Ray rayUp = new Ray(transform.position, transform.up);
+        Ray rayDown = new Ray(transform.position, -transform.up);
+        Ray rayRight = new Ray(transform.position, transform.right);
+        Ray rayLeft = new Ray(transform.position, -transform.right);
 
-        //calculating start and en point  of capuleCollider for capsuleCast to use
+        //calculating and setting points and distances for capsule cast (and rays)
+        float distanceToPoints = col.height / 2 - col.radius;
         Vector3 point1 = transform.position + col.center + Vector3.up * distanceToPoints;
         Vector3 point2 = transform.position + col.center - Vector3.up * distanceToPoints;
-        Vector3 dir = InputVector;
         float radius = col.radius * 1.1f;
-        float castDistance = 0.5f;
+        Height = col.height;
+        float castDistance;
+        castDistance = Height / 2 + Buffer;
 
-        //shoot capsuleCast
-        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, radius, dir, castDistance);
+        //shoot capsuleCast and save hit collisions to hits-array
+        RaycastHit[] hits = Physics.CapsuleCastAll(point1, point2, Height + HeightPadding, dir, castDistance * smooth, CollisionMask);
 
+        // check all collisions for their type and move of not accordingly
         foreach (RaycastHit objectHit in hits)
         {
-            collided = false;
-
-            if (objectHit.transform.tag == "Ground")
+            if (Physics.Raycast(rayDown, out hitInfo, castDistance + Buffer))
             {
-                colPoint = objectHit.point;
-
-                RaycastHit hit;
-
-                Physics.Raycast(point1, objectHit.point, out hit);
-                Debug.DrawRay(point1, objectHit.point, Color.red);
-
-                if (Vector3.Angle(objectHit.normal, hit.normal) > 5)
+                colPoint = hitInfo.point;
+                print("ground");
+                //check if ground angle allows movement
+                if (groundAngle < MaxGroundAngle)
                 {
-                    surfaceNormal = objectHit.normal;
+                    if (Physics.Raycast(transform.position, -surfaceNormal, out hitDown))
+                    {
+                        print(groundAngle);
+                        surfaceNormal = Vector3.Lerp(surfaceNormal, hitDown.normal, 4 * Time.deltaTime);
+                    }
+
+                    //Rotate character according to ground angle
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Vector3.Cross(transform.right, surfaceNormal), hitInfo.normal), step);
+
+                    //check distance to collision point and move target away from it
+                    if (Vector3.Distance(transform.position, colPoint) < Height + HeightPadding)
+                    {
+                        transform.position = Vector3.Lerp(transform.position, transform.position + surfaceNormal * Buffer, Time.fixedDeltaTime * 4);
+                    }
+                }
+            }
+
+            //check direction and determinate angle for normal and colPoint
+            if (Physics.Raycast(transform.position, dir, out hitInfo, castDistance))
+            {
+
+                if (Vector3.Angle(objectHit.normal, hitInfo.normal) > 5)
+                {
+                    curNormal = objectHit.normal;
+                    colPoint = objectHit.point;
                 }
                 else
                 {
-                    surfaceNormal = hit.normal;
+                    curNormal = hitInfo.normal;
+                    colPoint = hitInfo.point;
                 }
 
                 collided = true;
+            }
 
-                return false;
+            // check if sides of character hit something
+            // if only one side collides turn character slightly away from collision
+            if (Physics.Raycast(rayRight, out hitInfo, SideColDistance) && Physics.Raycast(rayLeft, out hitInfo, SideColDistance))
+            {
+                transform.rotation = Quaternion.Euler(new Vector3(strangeAxisClamp(transform.rotation.eulerAngles.x, 60, 300), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+            }
+            else if (Physics.CapsuleCast(point1, point2, radius, transform.right, out hitInfo, SideColDistance))
+            {
+                Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(temp), step);
+            }
+            else if (Physics.CapsuleCast(point1, point2, radius, -transform.right, out hitInfo, SideColDistance))
+            {
+                Vector3 temp = Vector3.Cross(transform.up, hitInfo.normal);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(-temp), step);
+            }
+
+            //Keep character at given distance of colliding objects
+            if (Vector3.Distance(transform.position, colPoint) < Height + HeightPadding)
+            {
+                transform.position = Vector3.Lerp(transform.position, transform.position + curNormal * (radius + Buffer), step * Time.fixedDeltaTime);
             }
         }
+    }
 
-        return true;
+    /// <summary>
+    /// calculate ground angle 
+    /// </summary>
+    private void CalculateGroundAngle()
+    {
+        if (!collided)
+        {
+            groundAngle = 90;
+            return;
+        }
+        groundAngle = Vector3.Angle(dir, hitDown.normal);
     }
 
     /// <summary>
@@ -241,7 +284,6 @@ public abstract class Character : NetworkBehaviour
     }
 
     protected abstract void SpawnCamera();
-
     [ServerCallback]
     public void EnablePlayer(bool enabled)
     {
@@ -265,6 +307,7 @@ public abstract class Character : NetworkBehaviour
     {
         col = GetComponentInChildren<CapsuleCollider>();
         musicSource = GetComponent<AudioSource>();
+        //SFXsource = transform.GetChild(3).GetComponent<AudioSource>();
     }
 
     protected virtual void Start()
@@ -275,24 +318,42 @@ public abstract class Character : NetworkBehaviour
             UIManager.Instance.InstantiateInGameUI(this);
         }
 
+
+
         inputEnabled = true;
         accPerSec = maxSpeed / accTimeToMax;
         decPerSec = -maxSpeed / decTimeToMin;
-        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
-    }
+        EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient); }
 
     protected virtual void Update()
     {
-        ForwardMovement();
-        UpwardsMovement();
-        SidewayMovement();
+
     }
 
     protected virtual void FixedUpdate()
     {
-        Restrict();
-        Stabilize();
+        step = defaultSpeed * Time.deltaTime;
+
+        dir = transform.TransformDirection(InputVector);
+
+
+        CalculateGroundAngle();
+        CheckCollision();
+        AnimationChanger();
+        Debug.Log(collided);
+        if (collided)
+        {
+            return;
+        }
+        else
+        {
+            ForwardMovement();
+            UpwardsMovement();
+            SidewayMovement();
+            ApplyMovement();
+        }
     }
 
     #endregion
+
 }

@@ -13,9 +13,10 @@ public class Herbivore : Character
     private bool HasRespawned;
     private float surTime;
     public bool mouseInput;
-    private bool cloaked = false;
+    private bool canDash;
+    Camera camCol;
+    CameraController cc = new CameraController(); private bool cloaked = false;
     public float defSmooth = 0;
-
     //timer values
     [SerializeField] protected float dashTime = 2f;
     [SerializeField] protected float coolTime = 6f;
@@ -97,12 +98,6 @@ public class Herbivore : Character
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         transform.Rotate(v, h, 0);
 
-        if (Input.GetAxisRaw("Mouse Y") != 0 || Input.GetAxisRaw("Mouse X") != 0)
-        {
-            mouseInput = true;
-        }
-        else
-            mouseInput = false;
     }
 
     /// <summary>
@@ -112,11 +107,10 @@ public class Herbivore : Character
     {
         for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
         {
-            //if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
-            //{
-
+            if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+            {
                 Eat(InGameManager.Instance.FoodPlaceList[i]);
-            //}
+            }
         }
     }
 
@@ -137,7 +131,7 @@ public class Herbivore : Character
             }
             Deathcount++;
             InGameManager.Instance.RespawnPlayer(this);
-            
+
         }
         else
         {
@@ -204,7 +198,7 @@ public class Herbivore : Character
 
                 if (carnivore)  //  If carnivore in game
                 {
-                    if(canSetNewCompassPosition)    //  If Compass Timer Ready
+                    if (canSetNewCompassPosition)    //  If Compass Timer Ready
                     {
                         if (isServer)
                         {
@@ -297,17 +291,6 @@ public class Herbivore : Character
         if (canDash)
         {
             Vector3 inputVectorZ = InputManager.Instance.GetButton("Ability") ? Vector3.forward * dashSpeed * Time.deltaTime : Vector3.zero;
-
-            if (inputVectorZ.magnitude != 0)
-            {
-                isDashing = true;
-
-                StartCoroutine(DashTimer());
-            }
-            else
-            {
-                isDashing = false;
-            }
             Z += inputVectorZ;
         }
     }
@@ -366,13 +349,13 @@ public class Herbivore : Character
         inputVector = X + Y + Z;
         isMoving = inputVector.normalized.magnitude != 0 ? true : false;
 
-        if (CollisionCheck())
+        if (!collided)
         {
             transform.Translate((X + Z) * defaultSpeed);
             transform.Rotate(Y * defaultSpeed);
         }
     }
-    
+
     #endregion
 
     #region Cloak
@@ -479,26 +462,13 @@ public class Herbivore : Character
         {
             base.Start();
             SpawnCamera();
-            canBarrellRoll = true;
-            canTurn = true;
         }
-
-        experience = 100f;  // For testing purposes
     }
 
     protected override void Update()
     {
         if (isLocalPlayer && inputEnabled)
         {
-            if (Input.GetKeyDown(KeyCode.Space)) //debug
-                TakeDamage(1);
-
-            if (Input.GetKeyDown(KeyCode.Q)) //also debug
-            {
-                ToggleCloak();
-
-            }
-
             //  Compass Update Timer limit!!
             if (!canSetNewCompassPosition)
             {
@@ -514,6 +484,7 @@ public class Herbivore : Character
             }
 
             base.Update();
+            Stabilize();
             Dash();
             InteractionChecker();
             UIManager.Instance.UpdateMatchUI(this);
@@ -531,10 +502,8 @@ public class Herbivore : Character
             }
             ApplyMovement();
         }
-
-        AnimationChanger();
     }
 
     #endregion
-
 }
+
