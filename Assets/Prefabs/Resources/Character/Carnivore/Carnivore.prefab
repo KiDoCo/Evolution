@@ -220,8 +220,10 @@ GameObject:
   - component: {fileID: 82769841182586898}
   - component: {fileID: 114401673902600974}
   - component: {fileID: 114213708722299978}
-  - component: {fileID: 114089988995669340}
   - component: {fileID: 54280091110362696}
+  - component: {fileID: 114706466942077408}
+  - component: {fileID: 114622324853343066}
+  - component: {fileID: 114443621666963802}
   m_Layer: 8
   m_Name: Carnivore
   m_TagString: Player
@@ -1163,27 +1165,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114089988995669340
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1445834569832970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 1
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 7
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_VelocityThreshold: 0.0001
-  m_SnapThreshold: 5
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1
 --- !u!114 &114213708722299978
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1258,6 +1239,58 @@ MonoBehaviour:
   xpReward: 0
   damage: 1
   slowDown: 0
+--- !u!114 &114443621666963802
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac700f3e0955454409a3d63addee4e6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useFog: 0
+  defaultColor: {r: 0, g: 0, b: 0, a: 0}
+  defaultDensity: 0
+  caveColor: {r: 0.09019608, g: 0.09019608, b: 0.18039216, a: 0}
+  caveDensity: 0.085
+  speed: 0.02
+  useCaveFog: 0
+--- !u!114 &114622324853343066
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f253c52edd9f094c8a907add7064464, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lerpRate: 4
+  normalLerpRate: 8
+  fasterLerpRate: 16
+  sendRate: 9
+  threshold: 0.1
+  closeEnough: 0.05
+--- !u!114 &114706466942077408
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1445834569832970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4b3138a9f6ef854090ef4daeb96e818, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lerpRate: 4
+  normalLerpRate: 8
+  fasterLerpRate: 16
+  sendRate: 9
+  threshold: 0.1
+  closeEnough: 0.05
 --- !u!136 &136574025905355464
 CapsuleCollider:
   m_ObjectHideFlags: 1

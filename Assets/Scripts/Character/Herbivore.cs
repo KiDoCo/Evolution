@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-
 public class Herbivore : Character
 {
     //Component search
@@ -30,6 +29,11 @@ public class Herbivore : Character
     private const float deathpenaltytime = 2.0f;
     protected float experience = 0;
     private int deathcount;
+
+    //Carnivore Send Rate Timer!
+    public float compassTimer = 8f;
+    public float currentCompassTime = 8f;
+    public bool canSetNewCompassPosition = true;
 
     #endregion
 
@@ -108,11 +112,11 @@ public class Herbivore : Character
     {
         for (int i = 0; InGameManager.Instance.FoodPlaceList.Count > i; i++)
         {
-            if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
-            {
+            //if (GetComponent<Collider>().bounds.Intersects(InGameManager.Instance.FoodPlaceList[i].GetComponent<FoodBaseClass>().GetCollider().bounds))
+            //{
 
                 Eat(InGameManager.Instance.FoodPlaceList[i]);
-            }
+            //}
         }
     }
 
@@ -133,6 +137,7 @@ public class Herbivore : Character
             }
             Deathcount++;
             InGameManager.Instance.RespawnPlayer(this);
+            
         }
         else
         {
@@ -194,6 +199,26 @@ public class Herbivore : Character
                     CmdEat(go);
 
 
+                //  Update Carnivore Compass
+                Carnivore carnivore = GameObject.FindObjectOfType<Carnivore>();
+
+                if (carnivore)  //  If carnivore in game
+                {
+                    if(canSetNewCompassPosition)    //  If Compass Timer Ready
+                    {
+                        if (isServer)
+                        {
+                            RpcCompassPos(transform.position);
+                        }
+                        else
+                        {
+                            CmdCompassPos(transform.position);
+                        }
+                    }
+                    //  Reset Compass Timer
+                    canSetNewCompassPosition = false;
+                    currentCompassTime = 0f;
+                }
             }
             else
             {
@@ -203,6 +228,18 @@ public class Herbivore : Character
             }
         }
 
+    }
+
+    [Command]
+    private void CmdCompassPos(Vector3 pos)
+    {
+        IndicatorAbility.instance.SetNewPoint(pos);
+    }
+
+    [ClientRpc]
+    private void RpcCompassPos(Vector3 pos)
+    {
+        IndicatorAbility.instance.SetNewPoint(pos);
     }
 
     /// <summary>
@@ -335,9 +372,7 @@ public class Herbivore : Character
             transform.Rotate(Y * defaultSpeed);
         }
     }
-
-
-
+    
     #endregion
 
     #region Cloak
@@ -350,7 +385,6 @@ public class Herbivore : Character
         {
             visibilityColor.a = 0;
             StartCoroutine(SwapColor(visibilityColor));
-
         }
         else
         {
@@ -463,6 +497,20 @@ public class Herbivore : Character
             {
                 ToggleCloak();
 
+            }
+
+            //  Compass Update Timer limit!!
+            if (!canSetNewCompassPosition)
+            {
+                currentCompassTime += 1 * Time.deltaTime;
+            }
+            if (currentCompassTime > compassTimer)    //  If bigger than compassTimer 
+            {
+                canSetNewCompassPosition = true;
+            }
+            else
+            {
+                canSetNewCompassPosition = false;
             }
 
             base.Update();

@@ -37,6 +37,10 @@ public class NetworkGameManager : NetworkLobbyManager {
     private bool thisIsHosting = false;
     private string externalIP = "";
 
+    private List<Transform> carnivoreStartPoints = new List<Transform>();
+    public List<Transform> herbivoreStartPoints = new List<Transform>();
+
+
     private void Awake ()
     {
         Instance = this;
@@ -52,7 +56,7 @@ public class NetworkGameManager : NetworkLobbyManager {
                 Instantiate(g);
             }
         }
-
+        
         SceneManager.LoadScene(lobbyScene);
         UIWindows = new GameObject[] { mainUI, hostUI, clientUI };
 
@@ -185,6 +189,11 @@ public class NetworkGameManager : NetworkLobbyManager {
         {
             EventManager.Broadcast(EVENT.RoundBegin);
         }
+        else if (sceneName == lobbyScene)
+        {
+            carnivoreStartPoints.Clear();
+            herbivoreStartPoints.Clear();
+        }
     }
 
     public override void OnLobbyClientSceneChanged(NetworkConnection conn)
@@ -207,9 +216,24 @@ public class NetworkGameManager : NetworkLobbyManager {
             InGameManager.Instance.DestroyFoodPlaceLists();
         }
     }
+    
+    private List<Transform> notBlockedSpawnPoints = new List<Transform>();
 
     public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
     {
+
+        foreach (Transform startPos in startPositions)  //  Make Carnivore & Herbivore Start Position Lists
+        {
+            if (startPos.transform.tag == "CarnivoreStartPos")
+            {
+                carnivoreStartPoints.Add(startPos);
+            }
+            else
+            {
+                herbivoreStartPoints.Add(startPos);
+            }
+        }
+        
         LobbyPlayer player = null;
 
         // Finds the lobby player
@@ -239,16 +263,49 @@ public class NetworkGameManager : NetworkLobbyManager {
         }
         else
         {
-            spawnedPlayer = Instantiate(player.CharacterSelected, startPositions[Random.Range(0, startPositions.Count)].position, player.CharacterSelected.transform.rotation);
-            InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+            if (player.CharacterSelected.GetComponent<Character>().GetType() == typeof(Carnivore))
+            {
+                //  Debugging   Carnivores in game >>       Debug.Log("cList count: " + carnivoreStartPoints.Count);
+
+                spawnedPlayer = Instantiate(player.CharacterSelected, carnivoreStartPoints[Random.Range(0, carnivoreStartPoints.Count)].position, player.CharacterSelected.transform.rotation); //  Starting position is randomly selected from carnivore list
+
+                InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+            }
+            else
+            {
+                //  Debugging   Herbivores in game >>       Debug.Log("hList count: " + herbivoreStartPoints.Count);
+
+                notBlockedSpawnPoints.Clear();
+
+                foreach (Transform startPos in herbivoreStartPoints)    //  Add starting positions that are empty into new starting position list
+                {
+                    if (startPos.transform.GetComponent<StartPositionCheck>().isEmpty == true)
+                    {
+                        notBlockedSpawnPoints.Add(startPos.transform);
+                    }
+                }
+
+                //  Debugging count of available starting positions >>      Debug.Log("notblockedSpawnPoints Count: " + notBlockedSpawnPoints.Count);
+
+                Vector3 spawnPoint = Vector3.zero;
+
+                if (notBlockedSpawnPoints != null && notBlockedSpawnPoints.Count > 0)   //  Starting position is randomly selected from new list
+                {
+                    spawnPoint = notBlockedSpawnPoints[Random.Range(0, notBlockedSpawnPoints.Count)].transform.position;
+                }
+
+                spawnedPlayer = Instantiate(player.CharacterSelected, spawnPoint, player.CharacterSelected.transform.rotation);
+
+                InGamePlayerList.Add(spawnedPlayer.GetComponent<Character>());
+            }
         }
 
         return spawnedPlayer;
     }
 
-    // --- Other private methods
+        // --- Other private methods
 
-    private IEnumerator GetPublicIP()
+        private IEnumerator GetPublicIP()
     {
         using (WWW www = new WWW("https://api.ipify.org"))
         {

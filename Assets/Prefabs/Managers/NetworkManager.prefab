@@ -983,6 +983,7 @@ MonoBehaviour:
   - {fileID: 1063323722126642, guid: 0247f83a354ed3044b8def18bfc70964, type: 2}
   - {fileID: 1159671913952188, guid: d7dcccfdadee83d4b8c7a9340601a117, type: 2}
   - {fileID: 1896606498718602, guid: 5f872a3ae431cd347966da54bb339f9d, type: 2}
+  - {fileID: 1588076483728332, guid: d2274be0469a9c24e92edae44709424e, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -1064,6 +1065,7 @@ MonoBehaviour:
 '
   playerListContent: {fileID: 1287177234032914}
   playerName: {fileID: 114726820482615308}
+  herbivoreStartPoints: []
 --- !u!114 &114366134838970938
 MonoBehaviour:
   m_ObjectHideFlags: 1

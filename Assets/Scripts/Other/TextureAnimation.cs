@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class TextureAnimation : MonoBehaviour
 {
@@ -22,7 +21,7 @@ public class TextureAnimation : MonoBehaviour
             Debug.LogWarning("TextureAnimation: No Renderer found on this gameObject", this);
             enabled = false;
         }
-        
+
         StartCoroutine("switchTexture");
     }
     

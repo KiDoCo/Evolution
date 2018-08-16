@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
@@ -21,7 +22,7 @@ public class InGameManager : NetworkBehaviour
     [SerializeField] private float experiencePenalty = 25.0f;
     [SerializeField] private float endScreenTime = 20f;
     [SerializeField] private int maxLifeCount = 2;
-    [SyncVar (hook =  "Timer")]
+    [SyncVar(hook = "Timer")]
     private float matchTimer;
     [SyncVar] private int lifeCount;
     [SyncVar] private bool matchEnd = false;    // BUG: MatchEnd doesn't sync to other players
@@ -133,17 +134,56 @@ public class InGameManager : NetworkBehaviour
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
+    private List<Transform> distanceList = new List<Transform>();
+
     private IEnumerator Respawn(Herbivore player)
     {
         player.EnablePlayer(false);
         // - Change camera to fixed camera
         yield return new WaitForSeconds(deathPenaltyTime);
+
+        Carnivore carnivore = GameObject.FindObjectOfType<Carnivore>();
+
+        player.transform.GetComponent<NetworkPlayerCaveFog>().useFog = false;
+
+        if (carnivore)  //  If carnivore in game
+        {
+            Vector3 carnivoreLocation = carnivore.transform.position;
+
+            distanceList.Clear();
+
+            foreach (Transform startPos in NetworkGameManager.Instance.herbivoreStartPoints)    //  Check starting positions if  is empty
+            {
+                if (startPos.GetComponent<StartPositionCheck>().isEmpty == true)
+                {
+                    //  Debugging Distances >>     float dist = Vector3.Distance(startPos.position, carnivore.transform.position); Debug.Log("" + startPos.transform.name + " - matka: " + dist);
+                    distanceList.Add(startPos);
+                }
+            }
+
+            distanceList.Sort(delegate (Transform c, Transform s)   //  Sort list by: smallest distance >>  biggest distance. Between starting positions and carnivore
+            {
+                return Vector3.Distance(carnivore.transform.position, c.transform.position).CompareTo((Vector3.Distance(carnivore.transform.position, s.transform.position)));
+            }
+            );
+
+            player.transform.position = distanceList.ElementAt(distanceList.Count - 1).position;    //  Last in list is most far from carnivore and is herbivores starting position.
+            //  Debugging Herbivore Starting Position >>    Debug.Log("Herbivore started at: " + distanceList.ElementAt(distanceList.Count - 1));
+
+        }
+        else  //  If NOT carnivore in game then random spawn
+        {
+            //  Debugging   If Not Carnivore >>     Debug.Lornivore not found.");
+            player.transform.position = NetworkGameManager.Instance.herbivoreStartPoints[Random.Range(0, NetworkGameManager.Instance.herbivoreStartPoints.Count)].position;
+        }
+
         // - Reset values
         player.Experience -= experiencePenalty;
         player.EnablePlayer(true);
         player.gameObject.SetActive(true);
         yield return null;
     }
+
 
     /// <summary>
     /// Ends the match when time ends or one of the sides wins the game
@@ -220,6 +260,7 @@ public class InGameManager : NetworkBehaviour
         }
     }
 
+    
     #endregion
 
     /// <summary>

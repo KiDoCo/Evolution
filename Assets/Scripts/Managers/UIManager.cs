@@ -15,6 +15,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject matchResultScreen;
     [SerializeField] private GameObject helixCamera;
 
+    public string playerType;
+
     public GameObject PauseMenuPrefab
     {
         get
@@ -57,6 +59,7 @@ public class UIManager : MonoBehaviour
         else if (source.GetType() == typeof(Carnivore))
         {
             HUDController.Instance.CurHealthText.gameObject.SetActive(false);
+            playerType = "Carnivore";
         }
     }
 

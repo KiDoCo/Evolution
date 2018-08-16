@@ -66,9 +66,9 @@ public class Carnivore : Character
 
     protected override void AnimationChanger()
     {
-        m_animator.SetBool("IsMoving", isMoving);
+        /*m_animator.SetBool("IsMoving", isMoving);
         m_animator.SetBool("IsEating", isEating);
-        m_animator.SetBool("IsCharging", charging);
+        m_animator.SetBool("IsCharging", charging);*/
     }
 
     public void RestoreSpeed()
@@ -204,6 +204,7 @@ public class Carnivore : Character
             transform.Translate(inputVector);
         }
     }
+    
 
     #endregion
 
@@ -383,4 +384,3 @@ public class Carnivore : Character
 
     #endregion
 }
-
