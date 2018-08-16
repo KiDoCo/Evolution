@@ -60,6 +60,7 @@ MonoBehaviour:
   matchResultScreen: {fileID: 0}
   helixCamera: {fileID: 1009143415174350, guid: 08c85d6115cdd8b48bd765bc3d098c84,
     type: 2}
+  AURA: {fileID: 1675161629720738, guid: c5eb2d9f9f749934091079635dd71609, type: 2}
 --- !u!114 &114409533856068308
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject pauseMenu = null;
     [SerializeField] private GameObject matchResultScreen;
     [SerializeField] private GameObject helixCamera;
+    [SerializeField] private GameObject AURA = null;
 
     public GameObject PauseMenuPrefab
     {
@@ -53,6 +54,7 @@ public class UIManager : MonoBehaviour
             HUDController.Instance.InstantiateHelix(clone);
             GameObject cameraClone = Instantiate(helixCamera, GameObject.Find("CameraLocation").transform.position, Quaternion.identity);
             cameraClone.transform.rotation = Quaternion.Euler(90, 180, 0);
+            Instantiate(AURA);
         }
         else if (source.GetType() == typeof(Carnivore))
         {

@@ -77,14 +77,14 @@ Material:
     - _OcclusionStrength: 1
     - _Offset1: 0
     - _Offset2: 0
-    - _Outline: 0.51
+    - _Outline: 1
     - _Parallax: 0.02
-    - _RampSmooth: 0.64
+    - _RampSmooth: 0.573
     - _RampThreshold: 0.45
     - _ReflSmoothness: 1
-    - _RimMax: 1
-    - _RimMin: 0.61
-    - _Shininess: 2
+    - _RimMax: 0.541
+    - _RimMin: 0.237
+    - _Shininess: 0.84
     - _SmoothnessTextureChannel: 0
     - _SpecSmooth: 0.05
     - _SpecularHighlights: 1
@@ -99,7 +99,7 @@ Material:
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 0.5}
-    - _RimColor: {r: 0.76432276, g: 1, b: 0, a: 0.6}
+    - _RimColor: {r: 0.19263972, g: 0.3490566, b: 0.31023863, a: 0.6}
     - _RimDir: {r: 0, g: 0, b: 1, a: 0}
     - _SColor: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 1}
-    - _SpecColor: {r: 0.6698113, g: 0.6698113, b: 0.6698113, a: 1}
+    - _SpecColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
