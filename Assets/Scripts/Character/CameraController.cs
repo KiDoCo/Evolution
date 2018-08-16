@@ -248,13 +248,24 @@ public class CameraController : MonoBehaviour
 
     void SmoothFollow() // follow every frame
     {
-        distance = minCollisionDistance - Mathf.Abs(0 + offset.x) * 2; //reduce absolute of cameraOffset.z from shortest collision point to get distance
-        distance = Mathf.Clamp(distance, MinDistance, MaxDistance); //Clamp distance between minDistance and maxDistance
+        Vector3 toPos;
+
+        if (!FreeCamera)
+        {
+            distance = minCollisionDistance - Mathf.Abs(0 + offset.x) * 2; //reduce absolute of cameraOffset.z from shortest collision point to get distance
+            distance = Mathf.Clamp(distance, MinDistance, MaxDistance); //Clamp distance between minDistance and maxDistance
+
+            toPos = target.position - (target.forward * distance);
+        }
+        else
+        {
+            toPos = target.position + (target.rotation * offset);
+        }
 
         print("distance: " + distance);
 
-        Vector3 toPos;
-        toPos = target.position - (target.forward * distance);
+   
+
         transform.position = Vector3.SmoothDamp(transform.position, toPos, ref velocity, distanceDamp);
     }
 
