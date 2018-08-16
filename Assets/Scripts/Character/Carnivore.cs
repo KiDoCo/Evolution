@@ -27,7 +27,6 @@ public class Carnivore : Character
     //Charge
     [SerializeField] private float chargeTime = 4;
     [SerializeField] private float chargeLenght;
-    private float coolDownTime = 0;
     private float defaultFov;
     private bool onCooldown = false;
     private bool hitTarget = false;
@@ -78,18 +77,6 @@ public class Carnivore : Character
         }
     }
 
-    public float CoolDownTime
-    {
-        get
-        {
-            return coolDownTime;
-        }
-
-        set
-        {
-            coolDownTime = Mathf.Clamp(value, 0, Mathf.Infinity);
-        }
-    }
 
     #region Checkers
 
@@ -112,17 +99,15 @@ public class Carnivore : Character
     }
 
     #endregion
-
+    [ClientRpc]
     public void RpcMusicChanger(bool hunted)
     {
-        if (musicSource == null) return;
-        Debug.Log("musicchanger called and source");
+        if (!isLocalPlayer) return;
 
         if (!hunted)
         {
             if (mClip != MusicEvent.Ambient)
             {
-                Debug.Log("Switched to ambient");
                 EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Ambient);
                 mClip = MusicEvent.Ambient;
             }
@@ -132,7 +117,6 @@ public class Carnivore : Character
         {
             if (mClip != MusicEvent.Hunting)
             {
-                Debug.Log("Switched to hunting");
                 EventManager.SoundBroadcast(EVENT.PlayMusic, musicSource, (int)MusicEvent.Hunting);
                 mClip = MusicEvent.Hunting;
             }
@@ -224,7 +208,7 @@ public class Carnivore : Character
             CmdHitTargetCheck(!CollisionCheck());
         }
 
-        InGameManager.Instance.MusicChecker(this, true, true);
+        InGameManager.Instance.MusicChecker(this, true);
     }
 
     public void Eat(Character col)
@@ -346,7 +330,6 @@ public class Carnivore : Character
         }
         else
         {
-            CoolDownTime = 10.0f;
             StartCoroutine(CameraFovChanger(speed));
             StartCoroutine(ChargeCooldown());
             CmdChargeChecker(true);
@@ -401,6 +384,8 @@ public class Carnivore : Character
     {
         onCooldown = true;
         yield return new WaitForSeconds(chargeLenght);
+        CoolDownTime = C_CooldownTime;
+
         CmdChargeChecker(false);
         CmdHitTargetCheck(false);
 
@@ -474,7 +459,6 @@ public class Carnivore : Character
             if (!charging)
                 CoolDownTime -= Time.deltaTime;
             InputManager.Instance.EnableInput = InputEnabled;
-            HUDController.Instance.Carnivore = true;
             EatInput();
             base.Update();
             Charge();

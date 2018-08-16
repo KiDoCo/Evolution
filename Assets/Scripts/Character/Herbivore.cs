@@ -36,7 +36,6 @@ public class Herbivore : Character
 
     //timer values
     [SerializeField] private float dashTime = 2f;
-    [SerializeField] protected float coolTime = 6f;
 
     #region Character stats
 
@@ -178,8 +177,11 @@ public class Herbivore : Character
 
     #endregion
 
+    [ClientRpc]
     public void RpcMusicChanger(bool hunted)
     {
+        if (!isLocalPlayer) return;
+
         if (!hunted)
         {
             if (mClip != MusicEvent.Ambient)
@@ -203,7 +205,7 @@ public class Herbivore : Character
     [Command]
     private void CmdMusicChangerCheck()
     {
-        InGameManager.Instance.MusicChecker(this, true, false);
+        InGameManager.Instance.MusicChecker(this, false);
     }
 
     /// <summary>
@@ -375,15 +377,15 @@ public class Herbivore : Character
         defaultSpeed = 3;
         yield return new WaitForSeconds(dashTime);
         defaultSpeed = 1;
+        CoolDownTime = C_CooldownTime;
         canDash = false;
         yield return StartCoroutine(CoolTimer());
     }
 
     protected IEnumerator CoolTimer()
     {
-        yield return new WaitForSeconds(coolTime);
+        while (CoolDownTime > 0) yield return null;
         canDash = true;
-
     }
 
     #endregion
@@ -616,7 +618,6 @@ public class Herbivore : Character
             cloakTimer = 10.0f;
             base.Start();
             SpawnCamera();
-            HUDController.Instance.Carnivore = false;
         }
 
     }
@@ -626,6 +627,8 @@ public class Herbivore : Character
         InvincibleTimer -= Time.deltaTime;
         if (isLocalPlayer)
         {
+            if(!canDash)
+            CoolDownTime -= Time.deltaTime;
             InputManager.Instance.EnableInput = InputEnabled;
             ApplyCloak();
             base.Update();

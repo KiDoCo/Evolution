@@ -404,7 +404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224255369402346844}
   m_Layer: 5
-  m_Name: PredCharCd
+  m_Name: AbilityIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -725,7 +725,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 2b951990d40378a4c889806d276d3373, type: 3}
+  m_Sprite: {fileID: 21300002, guid: 60920a9ef3f3f5e4ba45f830d92a182f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -954,7 +954,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 2b951990d40378a4c889806d276d3373, type: 3}
+  m_Sprite: {fileID: 21300002, guid: 60920a9ef3f3f5e4ba45f830d92a182f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -981,7 +981,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 2b951990d40378a4c889806d276d3373, type: 3}
+  m_Sprite: {fileID: 21300002, guid: 60920a9ef3f3f5e4ba45f830d92a182f, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1252,9 +1252,13 @@ MonoBehaviour:
   HresultScreen: {fileID: 1376312135425396}
   CresultScreen: {fileID: 1225608832756678}
   ResScreen: {fileID: 1036452533891604}
-  chargeIcon: {fileID: 1668500962430854}
+  AbilityIcon: {fileID: 1244715731650182, guid: 539146697ccfabd44ba8f7602e59e905,
+    type: 2}
+  abilitySprites:
+  - {fileID: 21300000, guid: 60920a9ef3f3f5e4ba45f830d92a182f, type: 3}
+  - {fileID: 21300002, guid: 60920a9ef3f3f5e4ba45f830d92a182f, type: 3}
   maxHealth: 100
-  abilityCount: 4
+  abilityCount: 0
   coolDownObjects: []
 --- !u!114 &114638729293830986
 MonoBehaviour:

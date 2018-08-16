@@ -10,7 +10,7 @@ public class HUDController : MonoBehaviour
 #pragma warning disable
     private float curProgress;
 
-    private bool carnivore;
+    private bool loadSprites;
 
     #region Texts
 
@@ -30,11 +30,13 @@ public class HUDController : MonoBehaviour
 
     #endregion
 
+    private Image maskImage;
     [SerializeField] private GameObject ingameUI;
     [SerializeField] private GameObject HresultScreen;
     [SerializeField] private GameObject CresultScreen;
     [SerializeField] private GameObject ResScreen;
-    [SerializeField] private GameObject chargeIcon;
+    [SerializeField] private GameObject AbilityIcon;
+    [SerializeField] private List<Sprite> abilitySprites;
     private Animator helixAnim;
     private Animator predatorMouthAnim;
     private AnimationClip clip;
@@ -140,18 +142,6 @@ public class HUDController : MonoBehaviour
         }
     }
 
-    public bool Carnivore
-    {
-        get
-        {
-            return carnivore;
-        }
-
-        set
-        {
-            carnivore = value;
-        }
-    }
 
     #endregion
 
@@ -174,26 +164,25 @@ public class HUDController : MonoBehaviour
     /// </summary>
     public void UpdateHUD()
     {
+        Type type = null;
         int Atime = (int)InGameManager.Instance.MatchTimer / 60;
         int Btime = (int)InGameManager.Instance.MatchTimer % 60;
         curHealthText.text = "" + curHealth;
         maxHealthText.text = "/" + maxHealth;
         inGameMatchTime.text = Atime + " : " + Btime.ToString("00");
 
-        if(Carnivore)
+        if (FindObjectOfType<Character>().CoolDownTime > 0)
         {
-            if(FindObjectOfType<Carnivore>().CoolDownTime > 0)
-            {
-                chargeIcon.SetActive(true);
-            }
-
-            if (FindObjectOfType<Carnivore>().CoolDownTime == 0)
-            {
-                chargeIcon.SetActive(false);
-            }
-
-            chargeIcon.transform.GetChild(1).GetComponent<Image>().fillAmount = FindObjectOfType<Carnivore>().CoolDownTime / 10;
+            Debug.Log("Ssetacslgk j true");
+            AbilityIcon.SetActive(true);
         }
+
+        if (FindObjectOfType<Character>().CoolDownTime == 0)
+        {
+            Debug.Log("setactive false");
+            AbilityIcon.SetActive(false);
+        }
+        maskImage.fillAmount = FindObjectOfType<Character>().CoolDownTime / FindObjectOfType<Character>().C_CooldownTime;
     }
 
     /// <summary>
@@ -214,16 +203,16 @@ public class HUDController : MonoBehaviour
     /// <param name="time"></param>
     /// <param name="surtime"></param>
     /// <param name="herbivore"></param>
-    public void ResultScreen(float exp, int death, float time,float surtime, bool herbivore)
+    public void ResultScreen(float exp, int death, float time, float surtime, bool herbivore)
     {
         ingameUI.SetActive(false);
         ResScreen.SetActive(true);
 
         if (!herbivore)
         {
-            if(death == 0)
+            if (death == 0)
             {
-                rank = PredatorRanks.Pacifish; 
+                rank = PredatorRanks.Pacifish;
             }
             /*else if(?) // if only one herbivore survives, add logic to this
             {
@@ -270,7 +259,7 @@ public class HUDController : MonoBehaviour
     /// <returns></returns>
     private string AddSpacesToSentence(string text)
     {
-        
+
         if (string.IsNullOrEmpty(text))
             return "";
         System.Text.StringBuilder newText = new System.Text.StringBuilder(text.Length * 2);
@@ -287,7 +276,7 @@ public class HUDController : MonoBehaviour
     /// <summary>
     /// Updates the player Cooldown UI
     /// </summary>
-    private void UpdateCooldowns() 
+    private void UpdateCooldowns()
     {
         StartCoroutine(Cooldown(5, coolDownObjects[0]));
         StartCoroutine(Cooldown(5, coolDownObjects[1]));
@@ -314,6 +303,27 @@ public class HUDController : MonoBehaviour
         cdObj.GetComponentInChildren<Text>().text = "";
     }
 
+    private void ChangeSprite()
+    {
+        List<Image> images = new List<Image>();
+        GetComponentsInChildren(images);
+        maskImage = images[1];
+        if (FindObjectOfType<Character>().GetType() == typeof(Carnivore))
+        {
+            foreach (Image i in images)
+            {
+                i.sprite = abilitySprites[1];
+            }
+        }
+        else
+        {
+            foreach (Image i in images)
+            {
+                i.sprite = abilitySprites[0];
+            }
+        }
+        loadSprites = true;
+    }
 
     private void Awake()
     {
@@ -324,12 +334,15 @@ public class HUDController : MonoBehaviour
 
     private void Start()
     {
-        chargeIcon.SetActive(Carnivore);
-
+        AbilityIcon.SetActive(true);
+        
     }
 
     private void Update()
     {
+        if (!loadSprites)
+            ChangeSprite();
+
         UpdateHUD();
         AnimationChanger();
         // UpdateCooldowns();

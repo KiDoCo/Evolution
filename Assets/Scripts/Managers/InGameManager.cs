@@ -277,7 +277,7 @@ public class InGameManager : NetworkBehaviour
     }
 
     [ServerCallback]
-    public void MusicChecker(Character car, bool hunt, bool carnivore)
+    public void MusicChecker(Character car, bool carnivore)
     {
         bool hunted = false;
         if (carnivore)
@@ -311,14 +311,12 @@ public class InGameManager : NetworkBehaviour
                 {
                     if (p.TriggerCollider.bounds.Intersects(h.TriggerCollider.bounds))
                     {
-                        Debug.Log("intersect");
-                        hunt = true;
+                        hunted = true;
                         h.RpcMusicChanger(hunted);
                         break;
                     }
                     else
                     {
-                        Debug.Log("Doesnt intersect");
                         h.RpcMusicChanger(hunted);
                         break;
                     }

@@ -29,6 +29,9 @@ public abstract class Character : NetworkBehaviour
     protected float restrictAngle = Mathf.Abs(80);
     public float turnSpeed = 2.0f;
     protected float defaultSpeed = 1.0f;
+    protected float coolDownTime = 0;
+    private const float c_CooldownTime = 10.0f;
+
 
     #endregion
 
@@ -45,7 +48,6 @@ public abstract class Character : NetworkBehaviour
     protected bool eating;
     private bool inputEnabled = true;
     //timer bools
-    [SerializeField] protected bool coolTimer;
 
     #endregion
 
@@ -90,6 +92,20 @@ public abstract class Character : NetworkBehaviour
 
 
     #region Getter&Setter
+
+    public float CoolDownTime
+    {
+        get
+        {
+            return coolDownTime;
+        }
+
+        set
+        {
+            coolDownTime = Mathf.Clamp(value, 0, Mathf.Infinity);
+        }
+    }
+
 
     public float ForwardVelocity
     {
@@ -156,6 +172,14 @@ public abstract class Character : NetworkBehaviour
         get
         {
             return triggerCollider;
+        }
+    }
+
+    public float C_CooldownTime
+    {
+        get
+        {
+            return c_CooldownTime;
         }
     }
 
